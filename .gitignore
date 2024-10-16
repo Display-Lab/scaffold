@@ -29,3 +29,5 @@ PFPenv/
 *.pyc
 .vscode
 .env.local
+.ruff_cache/
+.pytest_cache/
