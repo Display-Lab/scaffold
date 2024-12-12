@@ -187,7 +187,7 @@ INPUT_DIR=~/dev/PrecisionFeedbackMessageLog2024-05-20.xlsx OUTPUT_DIR=~/dev/Anal
 ```
 
 ### dataset_to_inputs.py
-Extracts input files from a dataset file.
+Extracts input files from a dataset file. Set QUARTERLY_DATA to True to create quarterly data instead of monthly data.
 
 ```
 INPUT_DIR=~/dev/OBI_dataset.xlsx OUTPUT_DIR=~/dev/inputs/  python src/bulk_up/dataset_to_inputs.py
