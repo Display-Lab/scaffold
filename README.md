@@ -52,7 +52,7 @@ poetry install # creates a virtual environment and install dependencies
 poetry shell # activates the enviroment
 ```
 
-#### Clone the knowledge base
+#### Setup a knowledge base for SCAFFOLD
 
 Clone the knowledge base repository in a separate location
 
