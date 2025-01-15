@@ -4,8 +4,6 @@ SCAFFOLD (Scalable Coaching and Appreciation Feedback For Optimal Learning and D
 
 Read through our [wiki pages](https://github.com/Display-Lab/scaffold/wiki) for more detail on testing. Please note that this wiki might not be completely up to date.
 
-The roadmap for [the next version of the PFP](https://github.com/Display-Lab/scaffold/wiki/Roadmap-(PFP-next)) can be found in the wiki.
-
 ## Quick start
 
 This is a Python software project and running SCAFFOLD requires some familiarity with [Python](https://www.python.org/downloads/) and virtual environments. This quick start gives directions using python's built in virtual environment tool [venv](https://docs.python.org/3/library/venv.html) and [Poetry](https://python-poetry.org/).
