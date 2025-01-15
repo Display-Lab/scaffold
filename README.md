@@ -1,21 +1,21 @@
-# Precision feedback pipeline
+# SCAFFOLD
 
-This is the pipeline service that implements the Precision Feedback Pipeline. The underlying model of precision feedback is captured in [this conceptual model](https://onlinelibrary.wiley.com/doi/full/10.1002/lrh2.10419).
+SCAFFOLD (Scalable Coaching and Appreciation Feedback For Optimal Learning and Decision-making) is a precision feedback system, implemented as a software pipeline to enhance performance reporting systems and dashboards. The underlying model of precision feedback is captured in [this conceptual model](https://onlinelibrary.wiley.com/doi/full/10.1002/lrh2.10419).
 
-Read through our [wiki pages](https://github.com/Display-Lab/precision-feedback-pipeline/wiki) for more detail on testing. Please note that this wiki might not be completely up to date.
+Read through our [wiki pages](https://github.com/Display-Lab/scaffold/wiki) for more detail on testing. Please note that this wiki might not be completely up to date.
 
-The roadmap for [the next version of the PFP](https://github.com/Display-Lab/precision-feedback-pipeline/wiki/Roadmap-(PFP-next)) can be found in the wiki.
+The roadmap for [the next version of the PFP](https://github.com/Display-Lab/scaffold/wiki/Roadmap-(PFP-next)) can be found in the wiki.
 
 ## Quick start
 
-This is a Python software project and running the pipeline requires some familiarity with [Python](https://www.python.org/downloads/) and virtual environments. This quick start gives directions using python's built in virtual environment tool [venv](https://docs.python.org/3/library/venv.html) and [Poetry](https://python-poetry.org/).
+This is a Python software project and running SCAFFOLD requires some familiarity with [Python](https://www.python.org/downloads/) and virtual environments. This quick start gives directions using python's built in virtual environment tool [venv](https://docs.python.org/3/library/venv.html) and [Poetry](https://python-poetry.org/).
 
-### Clone the precision feedback pipeline
+### Clone SCAFFOLD
 
 ```zsh
-git clone https://github.com/Display-Lab/precision-feedback-pipeline.git
+git clone https://github.com/Display-Lab/scaffold.git
 
-cd precision-feedback-pipeline
+cd scaffold
 ```
 
 #### Setup a virtual environment and install dependencies
@@ -63,12 +63,12 @@ cd ..
 git clone https://github.com/Display-Lab/knowledge-base.git 
 ```
 
-#### Running the pipeline
+#### Running SCAFFOLD
 
-Change back to the root of precision-feedback-pipeline
+Change back to the root of scaffold
 
 ```zsh
-cd precision-feedback-pipeline
+cd scaffold
 ```
 
 Update the `.env.local` file and change `path/to/knowledge-base` to point to the local knowledge base that you just checked out. (Don't remove the `file://` for preferences and manifest.)
@@ -81,7 +81,7 @@ manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
 ...
 ```
 
-Run the pipeline
+Run SCAFFOLD
 
 ```zsh
 ENV_PATH=.env.local uvicorn main:app
@@ -112,16 +112,16 @@ Local file path or URL (see .env.remote for github URL formats). All are require
 
 - default: 6
 
-#### generate_image: If set to true and the display type is bar chart or line chart, then the pipeline will generate the images and include them as part of the response
+#### generate_image: If set to true and the display type is bar chart or line chart, then SCAFFOLD will generate the images and include them as part of the response
 
 - default: True
 
 #### log_level: Sets the log level
 
 - default: `WARNING` (this is the production defauslt)
-- note: The PFP must be run with **`log_level=INFO`** in order to generate the candidate records in the output.
+- note: SCAFFOLD must be run with **`log_level=INFO`** in order to generate the candidate records in the output.
 
-#### performance_month: If set, the pipeline will override the performance month in the input requests
+#### performance_month: If set, SCAFFOLD will override the performance month in the input requests
 
 - default: None
 
@@ -151,7 +151,7 @@ The manifest file includes all different pieces that should be loaded to the bas
 
 Each entry consists of a ***key*** which is a URL (file:// or https:// or relative, see [Uniform Resource Identifier (URI)](https://datatracker.ietf.org/doc/html/rfc3986)) and a ***value*** which is a file path relative to the url. See manifest examples in the [knowledge base](https://github.com/Display-Lab/knowledge-base).
 
-If the key is a relative path, it must end with a '/'. In that case the key is going to be resolved towards the location of the manifest file by the pipeline.
+If the key is a relative path, it must end with a '/'. In that case the key is going to be resolved towards the location of the manifest file by SCAFFOLD.
 
 ### examples
 
