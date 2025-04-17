@@ -98,7 +98,7 @@ def render(performer_graph: Graph, candidate: BNode) -> dict:
         s_m["measure_name"] = str(measure.identifier)
         s_m["measure_title"] = measure.value(DCTERMS.title).value
         s_m["comparator_type"] = candidate_resource.value(
-            SLOWMO.RegardingComparator / RDFS.label
+            SLOWMO.RegardingComparator / SLOWMO.DisplayName
         )
         return s_m
 
