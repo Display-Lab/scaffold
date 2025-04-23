@@ -8,18 +8,18 @@ from rdflib import Graph
 
 def manifest_to_graph(manifest_path: str) -> Graph:
     g: Graph = Graph()
-    
-    try:    
+
+    try:
         with urlopen(manifest_path) as f:
             manifest_file = yaml.safe_load(f.read().decode("utf-8"))
     except Exception as e:
         logger.error(f"Error loading manifest: {e}")
-        return g  # Return an empty graph if the manifest cannot be loaded  
-          
+        return g  # Return an empty graph if the manifest cannot be loaded
+
     for key, values in manifest_file.items():
         base = urljoin(manifest_path, key)
         for value in values:
-            file = urljoin(base,value)
+            file = urljoin(base, value)
             try:
                 with urlopen(file) as f:
                     file_content = f.read().decode("utf-8")
@@ -30,6 +30,6 @@ def manifest_to_graph(manifest_path: str) -> Graph:
                 logger.debug(f"Graphed file {file}")
             except Exception as e:
                 logger.error(f"Error processing item {file}: {e}")
-                continue   
+                continue
 
     return g

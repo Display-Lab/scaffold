@@ -1,6 +1,6 @@
 from typing import List
 
-from rdflib import DCTERMS, RDF, RDFS, BNode, Graph, URIRef
+from rdflib import DCTERMS, RDF, BNode, Graph, URIRef
 from rdflib.resource import Resource
 
 from utils import SLOWMO

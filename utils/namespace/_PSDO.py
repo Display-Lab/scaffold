@@ -11,8 +11,8 @@ class PSDO(AliasingDefinedNamespace):
 
     PSDO_0000045: URIRef
     social_comparator_element: URIRef
-    
-    PSDO_0000046:URIRef
+
+    PSDO_0000046: URIRef
     goal_comparator_element: URIRef
 
     PSDO_0000093: URIRef
@@ -60,19 +60,19 @@ class PSDO(AliasingDefinedNamespace):
 
     PSDO_0000116: URIRef
     negative_performance_gap_set: URIRef
-    
+
     PSDO_0000117: URIRef
     positive_performance_gap_set: URIRef
 
     PSDO_0000119: URIRef
     negative_performance_trend_set: URIRef
-    
+
     PSDO_0000120: URIRef
     positive_performance_trend_set: URIRef
 
     PSDO_0000121: URIRef
     achievement_set: URIRef
-    
+
     PSDO_0000122: URIRef
     loss_set: URIRef
 
@@ -91,14 +91,14 @@ class PSDO(AliasingDefinedNamespace):
 
     PSDO_0000201: URIRef
     approach_content: URIRef
-    
+
     PSDO_0000202: URIRef
     approach_set: URIRef
 
     _alias = {
         "performance_summary_display_template": "PSDO_0000002",
         "social_comparator_element": "PSDO_0000045",
-        "goal_comparator_element":"PSDO_0000046",
+        "goal_comparator_element": "PSDO_0000046",
         "comparator_content": "PSDO_0000093",
         "goal_comparator_content": "PSDO_0000094",
         "social_comparator_content": "PSDO_0000095",
@@ -112,17 +112,17 @@ class PSDO(AliasingDefinedNamespace):
         "performance_content": "PSDO_0000107",
         "achievement_content": "PSDO_0000112",
         "loss_content": "PSDO_0000113",
-        "performance_gap_set":"PSDO_0000115",
+        "performance_gap_set": "PSDO_0000115",
         "negative_performance_gap_set": "PSDO_0000116",
-        "positive_performance_gap_set":"PSDO_0000117",
-        "negative_performance_trend_set":"PSDO_0000119",
+        "positive_performance_gap_set": "PSDO_0000117",
+        "negative_performance_trend_set": "PSDO_0000119",
         "positive_performance_trend_set": "PSDO_0000120",
-        "achievement_set":"PSDO_0000121",
-        "loss_set":"PSDO_0000122",
+        "achievement_set": "PSDO_0000121",
+        "loss_set": "PSDO_0000122",
         "peer_average_comparator": "PSDO_0000126",
         "peer_75th_percentile_benchmark": "PSDO_0000128",
         "peer_90th_percentile_benchmark": "PSDO_0000129",
         "motivating_information": "PSDO_0000200",
         "approach_content": "PSDO_0000201",
-        "approach_set": "PSDO_0000202"
+        "approach_set": "PSDO_0000202",
     }

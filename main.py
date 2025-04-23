@@ -127,19 +127,12 @@ async def createprecisionfeedback(info: Request):
 
     preferences = set_preferences(req_info)
 
-    initial_tic = tic = time.perf_counter()
-
     cool_new_super_graph = Graph()
     cool_new_super_graph += base_graph
-
-    toc = time.perf_counter()
-    timing = {"load base graph": f"{(toc-tic)*1000.:2.2f} ms"}
-    debug_output_if_set(cool_new_super_graph, "outputs/base.json")
 
     # BitStomach
     logger.debug("Calling BitStomach from main...")
 
-    tic = time.perf_counter()
     performance_data_df = bitstomach.prepare(req_info)
     # TODO: find a place for measures to live...mabe move these two line into prepare or make a measurees class
     measures = set(cool_new_super_graph[: RDF.type : PSDO.performance_measure_content])
@@ -164,17 +157,10 @@ async def createprecisionfeedback(info: Request):
         )
 
     cool_new_super_graph += g
-    toc = time.perf_counter()
-    timing["extract signals"] = f"{(toc-tic)*1000.:.2f} ms"
-
-    debug_output_if_set(cool_new_super_graph, "outputs/spek_bs.json")
 
     # candidate_pudding
     logger.debug("Calling candidate_pudding from main...")
-    tic = time.perf_counter()
     candidate_pudding.create_candidates(cool_new_super_graph)
-    toc = time.perf_counter()
-    timing["create candidates"] = f"{(toc-tic)*1000.:.2f} ms"
 
     # #Esteemer
     logger.debug("Calling Esteemer from main...")
@@ -185,7 +171,6 @@ async def createprecisionfeedback(info: Request):
         if key < performance_data_df.attrs["performance_month"]
     }
 
-    tic = time.perf_counter()
     measures: set[BNode] = set(
         cool_new_super_graph.objects(
             None, PSDO.motivating_information / SLOWMO.RegardingMeasure
@@ -202,20 +187,13 @@ async def createprecisionfeedback(info: Request):
         cool_new_super_graph.resource(selected_candidate)[SLOWMO.Display] = Literal(
             preferences["Display_Format"]
         )
-    toc = time.perf_counter()
-    timing["esteemer"] = f"{(toc-tic)*1000.:.2f} ms"
 
-    # print updated graph by esteemer
-    debug_output_if_set(cool_new_super_graph, "outputs/spek_st.json")
-
-    tic = time.perf_counter()
     selected_message = utils.render(cool_new_super_graph, selected_candidate)
 
     ### Pictoralist 2, now on the Nintendo DS: ###
     logger.debug("Calling Pictoralist from main...")
     if selected_message["message_text"] != "No message selected":
         ## Initialize and run message and display generation:
-        tic = time.perf_counter()
         pc = Pictoralist(
             performance_data_df,
             req_info["Performance_data"],
@@ -233,14 +211,9 @@ async def createprecisionfeedback(info: Request):
     else:
         full_selected_message = selected_message
 
-    toc = time.perf_counter()
-    timing["pictoralist"] = f"{(toc-tic)*1000.:.2f} ms"
-    timing["total"] = timedelta(seconds=(toc - initial_tic))
-
     response = {}
     # if settings.log_level == "INFO":
     if logger.at_least("INFO"):
-        response["timing"] = timing
 
         # Get memory usage information
         mem_info = psutil.Process(os.getpid()).memory_info()
