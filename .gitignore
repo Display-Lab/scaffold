@@ -14,7 +14,7 @@ outputs/*
 /.idea/
 .DS_Store
 *.DS_Store
-.env.local
+
 
 *.csv
 **/bin/__pycache__/
@@ -24,8 +24,10 @@ python/.vscode/settings.json
 .python-version
 ES.json
 venv/
+.venv/
 PFPenv/
 *.pyc
 .vscode
 .env.local
-.env.dev
+.ruff_cache/
+.pytest_cache/

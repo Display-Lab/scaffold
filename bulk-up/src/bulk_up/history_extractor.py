@@ -32,7 +32,10 @@ def add_history(filename):
             for row in performance_data:
                 if row[1] not in passed_rate:
                     passed_rate[row[1]] = {}
-                passed_rate[row[1]][row[2]] = int(row[3]) / int(row[5])
+                if int(row[5])!=0:
+                    passed_rate[row[1]][row[2]] = int(row[3]) / int(row[5])
+                else:
+                    passed_rate[row[1]][row[2]]=0
 
             with lock:
                 for key, value in data["History"].items():

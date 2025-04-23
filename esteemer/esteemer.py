@@ -26,17 +26,17 @@ def score(candidate: Resource, history: dict, preferences: dict, MPM: dict) -> R
     """
 
     CAUSAL_PATHWAY = {
-        "social better": {"score": score_better, "rules": rule_social_highest},
-        "social worse": {"score": score_worse, "rules": null_rule},
-        "improving": {"score": score_improving, "rules": null_rule},
-        "worsening": {"score": score_worsening, "rules": null_rule},
-        "goal gain": {"score": score_gain, "rules": null_rule},
-        "goal loss": {"score": score_loss, "rules": null_rule},
-        "social gain": {"score": score_gain, "rules": rule_social_highest},
-        "social loss": {"score": score_loss, "rules": rule_social_lowest},
-        "goal worse": {"score": score_worse, "rules": null_rule},
-        "goal approach": {"score": score_approach, "rules": null_rule},
-        "social approach": {"score": score_approach, "rules": rule_social_lowest},
+        "Social Better": {"score": score_better, "rules": rule_social_highest},
+        "Social Worse": {"score": score_worse, "rules": null_rule},
+        "Improving": {"score": score_improving, "rules": null_rule},
+        "Worsening": {"score": score_worsening, "rules": null_rule},
+        "Goal Gain": {"score": score_gain, "rules": null_rule},
+        "Goal Loss": {"score": score_loss, "rules": null_rule},
+        "Social Gain": {"score": score_gain, "rules": rule_social_highest},
+        "Social Loss": {"score": score_loss, "rules": rule_social_lowest},
+        "Goal Worse": {"score": score_worse, "rules": null_rule},
+        "Goal Approach": {"score": score_approach, "rules": null_rule},
+        "Social Approach": {"score": score_approach, "rules": rule_social_lowest},
     }
 
     causal_pathway = candidate.value(SLOWMO.AcceptableBy).value

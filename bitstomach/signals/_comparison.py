@@ -29,7 +29,7 @@ class Comparison(Signal):
         if perf_data.empty:
             raise ValueError
 
-        if not perf_data[-1:]["valid"].bool():
+        if not perf_data[-1:]["valid"].item():
             return []
 
         resources = []
@@ -86,7 +86,7 @@ class Comparison(Signal):
             comparator_value = perf_data[-1:][comparator] / 100
 
             gap = perf_data[-1:]["passed_rate"] - comparator_value
-            gaps[comparator] = (float(gap), float(comparator_value))
+            gaps[comparator] = (gap.item(), comparator_value.item())
 
         return gaps
 

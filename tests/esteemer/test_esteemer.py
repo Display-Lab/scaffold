@@ -9,14 +9,14 @@ from utils.namespace import PSDO, SLOWMO
 
 TEMPLATE_A = "https://repo.metadatacenter.org/template-instances/9e71ec9e-26f3-442a-8278-569bcd58e708"
 MPM = {
-    "social worse": {
+    "Social Worse": {
         "comparison_size": 0.5,
         "message_recency": 0.9,
         "message_recurrence": 0.5,
         "measure_recency": 0.5,
         "coachiness": 1.0,
     },
-    "social better": {
+    "Social Better": {
         "comparison_size": 0.5,
         "message_recency": 0.9,
         "message_recurrence": 0.9,
@@ -31,14 +31,14 @@ MPM = {
         "measure_recency": 1.0,
         "coachiness": 0.5,
     },
-    "worsening": {
+    "Worsening": {
         "trend_size": 0.8,
         "message_recency": 0.9,
         "message_recurrence": 0.5,
         "measure_recency": 1.0,
         "coachiness": 1.0,
     },
-    "goal gain": {
+    "Goal Gain": {
         "comparison_size": 0.5,
         "trend_size": 0.8,
         "achievement_recency": 0.5,
@@ -47,7 +47,7 @@ MPM = {
         "measure_recency": 0.5,
         "coachiness": 0.5,
     },
-    "goal loss": {
+    "Goal Loss": {
         "comparison_size": 0.5,
         "trend_size": 0.8,
         "loss_recency": 0.5,
@@ -69,17 +69,17 @@ def history():
         },
         "2023-05-01": {
             "message_template": "different template B",
-            "acceptable_by": "Social worse",
+            "acceptable_by": "Social Worse",
             "measure": "PONV05",
         },
         "2023-06-01": {
             "message_template": TEMPLATE_A,
-            "acceptable_by": "Social better",
+            "acceptable_by": "Social Better",
             "measure": "PONV05",
         },
         "2023-07-01": {
             "message_template": "different template A",
-            "acceptable_by": "Social better",
+            "acceptable_by": "Social Better",
             "measure": "PONV05",
         },
     }
@@ -112,7 +112,7 @@ def candidate_resource(performance_data_frame):
     graph = Graph()
     candidate_resource = graph.resource(BNode())
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.peer_90th_percentile_benchmark
-    candidate_resource[SLOWMO.AcceptableBy] = Literal("social better")
+    candidate_resource[SLOWMO.AcceptableBy] = Literal("Social Better")
     candidate_resource[SLOWMO.AncestorTemplate] = URIRef(TEMPLATE_A)
     candidate_resource[SLOWMO.RegardingMeasure] = BNode("PONV05")
 
@@ -151,7 +151,7 @@ def test_select_candidate():
     candidate2[SLOWMO.AcceptableBy] = Literal(True)
     candidate1[RDF.type] = SLOWMO.Candidate
     candidate2[RDF.type] = SLOWMO.Candidate
-    candidate1[SLOWMO.AcceptableBy] = Literal("social worse")
+    candidate1[SLOWMO.AcceptableBy] = Literal("Social Worse")
     candidate1[SLOWMO.AcceptableBy] = Literal("improving")
 
     # get graph that has candidates scored by esteemer
@@ -161,7 +161,7 @@ def test_select_candidate():
 
     candidate3 = graph.resource(BNode("candidate3"))
     candidate3[SLOWMO.Score] = Literal(0.2)
-    candidate3[SLOWMO.AcceptableBy] = Literal("social worse")
+    candidate3[SLOWMO.AcceptableBy] = Literal("Social Worse")
     selected_candidate = esteemer.select_candidate(graph)
     assert str(selected_candidate) in ["candidate1", "candidate3"]
     assert graph.resource(selected_candidate).value(SLOWMO.Score) == Literal(0.2)
@@ -184,7 +184,7 @@ def test_no_history_signal_is_score_0(candidate_resource):
 
 
 def test_history_with_two_recurrances(candidate_resource, history):
-    score = esteemer.score_history(candidate_resource, history, MPM["social better"])
+    score = esteemer.score_history(candidate_resource, history, MPM["Social Better"])
 
     assert score == pytest.approx(0.586589)
 
@@ -193,11 +193,11 @@ def test_social_better_score(performance_data_frame):
     graph = Graph()
     candidate_resource = graph.resource(BNode())
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.peer_90th_percentile_benchmark
-    candidate_resource[SLOWMO.AcceptableBy] = Literal("social better")
+    candidate_resource[SLOWMO.AcceptableBy] = Literal("Social Better")
 
     motivating_informations = Comparison.detect(performance_data_frame)
     score = esteemer.score_better(
-        candidate_resource, motivating_informations, MPM["social better"]
+        candidate_resource, motivating_informations, MPM["Social Better"]
     )
     assert score == pytest.approx(0.05)
 
@@ -224,11 +224,11 @@ def test_social_worse_score():
     graph = Graph()
     candidate_resource = graph.resource(BNode())
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.peer_average_comparator
-    candidate_resource[SLOWMO.AcceptableBy] = Literal("social worse")
+    candidate_resource[SLOWMO.AcceptableBy] = Literal("Social Worse")
 
     motivating_informations = Comparison.detect(data_frame)
     score = esteemer.score_worse(
-        candidate_resource, motivating_informations, MPM["social worse"]
+        candidate_resource, motivating_informations, MPM["Social Worse"]
     )
     assert score == pytest.approx(0.02)
 
@@ -256,7 +256,7 @@ def test_improving_score():
 def test_worsening_score():
     graph = Graph()
     candidate_resource = graph.resource(BNode())
-    candidate_resource[SLOWMO.AcceptableBy] = Literal("worsening")
+    candidate_resource[SLOWMO.AcceptableBy] = Literal("Worsening")
 
     motivating_informations = Trend.detect(
         pd.DataFrame(
@@ -268,7 +268,7 @@ def test_worsening_score():
         )
     )
     score = esteemer.score_worsening(
-        candidate_resource, motivating_informations, MPM["worsening"]
+        candidate_resource, motivating_informations, MPM["Worsening"]
     )
     assert score == pytest.approx(0.02)
 
@@ -294,12 +294,12 @@ def test_goal_gain_score():
     data_frame[data_frame.columns[-4:]] = [90.0, 92.0, 94.0, 90.0]
     graph = Graph()
     candidate_resource = graph.resource(BNode())
-    candidate_resource[SLOWMO.AcceptableBy] = Literal("goal gain")
+    candidate_resource[SLOWMO.AcceptableBy] = Literal("Goal Gain")
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.goal_comparator_content
 
     motivating_informations = Achievement.detect(data_frame)
     score = esteemer.score_gain(
-        candidate_resource, motivating_informations, MPM["goal gain"]
+        candidate_resource, motivating_informations, MPM["Goal Gain"]
     )
     assert score == pytest.approx(0.062407407407407404)
 
@@ -325,11 +325,11 @@ def test_goal_loss_score():
 
     graph = Graph()
     candidate_resource = graph.resource(BNode())
-    candidate_resource[SLOWMO.AcceptableBy] = Literal("goal loss")
+    candidate_resource[SLOWMO.AcceptableBy] = Literal("Goal Loss")
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.goal_comparator_content
 
     motivating_informations = Loss.detect(data_frame)
     score = esteemer.score_loss(
-        candidate_resource, motivating_informations, MPM["goal loss"]
+        candidate_resource, motivating_informations, MPM["Goal Loss"]
     )
     assert score == pytest.approx(0.0696296)

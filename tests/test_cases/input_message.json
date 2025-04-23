@@ -18,123 +18,519 @@
     "has_part": "http://purl.obolibrary.org/obo/bfo#BFO_0000051",
     "has_disposition": "http://purl.obolibrary.org/obo/RO_0000091"
   },
-"message_instance_id":"c4e32e3e-2d05-15fe-b3f5-fd4829e3fd99",
-"performance_month":"2023-12-01",  
-"Performance_data":[
-    ["staff_number","measure","month","passed_count","flagged_count","denominator","peer_average_comparator","peer_75th_percentile_benchmark","peer_90th_percentile_benchmark", "MPOG_goal"],
-    [1,"PONV05","2023-01-01",90,10,100,90,92,96,90],
-    [1,"PONV05","2023-02-01",90,10,100,90,92,96,90],
-    [1,"PONV05","2023-03-01",90,10,100,90,92,96,90],
-    [1,"PONV05","2023-04-01",90,10,100,90,92,96,90],
-    [1,"PONV05","2023-05-01",90,10,100,90,92,96,90],
-    [1,"PONV05","2023-06-01",90,10,100,90,92,96,90],
-    [1,"PONV05","2023-07-01",90,10,100,90,92,96,90],
-    [1,"PONV05","2023-08-01",90,10,100,90,92,96,90],
-    [1,"PONV05","2023-09-01",90,10,100,90,92,96,90],
-    [1,"PONV05","2023-10-01",90,10,100,90,92,96,90],
-    [1,"PONV05","2023-11-01",97,3,100,90,92,96,90],
-    [1,"PONV05","2023-12-01",91,9,100,90,92,96,90],
-
-    [1,"SUS04","2023-01-01",90,10,100,90,92,96,90],
-    [1,"SUS04","2023-02-01",90,10,100,90,92,96,90],
-    [1,"SUS04","2023-03-01",90,10,100,90,92,96,90],
-    [1,"SUS04","2023-04-01",90,10,100,90,92,96,90],
-    [1,"SUS04","2023-05-01",90,10,100,90,92,96,90],
-    [1,"SUS04","2023-06-01",90,10,100,90,92,96,90],
-    [1,"SUS04","2023-07-01",90,10,100,90,92,96,90],
-    [1,"SUS04","2023-08-01",90,10,100,90,92,96,90],
-    [1,"SUS04","2023-09-01",90,10,100,90,92,96,90],
-    [1,"SUS04","2023-10-01",90,10,100,90,92,96,90],
-    [1,"SUS04","2023-11-01",88,12,100,90,92,96,90],
-    [1,"SUS04","2023-12-01",98,2,100,90,92,96,90],
-
-    [1,"GLU03","2023-01-01",85,15,100,90,92,96,90],
-    [1,"GLU03","2023-02-01",85,15,100,90,92,96,90],
-    [1,"GLU03","2023-03-01",85,15,100,90,92,96,90],
-    [1,"GLU03","2023-04-01",85,15,100,90,92,96,90],
-    [1,"GLU03","2023-05-01",85,15,100,90,92,96,90],
-    [1,"GLU03","2023-06-01",85,15,100,90,92,96,90],
-    [1,"GLU03","2023-07-01",85,15,100,90,92,96,90],
-    [1,"GLU03","2023-08-01",85,15,100,90,92,96,90],
-    [1,"GLU03","2023-09-01",85,15,100,90,92,96,90],
-    [1,"GLU03","2023-10-01",85,15,100,90,92,96,90],
-    [1,"GLU03","2023-11-01",87,13,100,90,92,96,90],
-    [1,"GLU03","2023-12-01",89,11,100,90,92,96,90]
+  "message_instance_id": "c4e32e3e-2d05-15fe-b3f5-fd4829e3fd99",
+  "performance_month": "2023-12-01",
+  "Performance_data": [
+    [
+      "staff_number",
+      "measure",
+      "month",
+      "passed_count",
+      "flagged_count",
+      "denominator",
+      "peer_average_comparator",
+      "peer_75th_percentile_benchmark",
+      "peer_90th_percentile_benchmark",
+      "MPOG_goal"
+    ],
+    [
+      1,
+      "PONV05",
+      "2023-01-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "PONV05",
+      "2023-02-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "PONV05",
+      "2023-03-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "PONV05",
+      "2023-04-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "PONV05",
+      "2023-05-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "PONV05",
+      "2023-06-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "PONV05",
+      "2023-07-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "PONV05",
+      "2023-08-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "PONV05",
+      "2023-09-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "PONV05",
+      "2023-10-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "PONV05",
+      "2023-11-01",
+      97,
+      3,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "PONV05",
+      "2023-12-01",
+      91,
+      9,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "SUS04",
+      "2023-01-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "SUS04",
+      "2023-02-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "SUS04",
+      "2023-03-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "SUS04",
+      "2023-04-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "SUS04",
+      "2023-05-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "SUS04",
+      "2023-06-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "SUS04",
+      "2023-07-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "SUS04",
+      "2023-08-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "SUS04",
+      "2023-09-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "SUS04",
+      "2023-10-01",
+      90,
+      10,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "SUS04",
+      "2023-11-01",
+      88,
+      12,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "SUS04",
+      "2023-12-01",
+      98,
+      2,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "GLU03",
+      "2023-01-01",
+      85,
+      15,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "GLU03",
+      "2023-02-01",
+      85,
+      15,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "GLU03",
+      "2023-03-01",
+      85,
+      15,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "GLU03",
+      "2023-04-01",
+      85,
+      15,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "GLU03",
+      "2023-05-01",
+      85,
+      15,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "GLU03",
+      "2023-06-01",
+      85,
+      15,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "GLU03",
+      "2023-07-01",
+      85,
+      15,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "GLU03",
+      "2023-08-01",
+      85,
+      15,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "GLU03",
+      "2023-09-01",
+      85,
+      15,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "GLU03",
+      "2023-10-01",
+      85,
+      15,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "GLU03",
+      "2023-11-01",
+      87,
+      13,
+      100,
+      90,
+      92,
+      96,
+      90
+    ],
+    [
+      1,
+      "GLU03",
+      "2023-12-01",
+      89,
+      11,
+      100,
+      90,
+      92,
+      96,
+      90
+    ]
   ],
-"History":{
-    "2023-12-01": 
-      {
-        "message_template":"https://repo.metadatacenter.org/template-instances/1effb7ae-2ec9-4832-867e-360d1f035837",
-        "message_generated_datetime": "2023-10-09T1850.426262",
-        "measure":"PUL02",
-        "acceptable_by":"Social better",
-        "message_instance_id":"11384451-5dc1-4e5b-9bb2-de73e029420c"
-      },
-    "2023-11-01":
-      {   
-       "message_template":"https://repo.metadatacenter.org/template-instances/1effb7ae-2ec9-4832-867e-360d1f035837",
-        "message_generated_datetime": "2023-10-09T1850.426262",
-        "measure":"NMB02",
-        "acceptable_by":"Social worse",
-        "message_instance_id":"d5fc2e3f-f205-46fe-b3f5-bb5559e3fd40"
-      },
-      "2023-10-01":
-      {
-       "message_template":"https://repo.metadatacenter.org/template-instances/1effb7ae-2ec9-4832-867e-360d1f035837",
-        "message_generated_datetime": "2023-10-09T1850.426262",
-        "measure":"PONV04",
-        "acceptable_by":"Improving",
-        "message_instance_id":"9f35cf50-96d0-4c19-8e96-dbe28235cca3"
-      },
-      "2023-09-01":
-      {
-         "message_template":"https://repo.metadatacenter.org/template-instances/1effb7ae-2ec9-4832-867e-360d1f035837",
-        "message_generated_datetime": "2023-10-09T1850.426262",
-        "measure":"NMB04",
-        "acceptable_by":"Improving",
-        "message_instance_id":"11384451-5dc1-4e5b-9bb2-de73e029420c"
-      },
-        "2023-08-01":
-      {
-         "message_template":"https://repo.metadatacenter.org/template-instances/1effb7ae-2ec9-4832-867e-360d1f035837",
-        "message_generated_datetime": "2023-10-09T1850.426262",
-        "measure":"PUL02",
-        "acceptable_by":"Social gain",
-        "message_instance_id":"9f35cf50-96d0-4c19-8e96-dbe28235cca3"
-      },
-      "2023-07-01":
-      {
-        "message_template":"https://repo.metadatacenter.org/template-instances/1effb7ae-2ec9-4832-867e-360d1f035837",
-        "message_generated_datetime": "2023-10-09T1850.426262",
-        "measure":"PONV03",
-        "acceptable_by":"Goal approach",
-        "message_instance_id":"d5fc2e3f-f205-46fe-b3f5-bb5559e3fd40"
-      }
-},
-"Preferences":{
+  "History": {
+    "2023-12-01": {
+      "message_template": "https://repo.metadatacenter.org/template-instances/1effb7ae-2ec9-4832-867e-360d1f035837",
+      "message_generated_datetime": "2023-10-09T1850.426262",
+      "measure": "PUL02",
+      "acceptable_by": "Social Better",
+      "message_instance_id": "11384451-5dc1-4e5b-9bb2-de73e029420c"
+    },
+    "2023-11-01": {
+      "message_template": "https://repo.metadatacenter.org/template-instances/1effb7ae-2ec9-4832-867e-360d1f035837",
+      "message_generated_datetime": "2023-10-09T1850.426262",
+      "measure": "NMB02",
+      "acceptable_by": "Social Worse",
+      "message_instance_id": "d5fc2e3f-f205-46fe-b3f5-bb5559e3fd40"
+    },
+    "2023-10-01": {
+      "message_template": "https://repo.metadatacenter.org/template-instances/1effb7ae-2ec9-4832-867e-360d1f035837",
+      "message_generated_datetime": "2023-10-09T1850.426262",
+      "measure": "PONV04",
+      "acceptable_by": "Improving",
+      "message_instance_id": "9f35cf50-96d0-4c19-8e96-dbe28235cca3"
+    },
+    "2023-09-01": {
+      "message_template": "https://repo.metadatacenter.org/template-instances/1effb7ae-2ec9-4832-867e-360d1f035837",
+      "message_generated_datetime": "2023-10-09T1850.426262",
+      "measure": "NMB04",
+      "acceptable_by": "Improving",
+      "message_instance_id": "11384451-5dc1-4e5b-9bb2-de73e029420c"
+    },
+    "2023-08-01": {
+      "message_template": "https://repo.metadatacenter.org/template-instances/1effb7ae-2ec9-4832-867e-360d1f035837",
+      "message_generated_datetime": "2023-10-09T1850.426262",
+      "measure": "PUL02",
+      "acceptable_by": "Social Gain",
+      "message_instance_id": "9f35cf50-96d0-4c19-8e96-dbe28235cca3"
+    },
+    "2023-07-01": {
+      "message_template": "https://repo.metadatacenter.org/template-instances/1effb7ae-2ec9-4832-867e-360d1f035837",
+      "message_generated_datetime": "2023-10-09T1850.426262",
+      "measure": "PONV03",
+      "acceptable_by": "Goal Approach",
+      "message_instance_id": "d5fc2e3f-f205-46fe-b3f5-bb5559e3fd40"
+    }
+  },
+  "Preferences": {
     "Utilities": {
-    "Message_Format": 
-      {
-        "Social gain":"12.9773039154073",
-        "Social stayed better":"6.16437763767096",
-        "Worsening":"-22.2302388558724",
-        "Improving":"3.32588337712841",
-        "Social loss":"9.9561277682732",
-        "Social stayed worse":"-7.71048464732243",
-        "Social better":"-1.61124311975164",
-        "Social worse":"-14.8679453275023",
-        "Social approach":"13.9962122952887",
-        "Goal gain":"12.9773039154073",
-        "Goal approach":"13.9962122952887"
+      "Message_Format": {
+        "Social gain": "0.38085",
+        "Social stayed better": "-0.91402",
+        "Worsening": "0.02686",
+        "Improving": "-0.27243",
+        "Social loss": "1.73813",
+        "Social stayed worse": "-0.30541",
+        "Social better": "-1.28569",
+        "Social worse": "-0.12579",
+        "Social approach": "0.75750",
+        "Goal gain": "0.38085",
+        "Goal approach": "0.75750"
       },
-    "Display_Format":
-      {
-        "Bar chart": "1",
-        "Line chart": "0",
-        "Text-only": "0",
-        "System-generated":"0"
+      "Display_Format": {
+        "Bar chart": 0,
+        "Line chart": 0,
+        "Text-only": 1,
+        "System-generated": "0"
       }
+    }
   }
-}
-
 }
