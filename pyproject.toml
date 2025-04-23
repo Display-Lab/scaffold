@@ -1,46 +1,30 @@
 [tool.poetry]
-name = "pfp-api"
-version = "v0.5.0"
+name = "scaffold"
+version = "1.3"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Zach Landis-Lewis <zachll@umich.edu>"]
 readme = "README.md"
-# packages = [{include = "pfp_api"}]
 
 [tool.poetry.dependencies]
-python = "^3.10,<3.12"
-gunicorn = "20.1.0"
-fastapi = "^0.110.0"
-rdflib = "^6.2.0"
-pandas = "^1.5.3"
-rdfpandas = "^1.1.5"
-scipy = "1.10.0"
-matplotlib = "3.6.1"
-numpy = "1.23.2"
-requests_file = "1.5.1"
+python = "^3.13,<3.14"
+pandas = "^2.2.3"
+fastapi = "^0.115.12"
+rdflib = "^7.1.4"
+matplotlib = "^3.10.1"
+psutil = "^7.0.0"
+loguru = "^0.7.3"
+requests-file = "^2.1.0"
 python-decouple = "^3.8"
-loguru = "^0.7.2"
-psutil = "^5.9.8"
-
-# These are the versions that will work with python 3.12
-# python = ">=3.11,<3.13"
-# pandas = "^2.2.2"
-# rdflib = "^7.0.0"
-# fastapi = "^0.111.0"
-# matplotlib = "^3.8.4"
-# psutil = "^5.9.8"
-# loguru = "^0.7.2"
-# requests-file = "^2.0.0"
-# python-decouple = "^3.8"
-# gunicorn = "^22.0.0"
-pyyaml = "^6.0.1"
+pyyaml = "^6.0.2"
+gunicorn = "^23.0.0"
 
 [tool.poetry.group.dev.dependencies]
-uvicorn = "^0.20.0"
-pytest = "^8.0.0"
 python-slugify = "^8.0.4"
-decoy = "^2.1.1"
-ruff = "^0.3.5"
-poethepoet = "^0.25.0"
+decoy = "^2.1.2"
+poethepoet = "^0.34.0"
+ruff = "^0.11.6"
+pytest = "^8.3.5"
+uvicorn = "^0.34.2"
 
 [tool.ruff.lint]
 extend-select = ["I", "C901"] # sort imports 
