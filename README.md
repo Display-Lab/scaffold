@@ -97,6 +97,8 @@ If the key is a relative path, it must end with a '/'. In that case the key is g
 ```zsh
  ENV_PATH=/user/.../dev.env log_level=INFO use_preferences=True use_coachiness=True use_mi=True generate_image=False uvicorn main:app --workers=5
 ```
+
+for windows:
 ```psh
 $env:ENV_PATH=/user/.../dev.env; $env:log_level="INFO"; $env:use_preferences="True"; $env:use_coachiness="True"; $env:use_mi="True"; $env:generate_image="False"; uvicorn main:app --workers=5
 ```
