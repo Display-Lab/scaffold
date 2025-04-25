@@ -86,9 +86,13 @@ class Pictoralist:
             self.performance_data["measure"] == self.selected_measure
         ]
 
-        # Initialize new column of data to store only this feedback's crucial comparator levels for graphing as a float:
-        self.performance_data["comparator_level"] = 0.0000  # initialize column as float
-        self.performance_data["goal_percent"] = 0.0000  # same as above
+        self.performance_data = self.performance_data.copy()
+
+        # # Initialize new column of data to store only this feedback's crucial comparator levels for graphing as a float:
+        self.performance_data.loc[:, "comparator_level"] = (
+            0.0000  # initialize column as float
+        )
+        self.performance_data.loc[:, "goal_percent"] = 0.0000  # same as above
 
         ## Change processing and graphing depending on comparator type:
         # Make changes based on peer 50th percentile benchmark being comparator message "is about"
