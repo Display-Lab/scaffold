@@ -1,8 +1,5 @@
-import os
-
-os.environ["ENV_PATH"] = "/home/faridsei/dev/code/dev.env"
-os.environ["log_level"] = "DEBUG"
 import json
+import os
 import sys
 from typing import Annotated
 
@@ -31,8 +28,9 @@ def pipeline(
 ) -> None:
     with open(file_path, "r") as file:
         input = json.load(file)
-
     result = process_pipeline(input)
+    
+    
     result["message_generated_datetime"] = str(result["message_generated_datetime"])
     directory = os.path.join(os.path.dirname(file_path), "messages")
     filename = os.path.basename(file_path)
@@ -49,8 +47,6 @@ def pipeline(
 #     uvicorn.run("butter_cup.api:app", reload=True, use_colors=True)
 
 if __name__ == "__main__":
-    import sys
-
     sys.argv = [
         "pipeline.py",
         "/home/faridsei/dev/test/2024-06-24/2024-05-01/Provider_1.json",
