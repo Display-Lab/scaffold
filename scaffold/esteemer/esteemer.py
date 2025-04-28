@@ -5,11 +5,11 @@ from typing import List
 from rdflib import XSD, BNode, Graph, Literal, URIRef
 from rdflib.resource import Resource
 
-from bitstomach.signals import Achievement, Approach, Comparison, Loss, Signal, Trend
-from esteemer import utils
-from esteemer.signals import History
-from utils.namespace import PSDO, SLOWMO
-from utils.settings import settings
+from scaffold.bitstomach.signals import Achievement, Approach, Comparison, Loss, Signal, Trend
+from scaffold.esteemer import utils
+from scaffold.esteemer.signals import History
+from scaffold.utils.namespace import PSDO, SLOWMO
+from scaffold.utils.settings import settings
 
 
 def score(candidate: Resource, history: dict, preferences: dict, MPM: dict) -> Resource:

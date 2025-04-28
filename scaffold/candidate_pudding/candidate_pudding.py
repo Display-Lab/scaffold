@@ -3,8 +3,8 @@ from typing import Optional
 from rdflib import RDF, BNode, Graph, Literal, URIRef
 from rdflib.resource import Resource
 
-from bitstomach.signals import Signal
-from utils.namespace import CPO, IAO, PSDO, RO, SCHEMA, SLOWMO
+from scaffold.bitstomach.signals import Signal
+from scaffold.utils.namespace import CPO, IAO, PSDO, RO, SCHEMA, SLOWMO
 
 PERFORMANCE_SUMMARY_DISPLAY_TEMPLATE = URIRef(
     "http://data.bioontology.org/ontologies/PSDO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPSDO_0000002"

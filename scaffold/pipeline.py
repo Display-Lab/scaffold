@@ -5,13 +5,13 @@ from fastapi import HTTPException
 from loguru import logger
 from rdflib import RDF, BNode, Graph, Literal, URIRef
 
-import startup
-from bitstomach import bitstomach
-from candidate_pudding import candidate_pudding
-from esteemer import esteemer, utils
-from pictoralist.pictoralist import Pictoralist
-from utils.namespace import PSDO, SLOWMO
-from utils.settings import settings
+from scaffold import startup
+from scaffold.bitstomach import bitstomach
+from scaffold.candidate_pudding import candidate_pudding
+from scaffold.esteemer import esteemer, utils
+from scaffold.pictoralist.pictoralist import Pictoralist
+from scaffold.utils.namespace import PSDO, SLOWMO
+from scaffold.utils.settings import settings
 
 
 def pipeline(req_info):

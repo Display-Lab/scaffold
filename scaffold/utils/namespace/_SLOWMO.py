@@ -1,6 +1,6 @@
 from rdflib import Namespace, URIRef
 
-from utils.namespace import AliasingDefinedNamespace
+from scaffold.utils.namespace import AliasingDefinedNamespace
 
 
 class SLOWMO(AliasingDefinedNamespace):

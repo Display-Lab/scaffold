@@ -1,8 +1,8 @@
 import pandas as pd
 from rdflib import RDF, BNode, Graph, Literal
 
-from bitstomach.signals import SIGNALS
-from utils.namespace import PSDO, SLOWMO
+from scaffold.bitstomach.signals import SIGNALS
+from scaffold.utils.namespace import PSDO, SLOWMO
 
 
 def extract_signals(perf_df: pd.DataFrame) -> Graph:

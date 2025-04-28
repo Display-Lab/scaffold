@@ -4,8 +4,8 @@ import pandas as pd
 from rdflib import RDF, BNode, Literal, URIRef
 from rdflib.resource import Resource
 
-from bitstomach.signals import Signal
-from utils.namespace import PSDO, SLOWMO
+from scaffold.bitstomach.signals import Signal
+from scaffold.utils.namespace import PSDO, SLOWMO
 
 
 class Comparison(Signal):

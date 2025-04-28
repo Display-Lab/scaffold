@@ -5,8 +5,8 @@ import pandas as pd
 from rdflib import RDF, Literal
 from rdflib.resource import Resource
 
-from bitstomach.signals import Comparison, Signal, Trend
-from utils.namespace import PSDO, SLOWMO
+from scaffold.bitstomach.signals import Comparison, Signal, Trend
+from scaffold.utils.namespace import PSDO, SLOWMO
 
 
 class Approach(Signal):

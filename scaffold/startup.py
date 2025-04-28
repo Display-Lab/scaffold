@@ -6,8 +6,8 @@ import requests
 from rdflib import Graph
 from requests_file import FileAdapter
 
-from utils.graph_operations import manifest_to_graph
-from utils.settings import settings
+from scaffold.utils.graph_operations import manifest_to_graph
+from scaffold.utils.settings import settings
 
 mpm: dict = {}
 default_preferences: dict = {}

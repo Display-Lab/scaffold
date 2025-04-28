@@ -1,8 +1,8 @@
 import pandas as pd
 from rdflib import RDF, BNode, Graph
 
-from bitstomach import bitstomach
-from utils.namespace import PSDO
+from scaffold.bitstomach import bitstomach
+from scaffold.utils.namespace import PSDO
 
 COLUMNS = [
     "staff_number",

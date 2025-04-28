@@ -6,9 +6,9 @@ from typing import Annotated
 from loguru import logger
 from typer import Argument, Typer
 
-from pipeline import pipeline as process_pipeline
-from startup import startup
-from utils.settings import settings
+from scaffold.pipeline import pipeline as process_pipeline
+from scaffold.startup import startup
+from scaffold.utils.settings import settings
 
 logger.remove()
 logger.add(

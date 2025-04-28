@@ -5,12 +5,12 @@ import pandas as pd
 from rdflib import RDF, Literal
 from rdflib.resource import Resource
 
-from bitstomach.signals import Comparison, Signal, Trend
-from utils.namespace import PSDO, SLOWMO
+from scaffold.bitstomach.signals import Comparison, Signal, Trend
+from scaffold.utils.namespace import PSDO, SLOWMO
 
 
-class Achievement(Signal):
-    signal_type = PSDO.achievement_content
+class Loss(Signal):
+    signal_type = PSDO.loss_content
 
     @staticmethod
     def detect(perf_data: pd.DataFrame) -> Optional[List[Resource]]:
@@ -20,29 +20,29 @@ class Achievement(Signal):
         trend_signals = Trend.detect(perf_data)
         if (
             not trend_signals
-            or not trend_signals[0][RDF.type : PSDO.positive_performance_trend_content]
+            or not trend_signals[0][RDF.type : PSDO.negative_performance_trend_content]
         ):
             return []
 
-        positive_comparison_signals = [
+        negative_comparison_signals = [
             s
             for s in Comparison.detect(perf_data)
-            if s[RDF.type : PSDO.positive_performance_gap_content]
-        ]
-
-        negative_prior_month_comparisons = [
-            s
-            for s in Comparison.detect(perf_data.iloc[:-1], tiered_comparators=False)
             if s[RDF.type : PSDO.negative_performance_gap_content]
         ]
 
-        achievement_signals = []
+        positive_prior_month_comparisons = [
+            s
+            for s in Comparison.detect(perf_data.iloc[:-1], tiered_comparators=False)
+            if s[RDF.type : PSDO.positive_performance_gap_content]
+        ]
 
-        for comparison_signal in positive_comparison_signals:
+        loss_signals = []
+
+        for comparison_signal in negative_comparison_signals:
             previous_comparison_signal = next(
                 (
                     comparison
-                    for comparison in negative_prior_month_comparisons
+                    for comparison in positive_prior_month_comparisons
                     if (
                         Comparison.comparator_type(comparison)
                         == Comparison.comparator_type(comparison_signal)
@@ -54,19 +54,19 @@ class Achievement(Signal):
             if not previous_comparison_signal:
                 continue
 
-            streak_length = Achievement._detect(
+            streak_length = Loss._detect(
                 perf_data, comparison_signal.value(SLOWMO.RegardingComparator)
             )
 
-            mi = Achievement._resource(
+            mi = Loss._resource(
                 trend_signals[0],
                 comparison_signal,
                 previous_comparison_signal,
                 streak_length,
             )
 
-            achievement_signals.append(mi)
-        return achievement_signals
+            loss_signals.append(mi)
+        return loss_signals
 
     @classmethod
     def _resource(
@@ -114,7 +114,7 @@ class Achievement(Signal):
     @classmethod
     def moderators(cls, motivating_informations: List[Resource]) -> List[dict]:
         """
-        extracts achievement moderators (trend_slope, comparison_size, comparator_type and prior_comparison_size) from a suplied list of motivating information
+        extracts loss moderators (trend_slope, comparison_size, comparator_type and prior_comparison_size) from a suplied list of motivating information
         """
         mods = []
 
@@ -133,7 +133,7 @@ class Achievement(Signal):
             motivating_info_dict["prior_comparison_size"] = round(
                 abs(signal.value(SLOWMO.PriorPerformanceGapSize).value), 4
             )
-            motivating_info_dict["achievement_recency"] = (
+            motivating_info_dict["loss_recency"] = (
                 signal.value(SLOWMO.StreakLength).value / 12
             )
 
@@ -157,12 +157,13 @@ class Achievement(Signal):
 
         gaps = perf_data["passed_rate"] - perf_data[comp_cols[comparator_id]] / 100
 
-        # find the number of consecutive negative gaps
+        # find the number of consecutive positive gaps
         diff_reversed = gaps.values[:-1][::-1]
-        end_negative_gaps_index = np.argmax(diff_reversed >= 0)
-        if end_negative_gaps_index == 0:
-            consecutive_negative_gaps = len(diff_reversed)
-        else:
-            consecutive_negative_gaps = end_negative_gaps_index
+        end_positive_gaps_index = np.argmax(diff_reversed <= 0)
 
-        return consecutive_negative_gaps
+        if end_positive_gaps_index == 0:
+            consecutive_positive_gaps = len(diff_reversed)
+        else:
+            consecutive_positive_gaps = end_positive_gaps_index
+
+        return consecutive_positive_gaps

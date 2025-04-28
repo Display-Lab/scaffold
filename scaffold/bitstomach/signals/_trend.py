@@ -5,8 +5,8 @@ from dateutil.relativedelta import relativedelta
 from rdflib import RDF, Literal
 from rdflib.resource import Resource
 
-from bitstomach.signals import Signal
-from utils import PSDO, SLOWMO
+from scaffold.bitstomach.signals import Signal
+from scaffold.utils import PSDO, SLOWMO
 
 
 class Trend(Signal):

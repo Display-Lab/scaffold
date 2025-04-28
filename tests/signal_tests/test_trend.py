@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from bitstomach.signals import Trend
+from scaffold.bitstomach.signals import Trend
 
 
 def message() -> dict:

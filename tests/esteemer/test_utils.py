@@ -1,8 +1,8 @@
 import pytest
 from rdflib import RDF, BNode, Graph, Literal
 
-from esteemer import utils
-from utils.namespace import SLOWMO
+from scaffold.esteemer import utils
+from scaffold.utils.namespace import SLOWMO
 
 
 @pytest.fixture

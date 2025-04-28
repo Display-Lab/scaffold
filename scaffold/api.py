@@ -11,9 +11,9 @@ from rdflib import (  # , ConjunctiveGraph, Namespace, URIRef, RDFS, Literal
     Graph,
 )
 
-from pipeline import pipeline
-from startup import startup
-from utils.settings import settings
+from scaffold.pipeline import pipeline
+from scaffold.startup import startup
+from scaffold.utils.settings import settings
 
 matplotlib.use("Agg")
 

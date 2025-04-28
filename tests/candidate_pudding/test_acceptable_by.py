@@ -1,9 +1,9 @@
 import pytest
 from rdflib import RDF, XSD, BNode, Graph, Literal, URIRef
 
-from bitstomach.signals import Trend
-from candidate_pudding import candidate_pudding
-from utils.namespace import IAO, PSDO, SLOWMO
+from scaffold.bitstomach.signals import Trend
+from scaffold.candidate_pudding import candidate_pudding
+from scaffold.utils.namespace import IAO, PSDO, SLOWMO
 
 IMPROVING_TEMPLATE = URIRef(
     "https://repo.metadatacenter.org/template-instances/0ae1872f-5593-4891-8713-7d5e815c0b00"

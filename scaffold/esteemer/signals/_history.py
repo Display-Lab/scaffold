@@ -5,8 +5,8 @@ from dateutil.relativedelta import relativedelta
 from rdflib import XSD, Literal, URIRef
 from rdflib.resource import Resource
 
-from bitstomach.signals import Signal
-from utils.namespace import SLOWMO
+from scaffold.bitstomach.signals import Signal
+from scaffold.utils.namespace import SLOWMO
 
 
 class History(Signal):

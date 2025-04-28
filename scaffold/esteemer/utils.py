@@ -3,7 +3,7 @@ from typing import List
 from rdflib import DCTERMS, RDF, BNode, Graph, URIRef
 from rdflib.resource import Resource
 
-from utils import SLOWMO
+from scaffold.utils import SLOWMO
 
 
 def candidates(

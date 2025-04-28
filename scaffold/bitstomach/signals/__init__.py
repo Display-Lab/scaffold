@@ -3,7 +3,7 @@ from typing import List
 from rdflib import RDF, BNode, Graph, URIRef
 from rdflib.resource import Resource
 
-from utils import PSDO
+from scaffold.utils import PSDO
 
 
 class Signal:
@@ -70,11 +70,11 @@ class Signal:
 
 
 # TODO: revisit. at this time must be loaded after Signal and in order Comparison, Trend and then Achievement
-from bitstomach.signals._comparison import Comparison  # noqa: E402, I001
-from bitstomach.signals._trend import Trend  # noqa: E402, I001
-from bitstomach.signals._achievement import Achievement  # noqa: E402, I001
-from bitstomach.signals._loss import Loss  # noqa: E402, I001
-from bitstomach.signals._approach import Approach  # noqa: E402, I001
+from scaffold.bitstomach.signals._comparison import Comparison  # noqa: E402, I001
+from scaffold.bitstomach.signals._trend import Trend  # noqa: E402, I001
+from scaffold.bitstomach.signals._achievement import Achievement  # noqa: E402, I001
+from scaffold.bitstomach.signals._loss import Loss  # noqa: E402, I001
+from scaffold.bitstomach.signals._approach import Approach  # noqa: E402, I001
 
 __all__ = ["Comparison", "Trend", "Achievement", "Loss", "Approach"]
 
