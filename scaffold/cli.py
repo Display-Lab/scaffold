@@ -3,6 +3,7 @@ import os
 import sys
 from typing import Annotated
 
+import uvicorn
 from loguru import logger
 from typer import Argument, Typer
 
@@ -23,14 +24,13 @@ startup()
 
 
 @cli.command()
-def pipeline(
+def single(
     file_path: Annotated[str, Argument(help="Path to input data in JSON format")],
 ) -> None:
     with open(file_path, "r") as file:
         input = json.load(file)
     result = process_pipeline(input)
-    
-    
+
     result["message_generated_datetime"] = str(result["message_generated_datetime"])
     directory = os.path.join(os.path.dirname(file_path), "messages")
     filename = os.path.basename(file_path)
@@ -42,9 +42,9 @@ def pipeline(
         json.dump(result, f, indent=2)
 
 
-# @cli.command()
-# def web():
-#     uvicorn.run("butter_cup.api:app", reload=True, use_colors=True)
+@cli.command()
+def web():
+    uvicorn.run("scaffold.api:app", reload=True, use_colors=True)
 
 if __name__ == "__main__":
     sys.argv = [

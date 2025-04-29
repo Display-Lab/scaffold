@@ -79,10 +79,10 @@ manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
 ...
 ```
 
-Run SCAFFOLD
+Run SCAFFOLD API
 
 ```zsh
-ENV_PATH=.env.local uvicorn api:app
+ENV_PATH=.env.local uvicorn scaffold.api:app
 # Expect to see a server start message like this "INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)"
 ```
 
@@ -91,6 +91,15 @@ You can use Postman or your favorite tool to send a message and check the result
 ```zsh
 curl --data "@tests/test_cases/input_message.json" http://localhost:8000/createprecisionfeedback/
 ```
+
+Run SCAFFOLD CLI
+First install the python app. Then use the following command to run the pipeline on one input file
+
+ENV_PATH=/user/.../dev.env pipeline single '/path/to/input/file.json'
+
+or use the following command to run the pipeline api
+
+ENV_PATH=/user/.../dev.env pipeline web
 
 ## Environment variables
 
