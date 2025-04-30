@@ -1,14 +1,25 @@
 import csv
 import json
+import sys
 from io import StringIO
 
+import matplotlib
 import requests
+from loguru import logger
 from rdflib import Graph
 from requests_file import FileAdapter
 
 from scaffold.utils.graph_operations import manifest_to_graph
 from scaffold.utils.settings import settings
 
+logger.remove()
+logger.add(
+    sys.stdout, colorize=True, format="{level}|  {message}", level=settings.log_level
+)
+logger.at_least = (
+    lambda lvl: logger.level(lvl).no >= logger.level(settings.log_level).no
+)
+matplotlib.use("Agg")
 mpm: dict = {}
 default_preferences: dict = {}
 base_graph: Graph = Graph()
@@ -19,6 +30,13 @@ se.mount("file://", FileAdapter())
 
 
 def startup():
+    ## Log of instance configuration
+    logger.debug("Startup configuration for this instance:")
+    for attribute in dir(settings):
+        if not attribute.startswith("__"):
+            value = getattr(settings, attribute)
+            logger.debug(f"{attribute}:\t{value}")
+
     try:
         global base_graph, mpm, default_preferences
 

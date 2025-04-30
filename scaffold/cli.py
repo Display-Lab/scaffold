@@ -1,23 +1,15 @@
-import json
 import os
-import sys
+import pathlib
 from typing import Annotated
 
+import orjson
 import uvicorn
 from loguru import logger
 from typer import Argument, Typer
 
-from scaffold.pipeline import pipeline as process_pipeline
+from scaffold.pipeline import pipeline
 from scaffold.startup import startup
-from scaffold.utils.settings import settings
 
-logger.remove()
-logger.add(
-    sys.stdout, colorize=True, format="{level}|  {message}", level=settings.log_level
-)
-logger.at_least = (
-    lambda lvl: logger.level(lvl).no >= logger.level(settings.log_level).no
-)
 cli = Typer(no_args_is_help=True)
 
 startup()
@@ -25,31 +17,29 @@ startup()
 
 @cli.command()
 def single(
-    file_path: Annotated[str, Argument(help="Path to input data in JSON format")],
+    file_path: Annotated[
+        pathlib.Path, Argument(help="Path to input data in JSON format")
+    ],
 ) -> None:
-    with open(file_path, "r") as file:
-        input = json.load(file)
-    result = process_pipeline(input)
+    input = orjson.loads(file_path.read_bytes())
+    result = pipeline(input)
 
-    result["message_generated_datetime"] = str(result["message_generated_datetime"])
-    directory = os.path.join(os.path.dirname(file_path), "messages")
-    filename = os.path.basename(file_path)
-    name_without_ext, _ = os.path.splitext(filename)
-    new_filename = f"{name_without_ext} - message for {input['performance_month']}.json"
-    output_path = os.path.join(directory, new_filename)
+    directory = file_path.parent / "messages"
     os.makedirs(directory, exist_ok=True)
-    with open(output_path, "w") as f:
-        json.dump(result, f, indent=2)
+
+    new_filename = f"{file_path.stem} - message for {input['performance_month']}.json"
+
+    output_path = directory / new_filename
+
+    output_path.write_bytes(orjson.dumps(result, option=orjson.OPT_INDENT_2))
+
+    logger.info(f"Message created at {output_path}")
 
 
 @cli.command()
 def web():
-    uvicorn.run("scaffold.api:app", reload=True, use_colors=True)
+    uvicorn.run("scaffold.api:app", reload=False, use_colors=True)
+
 
 if __name__ == "__main__":
-    sys.argv = [
-        "pipeline.py",
-        "/home/faridsei/dev/test/2024-06-24/2024-05-01/Provider_1.json",
-    ]
-
     cli()
