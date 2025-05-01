@@ -4,9 +4,11 @@ version = "1.3"
 description = ""
 authors = ["Zach Landis-Lewis <zachll@umich.edu>"]
 readme = "README.md"
+packages = [{ include = "scaffold" }]
+
 
 [tool.poetry.dependencies]
-python = "^3.13,<3.14"
+python = "^3.12,<3.14"
 pandas = "^2.2.3"
 fastapi = "^0.115.12"
 rdflib = "^7.1.4"
@@ -16,6 +18,9 @@ loguru = "^0.7.3"
 requests-file = "^2.1.0"
 python-decouple = "^3.8"
 pyyaml = "^6.0.2"
+typer = "^0.15.2"
+orjson = "^3.10.18"
+uvicorn = "^0.34.2"
 gunicorn = "^23.0.0"
 
 [tool.poetry.group.dev.dependencies]
@@ -24,7 +29,9 @@ decoy = "^2.1.2"
 poethepoet = "^0.34.0"
 ruff = "^0.11.6"
 pytest = "^8.3.5"
-uvicorn = "^0.34.2"
+
+[tool.poetry.scripts]
+pipeline = "scaffold.cli:cli"
 
 [tool.ruff.lint]
 extend-select = ["I", "C901"] # sort imports 

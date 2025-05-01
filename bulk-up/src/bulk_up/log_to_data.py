@@ -32,9 +32,7 @@ SHEET_NAME = "Sheet1"  # Change this to the name of the sheet in your .xlsx file
 df = pd.read_excel(INPUT_DIR, sheet_name=SHEET_NAME, engine="openpyxl")
 response_df: pd.DataFrame = pd.DataFrame()
 
-graph: Graph = manifest_to_graph(
-    KNOWLEDGE_BASE_LOCAL_MANIFEST
-)
+graph: Graph = manifest_to_graph(KNOWLEDGE_BASE_LOCAL_MANIFEST)
 
 is_about_to_columns: dict = {
     PSDO.achievement_set: "represented set",

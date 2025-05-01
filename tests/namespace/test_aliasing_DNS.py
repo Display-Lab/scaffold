@@ -1,7 +1,7 @@
 import pytest
 from rdflib import Namespace, URIRef
 
-from utils.namespace import (
+from scaffold.utils.namespace import (
     AliasingDefinedNamespace,
 )
 

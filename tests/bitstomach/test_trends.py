@@ -6,8 +6,8 @@ import pytest
 from rdflib import RDF, BNode, Graph, Literal
 from rdflib.resource import Resource
 
-from bitstomach.signals import Comparison, Trend
-from utils import PSDO, SLOWMO
+from scaffold.bitstomach.signals import Comparison, Trend
+from scaffold.utils import PSDO, SLOWMO
 
 
 ## Trend resource

@@ -2,10 +2,10 @@ import pandas as pd
 import pytest
 from rdflib import RDF, BNode, Graph, Literal, URIRef
 
-from bitstomach.bitstomach import prepare
-from bitstomach.signals import Achievement, Comparison, Loss, Trend
-from esteemer import esteemer
-from utils.namespace import PSDO, SLOWMO
+from scaffold.bitstomach.bitstomach import prepare
+from scaffold.bitstomach.signals import Achievement, Comparison, Loss, Trend
+from scaffold.esteemer import esteemer
+from scaffold.utils.namespace import PSDO, SLOWMO
 
 TEMPLATE_A = "https://repo.metadatacenter.org/template-instances/9e71ec9e-26f3-442a-8278-569bcd58e708"
 MPM = {

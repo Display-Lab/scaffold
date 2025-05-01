@@ -5,8 +5,8 @@ import pytest
 from rdflib import RDF, BNode, Graph, Literal
 from rdflib.resource import Resource
 
-from bitstomach.signals import Achievement
-from utils.namespace import PSDO, SLOWMO
+from scaffold.bitstomach.signals import Achievement
+from scaffold.utils.namespace import PSDO, SLOWMO
 
 
 @pytest.fixture

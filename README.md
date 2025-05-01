@@ -79,10 +79,10 @@ manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
 ...
 ```
 
-Run SCAFFOLD
+Run SCAFFOLD API
 
 ```zsh
-ENV_PATH=.env.local uvicorn main:app
+ENV_PATH=.env.local uvicorn scaffold.api:app
 # Expect to see a server start message like this "INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)"
 ```
 
@@ -90,6 +90,19 @@ You can use Postman or your favorite tool to send a message and check the result
 
 ```zsh
 curl --data "@tests/test_cases/input_message.json" http://localhost:8000/createprecisionfeedback/
+```
+
+Run SCAFFOLD CLI
+First install the python app. Then use the following command to run the pipeline on one input file
+
+```zsh
+ENV_PATH=/user/.../dev.env pipeline single '/path/to/input/file.json'
+```
+
+or use the following command to run the pipeline api
+
+```zsh
+ENV_PATH=/user/.../dev.env pipeline web
 ```
 
 ## Environment variables
@@ -154,13 +167,13 @@ If the key is a relative path, it must end with a '/'. In that case the key is g
 ### examples
 
 ```zsh
- ENV_PATH=/user/.../dev.env log_level=INFO use_preferences=True use_coachiness=True use_mi=True generate_image=False uvicorn main:app --workers=5
+ ENV_PATH=/user/.../dev.env log_level=INFO use_preferences=True use_coachiness=True use_mi=True generate_image=False uvicorn api:app --workers=5
 ```
 
 
 for windows:
 ```psh
-$env:ENV_PATH=/user/.../dev.env; $env:log_level="INFO"; $env:use_preferences="True"; $env:use_coachiness="True"; $env:use_mi="True"; $env:generate_image="False"; uvicorn main:app --workers=5
+$env:ENV_PATH=/user/.../dev.env; $env:log_level="INFO"; $env:use_preferences="True"; $env:use_coachiness="True"; $env:use_mi="True"; $env:generate_image="False"; uvicorn api:app --workers=5
 ```
 
 > :point_right: `uvicorn` can be run with multiple workers. This is useful when testing with a client that can send multiple requests.
