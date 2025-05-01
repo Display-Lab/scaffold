@@ -5,7 +5,14 @@ from typing import List
 from rdflib import XSD, BNode, Graph, Literal, URIRef
 from rdflib.resource import Resource
 
-from scaffold.bitstomach.signals import Achievement, Approach, Comparison, Loss, Signal, Trend
+from scaffold.bitstomach.signals import (
+    Achievement,
+    Approach,
+    Comparison,
+    Loss,
+    Signal,
+    Trend,
+)
 from scaffold.esteemer import utils
 from scaffold.esteemer.signals import History
 from scaffold.utils.namespace import PSDO, SLOWMO

@@ -20,7 +20,7 @@ def single(
     ],
 ) -> None:
     startup()
-    
+
     input = orjson.loads(file_path.read_bytes())
     result = pipeline(input)
 
