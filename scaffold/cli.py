@@ -6,18 +6,17 @@ import orjson
 import typer
 import uvicorn
 from loguru import logger
-from typer import Argument, Typer
 
 from scaffold.pipeline import pipeline
 from scaffold.startup import startup
 
-cli = Typer(no_args_is_help=True)
+cli = typer.Typer(no_args_is_help=True)
 
 
 @cli.command()
 def single(
     file_path: Annotated[
-        pathlib.Path, Argument(help="Path to input data in JSON format")
+        pathlib.Path, typer.Argument(help="Path to input data in JSON format")
     ],
 ) -> None:
     startup()
@@ -41,7 +40,7 @@ def single(
 def batch(
     file_path: Annotated[
         pathlib.Path,
-        Argument(help="Path to a JSON file or a directory containing JSON files"),
+        typer.Argument(help="Path to a JSON file or a directory containing JSON files"),
     ],
     max_files: Annotated[
         int, typer.Option("--max-files", help="Maximum number of files to process")
