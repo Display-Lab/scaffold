@@ -19,7 +19,6 @@ requests-file = "^2.1.0"
 python-decouple = "^3.8"
 pyyaml = "^6.0.2"
 typer = "^0.15.2"
-uvicorn = "^0.34.2"
 orjson = "^3.10.18"
 gunicorn = "^23.0.0"
 
@@ -29,7 +28,6 @@ decoy = "^2.1.2"
 poethepoet = "^0.34.0"
 ruff = "^0.11.6"
 pytest = "^8.3.5"
-uvicorn = "^0.34.2"
 
 [tool.poetry.scripts]
 pipeline = "scaffold.cli:cli"
