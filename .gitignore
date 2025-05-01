@@ -21,7 +21,7 @@ outputs/*
 python/.vscode/settings.json
 **/dist/
 **/__pycache__/
-.python-version
+
 ES.json
 venv/
 .venv/
