@@ -12,8 +12,6 @@ from scaffold.startup import startup
 
 cli = Typer(no_args_is_help=True)
 
-startup()
-
 
 @cli.command()
 def single(
@@ -21,6 +19,8 @@ def single(
         pathlib.Path, Argument(help="Path to input data in JSON format")
     ],
 ) -> None:
+    startup()
+    
     input = orjson.loads(file_path.read_bytes())
     result = pipeline(input)
 
