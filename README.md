@@ -95,11 +95,15 @@ curl --data "@tests/test_cases/input_message.json" http://localhost:8000/createp
 Run SCAFFOLD CLI
 First install the python app. Then use the following command to run the pipeline on one input file
 
+```zsh
 ENV_PATH=/user/.../dev.env pipeline single '/path/to/input/file.json'
+```
 
 or use the following command to run the pipeline api
 
+```zsh
 ENV_PATH=/user/.../dev.env pipeline web
+```
 
 ## Environment variables
 
