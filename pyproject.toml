@@ -8,7 +8,7 @@ packages = [{ include = "scaffold" }]
 
 
 [tool.poetry.dependencies]
-python = "^3.13,<3.14"
+python = "^3.12,<3.14"
 pandas = "^2.2.3"
 fastapi = "^0.115.12"
 rdflib = "^7.1.4"
