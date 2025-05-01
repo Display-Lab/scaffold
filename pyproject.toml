@@ -21,6 +21,7 @@ pyyaml = "^6.0.2"
 typer = "^0.15.2"
 orjson = "^3.10.18"
 uvicorn = "^0.34.2"
+gunicorn = "^23.0.0"
 
 [tool.poetry.group.dev.dependencies]
 python-slugify = "^8.0.4"
