@@ -7,8 +7,9 @@ import typer
 import uvicorn
 from loguru import logger
 
+from scaffold.bitstomach.bitstomach import prepare
 from scaffold.pipeline import pipeline
-from scaffold.startup import startup
+from scaffold.startup import set_preferences, startup
 from scaffold.utils.cli_utils import (
     add_candidates,
     add_response,
@@ -58,7 +59,12 @@ def batch(
     for input_file in input_files:
         try:
             input_data = orjson.loads(input_file.read_bytes())
-            result = pipeline(input_data)
+            
+            preferences = set_preferences(input_data)
+            history: dict = input_data.get("History", {})
+            performance_df = prepare(input_data)
+
+            result = pipeline(preferences, history, performance_df)
 
             response_data = result
 

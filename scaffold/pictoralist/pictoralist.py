@@ -18,17 +18,13 @@ class Pictoralist:
     def __init__(
         self,
         performance_dataframe,
-        serialized_perf_df,
         selected_candidate,
         settings,
-        message_instance_id,
     ):
         ## Setup variables to process selected message
         # Needs cleanup to stop redundant var declaration (those passed directly to prepare_selected_message)
         self.performance_data = performance_dataframe  # Dataframe of recipient perf data (performance_data_df)
-        self.performance_block = str(
-            serialized_perf_df
-        )  # Pull un-altered performance (serialized JSON) data to append output messsage with
+
 
         # Need refactor
         self.selected_measure = str(
@@ -57,7 +53,6 @@ class Pictoralist:
             self.acceptable_by.append(
                 pathway
             )  # Add string value of rdflib literal to list
-        self.message_instance_id = message_instance_id
         self.base64_image = []  # Initialize as empty key to later fill image into
         self.staff_ID = int(
             performance_dataframe["staff_number"].iloc[0]
@@ -505,11 +500,9 @@ class Pictoralist:
             "performance_month": self.performance_data["month"]
             .iloc[-1]
             .strftime("%B %Y"),  # Becomes string in response, format here
-            "performance_data": self.performance_block,
-            "message_generated_datetime": self.init_time,
+             "message_generated_datetime": self.init_time,
             "message": message,
         }
-        if self.message_instance_id is not None:
-            full_message["message_instance_id"] = self.message_instance_id
+        
 
         return full_message
