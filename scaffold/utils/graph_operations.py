@@ -5,6 +5,9 @@ import yaml
 from loguru import logger
 from rdflib import Graph
 
+from scaffold.utils.utils import set_logger
+
+set_logger()
 
 def manifest_to_graph(manifest_path: str) -> Graph:
     g: Graph = Graph()

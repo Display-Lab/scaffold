@@ -1,14 +1,16 @@
 import os
 import pathlib
+import subprocess
 from typing import Annotated
 
 import orjson
+import pandas as pd
 import typer
-import uvicorn
 from loguru import logger
 
-from scaffold.pipeline import run_pipeline
-from scaffold.startup import startup
+from scaffold.bitstomach.bitstomach import prepare_performance_df
+from scaffold.pipeline import pipeline, run_pipeline
+from scaffold.startup import set_preferences, startup
 from scaffold.utils.utils import (
     add_candidates,
     add_response,
@@ -94,11 +96,41 @@ def batch(
     if not stats_only:
         analyse_candidates(file_path / "messages" / "candidates.csv")
 
-
 @cli.command()
-def web():
-    uvicorn.run("scaffold.api:app", reload=False, use_colors=True)
+def batch_csv(
+    file_path: Annotated[
+        pathlib.Path,
+        typer.Argument(help="Path to a JSON file or a directory containing JSON files"),
+    ]):
+    startup()
+    
+    all_performance_data = pd.read_csv(file_path,parse_dates=["month"])
+    
+    
+    success_count = 0
+    failure_count = 0
+    for provider_id in all_performance_data["staff_number"].unique().tolist():
+        try:
+            preferences=set_preferences({})
+            performance_df = prepare_performance_df("2024-05-01",all_performance_data[all_performance_data["staff_number"] == provider_id].reset_index(drop=True))
+            result = pipeline(preferences,{},performance_df)
+            print(result)
+            success_count += 1
+        except Exception as e:
+            failure_count += 1
 
+    logger.info(f"Successful: {success_count}, Failed: {failure_count}")   
+    
+    
+@cli.command()
+def web(workers: int = 5):
+    # uvicorn.run(["scaffold.api:app","--workers", str(workers)], reload=False, use_colors=True)
+    subprocess.run([
+        "uvicorn",
+        "scaffold.api:app",
+        "--workers", str(workers),
+        "--use-colors"
+    ])
 
 if __name__ == "__main__":
     cli()
