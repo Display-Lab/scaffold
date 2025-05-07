@@ -2,6 +2,7 @@ import pandas as pd
 from rdflib import RDF, BNode, Graph, Literal
 
 from scaffold.bitstomach.signals import SIGNALS
+from scaffold.utils import settings
 from scaffold.utils.namespace import PSDO, SLOWMO
 
 
@@ -33,6 +34,8 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
 
 
 def prepare(req_info):
+    if settings.settings.performance_month:
+        req_info["performance_month"] = settings.settings.performance_month
     performance_data = req_info["Performance_data"]
     performance_df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
 

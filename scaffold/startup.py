@@ -1,6 +1,5 @@
 import csv
 import json
-import sys
 from io import StringIO
 
 import matplotlib
@@ -11,14 +10,10 @@ from requests_file import FileAdapter
 
 from scaffold.utils.graph_operations import manifest_to_graph
 from scaffold.utils.settings import settings
+from scaffold.utils.utils import set_logger
 
-logger.remove()
-logger.add(
-    sys.stdout, colorize=True, format="{level}|  {message}", level=settings.log_level
-)
-logger.at_least = (
-    lambda lvl: logger.level(lvl).no >= logger.level(settings.log_level).no
-)
+set_logger()
+
 matplotlib.use("Agg")
 mpm: dict = {}
 default_preferences: dict = {}

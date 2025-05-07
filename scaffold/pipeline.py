@@ -1,5 +1,6 @@
 import os
 
+import pandas as pd
 import psutil
 from fastapi import HTTPException
 from loguru import logger
@@ -12,36 +13,32 @@ from scaffold.esteemer import esteemer, utils
 from scaffold.pictoralist.pictoralist import Pictoralist
 from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
+from scaffold.utils.utils import set_logger
+
+set_logger()
 
 
-def pipeline(req_info):
-    if settings.performance_month:
-        req_info["performance_month"] = settings.performance_month
-
-    preferences = startup.set_preferences(req_info)
-
+def pipeline(preferences: dict, history: dict, performance_df: pd.DataFrame):
     cool_new_super_graph = Graph()
     cool_new_super_graph += startup.base_graph
 
     # BitStomach
     logger.debug("Calling BitStomach from main...")
 
-    performance_data_df = bitstomach.prepare(req_info)
-    # TODO: find a place for measures to live...mabe move these two line into prepare or make a measurees class
+    # TODO: find a place for measures to live...may be move these two line into prepare or make a measurees class
     measures = set(cool_new_super_graph[: RDF.type : PSDO.performance_measure_content])
 
-    performance_data_df.attrs["valid_measures"] = [
-        m for m in performance_data_df.attrs["valid_measures"] if BNode(m) in measures
+    performance_df.attrs["valid_measures"] = [
+        m for m in performance_df.attrs["valid_measures"] if BNode(m) in measures
     ]
-    g: Graph = bitstomach.extract_signals(performance_data_df)
+    g: Graph = bitstomach.extract_signals(performance_df)
 
     performance_content = g.resource(BNode("performance_content"))
     if len(list(performance_content[PSDO.motivating_information])) == 0:
         cool_new_super_graph.close()
         detail = {
             "message": "Insufficient significant data found for providing feedback, process aborted.",
-            "message_instance_id": req_info["message_instance_id"],
-            "staff_number": performance_data_df.attrs["staff_number"],
+            "staff_number": performance_df.attrs["staff_number"],
         }
         raise HTTPException(
             status_code=400,
@@ -57,11 +54,11 @@ def pipeline(req_info):
 
     # #Esteemer
     logger.debug("Calling Esteemer from main...")
-    history: dict = req_info.get("History", {})
+
     history = {
         key: value
         for key, value in history.items()
-        if key < performance_data_df.attrs["performance_month"]
+        if key < performance_df.attrs["performance_month"]
     }
 
     measures: set[BNode] = set(
@@ -90,11 +87,9 @@ def pipeline(req_info):
     if selected_message["message_text"] != "No message selected":
         ## Initialize and run message and display generation:
         pc = Pictoralist(
-            performance_data_df,
-            req_info["Performance_data"],
+            performance_df,
             selected_message,
             settings,
-            req_info["message_instance_id"],
         )
         pc.prep_data_for_graphing()  # Setup dataframe of one measure, cleaned for graphing
         pc.fill_missing_months()  # Fill holes in dataframe where they exist
@@ -120,7 +115,7 @@ def pipeline(req_info):
             (
                 BNode("p1"),
                 URIRef("http://example.com/slowmo#IsAboutPerformer"),
-                Literal(int(performance_data_df["staff_number"].iloc[0])),
+                Literal(int(performance_df["staff_number"].iloc[0])),
             )
         )
         response["candidates"] = utils.candidates_records(cool_new_super_graph)
@@ -128,3 +123,17 @@ def pipeline(req_info):
     response.update(full_selected_message)
 
     return response
+
+
+def run_pipeline(req_info):
+    preferences = startup.set_preferences(req_info)
+    history: dict = req_info.get("History", {})
+    performance_df = bitstomach.prepare(req_info)
+    try:
+        full_message = pipeline(preferences, history, performance_df)
+        full_message["message_instance_id"] = req_info["message_instance_id"]
+        full_message["performance_data"] = req_info["Performance_data"]
+    except HTTPException as e:
+        e.detail["message_instance_id"] = req_info["message_instance_id"]
+        raise e
+    return full_message

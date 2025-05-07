@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 
-from scaffold.pipeline import pipeline
+from scaffold.pipeline import run_pipeline
 from scaffold.startup import startup
 from scaffold.utils.settings import settings
 
@@ -30,5 +30,6 @@ async def template():
 @app.post("/createprecisionfeedback/")
 async def createprecisionfeedback(info: Request):
     req_info = await info.json()
+    full_message = run_pipeline(req_info)
 
-    return pipeline(req_info)
+    return full_message
