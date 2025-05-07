@@ -13,17 +13,18 @@ from scaffold.esteemer import esteemer, utils
 from scaffold.pictoralist.pictoralist import Pictoralist
 from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
+from scaffold.utils.utils import set_logger
+
+set_logger()
 
 
-def pipeline( preferences:dict, history: dict, performance_df:pd.DataFrame  ):
-
+def pipeline(preferences: dict, history: dict, performance_df: pd.DataFrame):
     cool_new_super_graph = Graph()
     cool_new_super_graph += startup.base_graph
 
     # BitStomach
     logger.debug("Calling BitStomach from main...")
 
-    
     # TODO: find a place for measures to live...may be move these two line into prepare or make a measurees class
     measures = set(cool_new_super_graph[: RDF.type : PSDO.performance_measure_content])
 
@@ -53,7 +54,7 @@ def pipeline( preferences:dict, history: dict, performance_df:pd.DataFrame  ):
 
     # #Esteemer
     logger.debug("Calling Esteemer from main...")
-    
+
     history = {
         key: value
         for key, value in history.items()
@@ -122,3 +123,17 @@ def pipeline( preferences:dict, history: dict, performance_df:pd.DataFrame  ):
     response.update(full_selected_message)
 
     return response
+
+
+def run_pipeline(req_info):
+    preferences = startup.set_preferences(req_info)
+    history: dict = req_info.get("History", {})
+    performance_df = bitstomach.prepare(req_info)
+    try:
+        full_message = pipeline(preferences, history, performance_df)
+        full_message["message_instance_id"] = req_info["message_instance_id"]
+        full_message["performance_data"] = req_info["Performance_data"]
+    except HTTPException as e:
+        e.detail["message_instance_id"] = req_info["message_instance_id"]
+        raise e
+    return full_message

@@ -1,6 +1,10 @@
 import re
+import sys
 
 import pandas as pd
+from loguru import logger
+
+from scaffold.utils.settings import settings
 
 candidate_df: pd.DataFrame = pd.DataFrame()
 response_df: pd.DataFrame = pd.DataFrame()
@@ -29,11 +33,6 @@ def analyse_candidates(OUTPUT):
     candidate_df.rename(columns={"acceptable_by": "causal_pathway"}, inplace=True)
     candidate_df["score"] = candidate_df["score"].astype(float)
     candidate_df.rename(columns={"name": "message"}, inplace=True)
-
-    # pd.set_option("display.max_columns", None)
-    # pd.set_option("display.expand_frame_repr", False)
-    # pd.set_option("display.width", 1000)
-    # pd.set_option("display.max_colwidth", None)
 
     # causal pathways
     causal_pathway_report = build_table("causal_pathway")
@@ -130,3 +129,16 @@ def extract_number(filename):
         return int(match.group(1))
     else:
         return float("inf")  # Return infinity if no numeric part found
+
+
+def set_logger():
+    logger.remove()
+    logger.add(
+        sys.stdout,
+        colorize=True,
+        format="{level}|  {message}",
+        level=settings.log_level,
+    )
+    logger.at_least = (
+        lambda lvl: logger.level(lvl).no >= logger.level(settings.log_level).no
+    )

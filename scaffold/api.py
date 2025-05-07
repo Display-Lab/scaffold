@@ -1,9 +1,8 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
 
-from scaffold.bitstomach.bitstomach import prepare
-from scaffold.pipeline import pipeline
-from scaffold.startup import set_preferences, startup
+from scaffold.pipeline import run_pipeline
+from scaffold.startup import startup
 from scaffold.utils.settings import settings
 
 app = FastAPI()
@@ -31,15 +30,6 @@ async def template():
 @app.post("/createprecisionfeedback/")
 async def createprecisionfeedback(info: Request):
     req_info = await info.json()
-    preferences = set_preferences(req_info)
-    history: dict = req_info.get("History", {})
-    performance_df = prepare(req_info)
-    try:
-        full_message = pipeline(preferences, history, performance_df)
-        full_message["message_instance_id"] = req_info["message_instance_id"]
-        full_message["performance_data"] = req_info["Performance_data"]
-    except HTTPException as e:        
-        e.detail["message_instance_id"] = req_info["message_instance_id"]
-        raise e
-        
+    full_message = run_pipeline(req_info)
+
     return full_message

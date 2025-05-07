@@ -25,7 +25,6 @@ class Pictoralist:
         # Needs cleanup to stop redundant var declaration (those passed directly to prepare_selected_message)
         self.performance_data = performance_dataframe  # Dataframe of recipient perf data (performance_data_df)
 
-
         # Need refactor
         self.selected_measure = str(
             selected_candidate["measure_name"]
@@ -163,8 +162,10 @@ class Pictoralist:
             )  # reset col name from index to month
 
             # Forward fill 'measure' and percent-scale version of 'MPOG_goal' columns with the previous valid values
-            self.performance_data["measure"].fillna(method="ffill", inplace=True)
-            self.performance_data["goal_percent"].fillna(method="ffill", inplace=True)
+            self.performance_data["measure"] = self.performance_data["measure"].ffill()
+            self.performance_data["goal_percent"] = self.performance_data[
+                "goal_percent"
+            ].ffill()
 
             # Debugging statement
             # logger.debug(f"After gap fill, dataframe is:")
@@ -500,9 +501,8 @@ class Pictoralist:
             "performance_month": self.performance_data["month"]
             .iloc[-1]
             .strftime("%B %Y"),  # Becomes string in response, format here
-             "message_generated_datetime": self.init_time,
+            "message_generated_datetime": self.init_time,
             "message": message,
         }
-        
 
         return full_message
