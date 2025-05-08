@@ -96,41 +96,92 @@ def batch(
     if not stats_only:
         analyse_candidates(file_path / "messages" / "candidates.csv")
 
+
 @cli.command()
 def batch_csv(
     file_path: Annotated[
         pathlib.Path,
         typer.Argument(help="Path to a JSON file or a directory containing JSON files"),
-    ]):
+    ],
+    max_files: Annotated[
+        int, typer.Option("--max-files", help="Maximum number of files to process")
+    ] = None,
+    performance_month: Annotated[
+        str, typer.Option("--performance-month", help="Performance month")
+    ] = None,
+    stats_only: Annotated[
+        bool,
+        typer.Option(
+            "--stats-only",
+            help="Only simulate processing; count successes and failures and additional stats",
+        ),
+    ] = False,
+):
     startup()
-    
-    all_performance_data = pd.read_csv(file_path,parse_dates=["month"])
-    
-    
+
+    all_performance_data = pd.read_csv(file_path, parse_dates=["month"])
+
+    if max_files is not None:
+        first_n_staff = (
+            all_performance_data["staff_number"].drop_duplicates().head(max_files)
+        )
+        performance_data = all_performance_data[
+            all_performance_data["staff_number"].isin(first_n_staff)
+        ].reset_index(drop=True)
+        # performance_data = all_performance_data[all_performance_data['staff_number'].isin(set(range(1, max_files + 1)))].reset_index(drop=True)
     success_count = 0
     failure_count = 0
-    for provider_id in all_performance_data["staff_number"].unique().tolist():
+    for provider_id in performance_data["staff_number"].unique().tolist():
         try:
-            preferences=set_preferences({})
-            performance_df = prepare_performance_df("2024-05-01",all_performance_data[all_performance_data["staff_number"] == provider_id].reset_index(drop=True))
-            result = pipeline(preferences,{},performance_df)
-            print(result)
-            success_count += 1
-        except Exception as e:
-            failure_count += 1
+            preferences = set_preferences({})
+            performance_df = prepare_performance_df(
+                performance_month,
+                performance_data[
+                    performance_data["staff_number"] == provider_id
+                ].reset_index(drop=True),
+            )
+            result = pipeline(preferences, {}, performance_df)
+            if not stats_only:
+                directory = file_path.parent / "messages"
+                os.makedirs(directory, exist_ok=True)
 
-    logger.info(f"Successful: {success_count}, Failed: {failure_count}")   
-    
-    
+                performance_month = performance_month
+                new_filename = (
+                    f"Provider_{provider_id} - message for {performance_month}.json"
+                )
+                output_path = directory / new_filename
+
+                output_path.write_bytes(
+                    orjson.dumps(result, option=orjson.OPT_INDENT_2)
+                )
+                logger.info(f"Message created at {output_path}")
+            else:
+                logger.info(f"✔ Would process: Provider_{provider_id}")
+
+            success_count += 1
+
+        except Exception as e:
+            logger.error(f"✘ Failed to process Provider_{provider_id}: {e}")
+            failure_count += 1
+            result = e.detail
+
+        add_response(result)
+        if not stats_only:
+            add_candidates(result, performance_month)
+
+    logger.info(f"Successful: {success_count}, Failed: {failure_count}")
+    analyse_responses()
+    if not stats_only:
+        analyse_candidates(file_path.parent / "messages" / "candidates.csv")
+
+
 @cli.command()
 def web(workers: int = 5):
     # uvicorn.run(["scaffold.api:app","--workers", str(workers)], reload=False, use_colors=True)
-    subprocess.run([
-        "uvicorn",
-        "scaffold.api:app",
-        "--workers", str(workers),
-        "--use-colors"
-    ])
+    subprocess.run(
+        ["uvicorn", "scaffold.api:app", "--workers", str(workers), "--use-colors"]
+    )
+
 
 if __name__ == "__main__":
     cli()
