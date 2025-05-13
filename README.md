@@ -93,13 +93,27 @@ curl --data "@tests/test_cases/input_message.json" http://localhost:8000/createp
 ```
 
 Run SCAFFOLD CLI
-First install the python app. Then use the following command to run the pipeline on one input file
+First install the python app. Then use the following command to run the pipeline on one json input file
 
 ```zsh
-ENV_PATH=/user/.../dev.env pipeline single '/path/to/input/file.json'
+ENV_PATH=/user/.../dev.env pipeline batch '/path/to/input/file.json'
 ```
 
-or use the following command to run the pipeline api
+Use the following command to run the pipeline on some or all json input files in a folder
+
+```zsh
+ENV_PATH=/user/.../dev.env pipeline batch '/path/to/input/folder/' --max-files 500
+```
+Use --max-files if you need to limit the number of files to process.
+
+Use the following command to run the pipeline passing preformance_data, history and preferences as separate CSV files
+
+```zsh
+ENV_PATH=/user/.../dev.env pipeline batch_csv '/path/to/performance/data/file.csv' '/path/to/preferences/file.csv' '/path/to/history/file.csv' --performance-month {performance month i.e. 2024-05-01} --max-files 500
+```
+Use --performance-month to set the performance month for batch_csv command.
+
+Use the following command to run the pipeline api
 
 ```zsh
 ENV_PATH=/user/.../dev.env pipeline web
