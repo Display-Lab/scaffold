@@ -2,7 +2,6 @@ import pandas as pd
 from rdflib import RDF, BNode, Graph, Literal
 
 from scaffold.bitstomach.signals import SIGNALS
-from scaffold.utils import settings
 from scaffold.utils.namespace import PSDO, SLOWMO
 
 
@@ -33,23 +32,15 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
     return g
 
 
-def prepare(req_info):
-    performance_month = req_info["performance_month"]
-    if settings.settings.performance_month:
-        performance_month = settings.settings.performance_month
-        
-    
-    performance_data = req_info["Performance_data"]
-    performance_df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
-
-    return prepare_performance_df(performance_month, performance_df)
-
-def prepare_performance_df(performance_month, performance_df):
+def prepare(performance_month, performance_df):
+    # we would have multiple staff performance data at this point so this like won't work right
     performance_df.attrs["staff_number"] = int(performance_df.at[0, "staff_number"])
 
     performance_df["goal_comparator_content"] = performance_df["MPOG_goal"]
 
-    performance_df.attrs["performance_month"] = performance_month if performance_month else performance_df["month"].max()
+    performance_df.attrs["performance_month"] = (
+        performance_month if performance_month else performance_df["month"].max()
+    )
 
     performance_df = performance_df[
         performance_df["month"] <= performance_df.attrs["performance_month"]

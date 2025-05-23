@@ -18,10 +18,16 @@ from scaffold.utils.utils import set_logger
 set_logger()
 
 
-def pipeline(preferences: dict, history: dict, performance_df: pd.DataFrame):
+def pipeline(performance_df: pd.DataFrame):
     cool_new_super_graph = Graph()
     cool_new_super_graph += startup.base_graph
-
+    cool_new_super_graph.add(
+        (
+            BNode("p1"),
+            URIRef("http://example.com/slowmo#IsAboutPerformer"),
+            Literal(int(performance_df.attrs["staff_number"])),
+        )
+    )
     # BitStomach
     logger.debug("Calling BitStomach from main...")
 
@@ -55,26 +61,21 @@ def pipeline(preferences: dict, history: dict, performance_df: pd.DataFrame):
     # #Esteemer
     logger.debug("Calling Esteemer from main...")
 
-    history = {
-        key: value
-        for key, value in history.items()
-        if key < performance_df.attrs["performance_month"]
-    }
-
     measures: set[BNode] = set(
         cool_new_super_graph.objects(
             None, PSDO.motivating_information / SLOWMO.RegardingMeasure
         )
     )
+
     for measure in measures:
         candidates = utils.candidates(
             cool_new_super_graph, filter_acceptable=True, measure=measure
         )
         for candidate in candidates:
-            esteemer.score(
-                candidate, history, preferences["Message_Format"], startup.mpm
-            )
+            esteemer.score(candidate, startup.mpm)
     selected_candidate = esteemer.select_candidate(cool_new_super_graph)
+    preferences = esteemer.get_preferences(performance_df.attrs["staff_number"])
+
     if preferences["Display_Format"]:
         cool_new_super_graph.resource(selected_candidate)[SLOWMO.Display] = Literal(
             preferences["Display_Format"]
@@ -111,29 +112,8 @@ def pipeline(preferences: dict, history: dict, performance_df: pd.DataFrame):
             "memory_info.rss": mem_info.rss / 1024 / 1024,
         }
 
-        cool_new_super_graph.add(
-            (
-                BNode("p1"),
-                URIRef("http://example.com/slowmo#IsAboutPerformer"),
-                Literal(int(performance_df["staff_number"].iloc[0])),
-            )
-        )
         response["candidates"] = utils.candidates_records(cool_new_super_graph)
 
     response.update(full_selected_message)
 
     return response
-
-
-def run_pipeline(req_info):
-    preferences = startup.set_preferences(req_info)
-    history: dict = req_info.get("History", {})
-    performance_df = bitstomach.prepare(req_info)
-    try:
-        full_message = pipeline(preferences, history, performance_df)
-        full_message["message_instance_id"] = req_info["message_instance_id"]
-        full_message["performance_data"] = req_info["Performance_data"]
-    except HTTPException as e:
-        e.detail["message_instance_id"] = req_info["message_instance_id"]
-        raise e
-    return full_message

@@ -37,38 +37,14 @@ def startup():
 
         mpm = load_mpm()
 
-        preferences_text = se.get(settings.preferences).text
-        default_preferences = json.loads(preferences_text)
+        default_preferences_text = se.get(settings.default_preferences).text
+        default_preferences = json.loads(default_preferences_text)
 
         base_graph = manifest_to_graph(settings.manifest)
 
     except Exception as e:
         print("Startup aborted, see traceback:")
         raise e
-
-
-def set_preferences(req_info):
-    preferences_utilities = req_info.get("Preferences", {}).get("Utilities", {})
-    input_preferences: dict = preferences_utilities.get("Message_Format", {})
-    individual_preferences: dict = {}
-    for key in input_preferences:
-        individual_preferences[key.lower()] = float(input_preferences[key])
-
-    preferences: dict = default_preferences.copy()
-    preferences.update(individual_preferences)
-
-    min_value = min(preferences.values())
-    max_value = max(preferences.values())
-
-    for key in preferences:
-        preferences[key] = (preferences[key] - min_value) / (max_value - min_value)
-
-    display_format = None
-    for key, value in preferences_utilities.get("Display_Format", {}).items():
-        if value == 1 and key != "System-generated":
-            display_format = key.lower()
-
-    return {"Message_Format": preferences, "Display_Format": display_format}
 
 
 ### read csv file to a dictionary
