@@ -104,12 +104,21 @@ def performance_data_frame():
         [157, "PONV05", "2023-07-01", 94, 0, 100, 84.0, 88.0, 90.0, 99.0],
         [157, "PONV05", "2023-08-01", 95, 0, 100, 84.0, 88.0, 90.0, 99.0],
     ]
-    return prepare({"Performance_data": performance_data})
+
+    performance_df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
+    return prepare("2023-08-01", performance_df)
 
 
 @pytest.fixture
 def candidate_resource(performance_data_frame):
     graph = Graph()
+    graph.add(
+        (
+            BNode("p1"),
+            URIRef("http://example.com/slowmo#IsAboutPerformer"),
+            Literal(int(performance_data_frame.attrs["staff_number"])),
+        )
+    )
     candidate_resource = graph.resource(BNode())
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.peer_90th_percentile_benchmark
     candidate_resource[SLOWMO.AcceptableBy] = Literal("Social Better")
@@ -130,7 +139,7 @@ def candidate_resource(performance_data_frame):
 
 
 def test_score(candidate_resource):
-    esteemer.score(candidate_resource, None, {}, MPM)
+    esteemer.score(candidate_resource, MPM)
     assert candidate_resource.value(SLOWMO.Score).value == pytest.approx(2.05)
 
 

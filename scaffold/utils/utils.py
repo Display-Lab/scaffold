@@ -1,8 +1,6 @@
-import ast
 import re
 import sys
 
-import numpy as np
 import pandas as pd
 from loguru import logger
 
@@ -146,51 +144,8 @@ def set_logger():
     )
 
 
-def get_preferences(preferences_row):
-    if preferences_row.empty:
-        return {}
-
-    preferences = {"Utilities": {"Message_Format": {}, "Display_Format": {}}}
-
-    # We'll just use the first row of the CSV
-    row = preferences_row.iloc[0]
-
-    for key in preferences_row.columns:
-        value = row[key]
-        if key == "staff_number":
-            continue  # skip or store if you need it
-        elif key == "Display_Format":
-            # Example: "Bar chart, Line chart"
-            preferences["Utilities"]["Display_Format"] = {
-                "Bar chart": 0,
-                "Line chart": 0,
-                "Text-only": 0,
-                "System-generated": "0",
-            }
-            preferences["Utilities"]["Display_Format"][value] = 1
-        else:
-            if isinstance(value, (np.float64, np.int64)):
-                value = value.item()
-            preferences["Utilities"]["Message_Format"][key] = value
-
-    return preferences
-
-
-def get_history(history_row):
-    if history_row.empty:
-        return {}
-
-    history = {}
-    row = history_row.iloc[0]
-    for col in history_row.columns:
-        if col == "staff_number":
-            continue
-        value = row[col]
-        if pd.notna(value):
-            try:
-                value = ast.literal_eval(value)
-            except Exception:
-                continue  # or handle invalid format
-            history[col] = value
-
-    return history
+def get_performance_month(req_info):
+    performance_month = req_info["performance_month"]
+    if settings.performance_month:
+        performance_month = settings.settings.performance_month
+    return performance_month

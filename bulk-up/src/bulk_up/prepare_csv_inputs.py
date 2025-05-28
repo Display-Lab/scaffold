@@ -63,16 +63,18 @@ with open("preferences.csv", "w", newline="") as file:
             )
             writer.writerows([preferences])
 
-all_keys = set(["staff_number"])
+all_keys = set(["staff_number", "month", "history"])
 for input_file in input_files:
     input_data = orjson.loads(input_file.read_bytes())
-    all_keys.update(input_data["History"].keys())
 with open("history.csv", "w", newline="") as file:
     writer = csv.DictWriter(file, fieldnames=all_keys)
     writer.writeheader()
     for index, input_file in enumerate(input_files):
         input_data = orjson.loads(input_file.read_bytes())
-        if input_data["History"]:
-            history = {"staff_number": input_data["Performance_data"][1][0]}
-            history.update(input_data["History"])
+        for key, value in input_data["History"].items():
+            history = {
+                "staff_number": input_data["Performance_data"][1][0],
+                "month": key,
+                "history": value,
+            }
             writer.writerows([history])

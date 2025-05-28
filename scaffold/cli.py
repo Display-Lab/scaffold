@@ -6,19 +6,20 @@ from typing import Annotated
 import orjson
 import pandas as pd
 import typer
+from fastapi import HTTPException
 from loguru import logger
 
-from scaffold.bitstomach.bitstomach import prepare_performance_df
-from scaffold.pipeline import pipeline, run_pipeline
-from scaffold.startup import set_preferences, startup
+from scaffold import context
+from scaffold.bitstomach.bitstomach import prepare
+from scaffold.pipeline import pipeline
+from scaffold.startup import startup
 from scaffold.utils.utils import (
     add_candidates,
     add_response,
     analyse_candidates,
     analyse_responses,
     extract_number,
-    get_history,
-    get_preferences,
+    get_performance_month,
 )
 
 cli = typer.Typer(no_args_is_help=True)
@@ -53,17 +54,30 @@ def batch(
         )
         raise SystemExit(1)
 
-    if max_files is not None:
-        input_files = input_files[:max_files]
-
     success_count = 0
     failure_count = 0
 
-    for input_file in input_files:
+    for input_file in input_files[:max_files]:
         try:
             input_data = orjson.loads(input_file.read_bytes())
 
-            response_data = run_pipeline(input_data)
+            context.update(input_data)
+
+            performance_month = get_performance_month(input_data)
+            performance_df = prepare(
+                performance_month,
+                pd.DataFrame(
+                    input_data["Performance_data"][1:],
+                    columns=input_data["Performance_data"][0],
+                ),
+            )
+            try:
+                full_message = pipeline(performance_df)
+                full_message["message_instance_id"] = input_data["message_instance_id"]
+                full_message["performance_data"] = input_data["Performance_data"]
+            except HTTPException as e:
+                e.detail["message_instance_id"] = input_data["message_instance_id"]
+                raise e
 
             if not stats_only:
                 directory = input_file.parent / "messages"
@@ -76,7 +90,7 @@ def batch(
                 output_path = directory / new_filename
 
                 output_path.write_bytes(
-                    orjson.dumps(response_data, option=orjson.OPT_INDENT_2)
+                    orjson.dumps(full_message, option=orjson.OPT_INDENT_2)
                 )
                 logger.info(f"Message created at {output_path}")
             else:
@@ -86,13 +100,13 @@ def batch(
         except Exception as e:
             logger.error(f"✘ Failed to process {input_file}: {e}")
             failure_count += 1
-            response_data = e.detail
+            full_message = e.detail
 
-        add_response(response_data)
+        add_response(full_message)
         if not stats_only:
-            add_candidates(response_data, input_data["performance_month"])
+            add_candidates(full_message, input_data["performance_month"])
 
-    logger.info(f"Total files scanned: {len(input_files)}")
+    logger.info(f"Total files scanned: {len(input_files[:max_files])}")
     logger.info(f"Successful: {success_count}, Failed: {failure_count}")
     analyse_responses()
     if not stats_only:
@@ -104,14 +118,6 @@ def batch_csv(
     performance_data_path: Annotated[
         pathlib.Path,
         typer.Argument(help="Path to a CSV file containing performance data"),
-    ],
-    preferences_path: Annotated[
-        pathlib.Path,
-        typer.Argument(help="Path to a CSV file containing the preferences"),
-    ],
-    history_path: Annotated[
-        pathlib.Path,
-        typer.Argument(help="Path to a CSV file containing the history"),
     ],
     max_files: Annotated[
         int, typer.Option("--max-files", help="Maximum number of files to process")
@@ -128,44 +134,26 @@ def batch_csv(
     ] = False,
 ):
     startup()
+    context.init()
 
-    all_performance_data = pd.read_csv(performance_data_path, parse_dates=["month"])
-    all_preferences = pd.read_csv(preferences_path)
-    all_hostory = pd.read_csv(history_path)
-
-    if max_files is not None:
-        first_n_staff = (
-            all_performance_data["staff_number"].drop_duplicates().head(max_files)
-        )
-        performance_data = all_performance_data[
-            all_performance_data["staff_number"].isin(first_n_staff)
-        ].reset_index(drop=True)
-        # performance_data = all_performance_data[all_performance_data['staff_number'].isin(set(range(1, max_files + 1)))].reset_index(drop=True)
+    performance_data = pd.read_csv(performance_data_path, parse_dates=["month"])
     success_count = 0
     failure_count = 0
-    for provider_id in performance_data["staff_number"].unique().tolist():
+    for provider_id in (
+        performance_data["staff_number"].drop_duplicates().head(max_files)
+    ):
         try:
-            preferences = set_preferences(
-                get_preferences(
-                    all_preferences[all_preferences["staff_number"] == provider_id]
-                )
-            )
-            history = get_history(
-                all_hostory[all_hostory["staff_number"] == provider_id]
-            )
-
-            performance_df = prepare_performance_df(
+            performance_df = prepare(
                 performance_month,
                 performance_data[
                     performance_data["staff_number"] == provider_id
                 ].reset_index(drop=True),
             )
-            result = pipeline(preferences, history, performance_df)
+            result = pipeline(performance_df)
             if not stats_only:
                 directory = performance_data_path.parent / "messages"
                 os.makedirs(directory, exist_ok=True)
 
-                performance_month = performance_month
                 new_filename = (
                     f"Provider_{provider_id} - message for {performance_month}.json"
                 )
@@ -197,7 +185,6 @@ def batch_csv(
 
 @cli.command()
 def web(workers: int = 5):
-    # uvicorn.run(["scaffold.api:app","--workers", str(workers)], reload=False, use_colors=True)
     subprocess.run(
         ["uvicorn", "scaffold.api:app", "--workers", str(workers), "--use-colors"]
     )

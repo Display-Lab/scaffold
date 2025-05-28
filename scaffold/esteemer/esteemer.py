@@ -13,13 +13,14 @@ from scaffold.bitstomach.signals import (
     Signal,
     Trend,
 )
+from scaffold.context import get_history, get_preferences
 from scaffold.esteemer import utils
 from scaffold.esteemer.signals import History
 from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
 
 
-def score(candidate: Resource, history: dict, preferences: dict, MPM: dict) -> Resource:
+def score(candidate: Resource, MPM: dict) -> Resource:
     """
     calculates score.
 
@@ -31,6 +32,13 @@ def score(candidate: Resource, history: dict, preferences: dict, MPM: dict) -> R
     Returns:
     float: score.
     """
+
+    staff_number = candidate.graph.value(
+        BNode("p1"), URIRef("http://example.com/slowmo#IsAboutPerformer")
+    ).value
+
+    history = get_history(staff_number)
+    preferences = get_preferences(staff_number)["Message_Format"]
 
     CAUSAL_PATHWAY = {
         "Social Better": {"score": score_better, "rules": rule_social_highest},

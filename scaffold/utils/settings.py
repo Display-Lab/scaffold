@@ -35,7 +35,10 @@ class Settings:
 
         self.manifest = config("manifest", cast=str, default=None)
         self.mpm = config("mpm", cast=str, default=None)
+        self.default_preferences = config("default_preferences", cast=str, default=None)
+
         self.preferences = config("preferences", cast=str, default=None)
+        self.history = config("history", cast=str, default=None)
 
         # Instance settings
         self.log_level = config(
