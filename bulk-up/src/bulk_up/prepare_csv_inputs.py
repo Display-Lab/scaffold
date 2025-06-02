@@ -75,6 +75,6 @@ with open("history.csv", "w", newline="") as file:
             history = {
                 "staff_number": input_data["Performance_data"][1][0],
                 "month": key,
-                "history": value,
+                "history": orjson.dumps(value).decode(),
             }
             writer.writerows([history])

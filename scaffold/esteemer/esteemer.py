@@ -20,7 +20,7 @@ from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
 
 
-def score(candidate: Resource, MPM: dict) -> Resource:
+def score(candidate: Resource, MPM: dict, performance_month) -> Resource:
     """
     calculates score.
 
@@ -73,7 +73,9 @@ def score(candidate: Resource, MPM: dict) -> Resource:
     candidate[URIRef("motivating_score")] = Literal(mi_score, datatype=XSD.double)
 
     # History
-    history_score = score_history(candidate, history, MPM[causal_pathway])
+    history_score = score_history(
+        candidate, history, MPM[causal_pathway], performance_month
+    )
     candidate[URIRef("history_score")] = Literal(history_score, datatype=XSD.double)
 
     # Preferences
@@ -276,7 +278,7 @@ def comparator_moderators(candidate, motivating_informations, signal: Signal):
     return scoring_detail
 
 
-def score_history(candidate: Resource, history, mpm: dict) -> float:
+def score_history(candidate: Resource, history, mpm: dict, performance_month) -> float:
     """
     calculates history sub-score.
 
@@ -292,7 +294,6 @@ def score_history(candidate: Resource, history, mpm: dict) -> float:
 
     # turn candidate resource into a 'history' element for the current month
     g: Graph = candidate.graph
-    performance_month = next(g.objects(None, SLOWMO.PerformanceMonth)).value
 
     signals = History.detect(
         history,

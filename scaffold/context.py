@@ -17,7 +17,11 @@ def init():
         if settings.preferences is not None:
             preferences = pd.read_csv(settings.preferences)
         if settings.history is not None:
-            history = pd.read_csv(settings.history, converters={"history": json.loads})
+            history = pd.read_csv(
+                settings.history,
+                converters={"history": json.loads},
+                dtype={"month": str},
+            )
 
     except Exception as e:
         print("context init aborted, see traceback:")

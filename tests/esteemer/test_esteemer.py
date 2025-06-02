@@ -106,7 +106,8 @@ def performance_data_frame():
     ]
 
     performance_df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
-    return prepare("2023-08-01", performance_df)
+    perf_df, perf_month = prepare(performance_df, 157, "2023-08-01")
+    return perf_df
 
 
 @pytest.fixture
@@ -128,7 +129,6 @@ def candidate_resource(performance_data_frame):
     motivating_informations = Comparison.detect(performance_data_frame)
 
     performance_content = graph.resource(BNode("performance_content"))
-    performance_content.set(SLOWMO.PerformanceMonth, Literal("2023-08-01"))
     for s in motivating_informations:
         candidate_resource.add(PSDO.motivating_information, s)
         s[SLOWMO.RegardingMeasure] = BNode("PONV05")
@@ -139,7 +139,7 @@ def candidate_resource(performance_data_frame):
 
 
 def test_score(candidate_resource):
-    esteemer.score(candidate_resource, MPM)
+    esteemer.score(candidate_resource, MPM, "2023-08-01")
     assert candidate_resource.value(SLOWMO.Score).value == pytest.approx(2.05)
 
 
@@ -187,13 +187,15 @@ def test_get_trend_info():
 
 
 def test_no_history_signal_is_score_0(candidate_resource):
-    assert esteemer.score_history(candidate_resource, {}, {}) == 1.0
+    assert esteemer.score_history(candidate_resource, {}, {}, "2023-08-01") == 1.0
 
-    assert esteemer.score_history(candidate_resource, None, {}) == 1.0
+    assert esteemer.score_history(candidate_resource, None, {}, "2023-08-01") == 1.0
 
 
 def test_history_with_two_recurrances(candidate_resource, history):
-    score = esteemer.score_history(candidate_resource, history, MPM["Social Better"])
+    score = esteemer.score_history(
+        candidate_resource, history, MPM["Social Better"], "2023-08-01"
+    )
 
     assert score == pytest.approx(0.586589)
 

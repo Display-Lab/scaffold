@@ -110,7 +110,7 @@ def add_signal_properties(row, output_message, input_message):
         columns=input_message["Performance_data"][0],
     )
 
-    performance_df = prepare(performance_month, performance_df)
+    performance_df, performance_month = prepare(performance_df, performance_df.at[0, "staff_number"], performance_month)
     performance_df = performance_df[
         performance_df["measure"] == output_message["selected_candidate"]["measure"]
     ].tail(12)
