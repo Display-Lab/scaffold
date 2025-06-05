@@ -18,7 +18,17 @@ from scaffold.utils.utils import set_logger
 set_logger()
 
 
-def pipeline(performance_df: pd.DataFrame):
+def pipeline(performance_df: pd.DataFrame, staff_number, performance_month):
+    performance_df, performance_month = bitstomach.prepare(
+        performance_df, staff_number, performance_month
+    )
+
+    measures = set(startup.base_graph[: RDF.type : PSDO.performance_measure_content])
+
+    performance_df.attrs["valid_measures"] = [
+        m for m in performance_df.attrs["valid_measures"] if BNode(m) in measures
+    ]
+
     cool_new_super_graph = Graph()
     cool_new_super_graph += startup.base_graph
     cool_new_super_graph.add(
@@ -31,12 +41,6 @@ def pipeline(performance_df: pd.DataFrame):
     # BitStomach
     logger.debug("Calling BitStomach from main...")
 
-    # TODO: find a place for measures to live...may be move these two line into prepare or make a measurees class
-    measures = set(cool_new_super_graph[: RDF.type : PSDO.performance_measure_content])
-
-    performance_df.attrs["valid_measures"] = [
-        m for m in performance_df.attrs["valid_measures"] if BNode(m) in measures
-    ]
     g: Graph = bitstomach.extract_signals(performance_df)
 
     performance_content = g.resource(BNode("performance_content"))
@@ -72,9 +76,9 @@ def pipeline(performance_df: pd.DataFrame):
             cool_new_super_graph, filter_acceptable=True, measure=measure
         )
         for candidate in candidates:
-            esteemer.score(candidate, startup.mpm)
+            esteemer.score(candidate, startup.mpm, performance_month)
     selected_candidate = esteemer.select_candidate(cool_new_super_graph)
-    preferences = esteemer.get_preferences(performance_df.attrs["staff_number"])
+    preferences = esteemer.get_preferences()
 
     if preferences["Display_Format"]:
         cool_new_super_graph.resource(selected_candidate)[SLOWMO.Display] = Literal(

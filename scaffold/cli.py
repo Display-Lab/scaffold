@@ -10,7 +10,6 @@ from fastapi import HTTPException
 from loguru import logger
 
 from scaffold import context
-from scaffold.bitstomach.bitstomach import prepare
 from scaffold.pipeline import pipeline
 from scaffold.startup import startup
 from scaffold.utils.utils import (
@@ -61,18 +60,18 @@ def batch(
         try:
             input_data = orjson.loads(input_file.read_bytes())
 
-            context.update(input_data)
-
             performance_month = get_performance_month(input_data)
-            performance_df = prepare(
-                performance_month,
-                pd.DataFrame(
-                    input_data["Performance_data"][1:],
-                    columns=input_data["Performance_data"][0],
-                ),
+            performance_df = pd.DataFrame(
+                input_data["Performance_data"][1:],
+                columns=input_data["Performance_data"][0],
             )
+            context.create(input_data, performance_df.at[0, "staff_number"])
             try:
-                full_message = pipeline(performance_df)
+                full_message = pipeline(
+                    performance_df,
+                    performance_df.at[0, "staff_number"],
+                    performance_month,
+                )
                 full_message["message_instance_id"] = input_data["message_instance_id"]
                 full_message["performance_data"] = input_data["Performance_data"]
             except HTTPException as e:
@@ -134,7 +133,6 @@ def batch_csv(
     ] = False,
 ):
     startup()
-    context.init()
 
     performance_data = pd.read_csv(performance_data_path, parse_dates=["month"])
     success_count = 0
@@ -143,13 +141,8 @@ def batch_csv(
         performance_data["staff_number"].drop_duplicates().head(max_files)
     ):
         try:
-            performance_df = prepare(
-                performance_month,
-                performance_data[
-                    performance_data["staff_number"] == provider_id
-                ].reset_index(drop=True),
-            )
-            result = pipeline(performance_df)
+            context.create({}, provider_id)
+            result = pipeline(performance_data, provider_id, performance_month)
             if not stats_only:
                 directory = performance_data_path.parent / "messages"
                 os.makedirs(directory, exist_ok=True)

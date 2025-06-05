@@ -1,5 +1,5 @@
 import pandas as pd
-from rdflib import RDF, BNode, Graph, Literal
+from rdflib import RDF, BNode, Graph
 
 from scaffold.bitstomach.signals import SIGNALS
 from scaffold.utils.namespace import PSDO, SLOWMO
@@ -14,7 +14,6 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
     g = Graph()
     r = g.resource(BNode("performance_content"))
     r.set(RDF.type, PSDO.performance_content)
-    r.set(SLOWMO.PerformanceMonth, Literal(perf_df.attrs["performance_month"]))
     if perf_df.empty:
         return g
 
@@ -32,19 +31,18 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
     return g
 
 
-def prepare(performance_month, performance_df):
-    # we would have multiple staff performance data at this point so this like won't work right
+def prepare(performance_df, staff_number, performance_month):
+    performance_df = performance_df[
+        performance_df["staff_number"] == staff_number
+    ].reset_index(drop=True)
+
+    if not performance_month:
+        performance_month = performance_df["month"].max()
     performance_df.attrs["staff_number"] = int(performance_df.at[0, "staff_number"])
 
     performance_df["goal_comparator_content"] = performance_df["MPOG_goal"]
 
-    performance_df.attrs["performance_month"] = (
-        performance_month if performance_month else performance_df["month"].max()
-    )
-
-    performance_df = performance_df[
-        performance_df["month"] <= performance_df.attrs["performance_month"]
-    ]
+    performance_df = performance_df[performance_df["month"] <= performance_month]
 
     performance_df["valid"] = performance_df["denominator"] >= 10
 
@@ -55,10 +53,7 @@ def prepare(performance_month, performance_df):
     performance_df.attrs["measures"] = performance_df["measure"].unique()
 
     performance_df.attrs["valid_measures"] = performance_df[
-        (
-            (performance_df["month"] == performance_df.attrs["performance_month"])
-            & performance_df["valid"]
-        )
+        ((performance_df["month"] == performance_month) & performance_df["valid"])
     ]["measure"]
 
-    return performance_df
+    return performance_df, performance_month

@@ -3,7 +3,6 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import RedirectResponse
 
 from scaffold import context
-from scaffold.bitstomach.bitstomach import prepare
 from scaffold.pipeline import pipeline
 from scaffold.startup import startup
 from scaffold.utils.settings import settings
@@ -34,17 +33,16 @@ async def template():
 @app.post("/createprecisionfeedback/")
 async def createprecisionfeedback(info: Request):
     req_info = await info.json()
-    context.update(req_info)
 
     performance_month = get_performance_month(req_info)
-    performance_df = prepare(
-        performance_month,
-        pd.DataFrame(
-            req_info["Performance_data"][1:], columns=req_info["Performance_data"][0]
-        ),
+    performance_df = pd.DataFrame(
+        req_info["Performance_data"][1:], columns=req_info["Performance_data"][0]
     )
+    context.create(req_info, performance_df.at[0, "staff_number"])
     try:
-        full_message = pipeline(performance_df)
+        full_message = pipeline(
+            performance_df, performance_df.at[0, "staff_number"], performance_month
+        )
         full_message["message_instance_id"] = req_info["message_instance_id"]
         full_message["performance_data"] = req_info["Performance_data"]
     except HTTPException as e:
