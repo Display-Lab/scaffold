@@ -3,6 +3,7 @@ import json
 from io import StringIO
 
 import matplotlib
+import pandas as pd
 import requests
 from loguru import logger
 from rdflib import Graph
@@ -18,6 +19,12 @@ matplotlib.use("Agg")
 mpm: dict = {}
 default_preferences: dict = {}
 base_graph: Graph = Graph()
+preferences: pd.DataFrame = pd.DataFrame(
+    columns=["staff_number", "preferences"], index=["staff_number"]
+)
+history: pd.DataFrame = pd.DataFrame(
+    columns=["staff_number", "month", "history"], index=["staff_number"]
+)
 
 # Set up request session as se, config to handle file URIs with FileAdapter
 se = requests.Session()
@@ -33,14 +40,30 @@ def startup():
             logger.debug(f"{attribute}:\t{value}")
 
     try:
-        global base_graph, mpm, default_preferences
+        global base_graph, mpm, default_preferences, preferences, history
 
         mpm = load_mpm()
 
         default_preferences_text = se.get(settings.default_preferences).text
-        default_preferences = json.loads(default_preferences_text)
+        default_preferences_original_dict = json.loads(default_preferences_text)
+        default_preferences = {
+            k.lower(): v for k, v in default_preferences_original_dict.items()
+        }
 
         base_graph = manifest_to_graph(settings.manifest)
+
+        if settings.preferences is not None:
+            preferences = pd.read_csv(
+                settings.preferences, converters={"preferences": json.loads}
+            )
+            preferences.set_index("staff_number", inplace=True, drop=False)
+        if settings.history is not None:
+            history = pd.read_csv(
+                settings.history,
+                converters={"history": json.loads},
+                dtype={"month": str},
+            )
+            history.set_index("staff_number", inplace=True, drop=False)
 
     except Exception as e:
         print("Startup aborted, see traceback:")

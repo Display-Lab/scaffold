@@ -329,7 +329,7 @@ def score_preferences(candidate_resource: Resource, preferences: dict) -> float:
     if not settings.use_preferences:
         return 0.0
 
-    return preferences.get(candidate_resource.value(SLOWMO.AcceptableBy).value, 0.0)
+    return preferences.get(str(candidate_resource.value(SLOWMO.AcceptableBy).value).lower(), 0.0)
 
 
 def select_candidate(performer_graph: Graph) -> BNode:

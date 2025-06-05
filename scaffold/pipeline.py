@@ -4,7 +4,7 @@ import pandas as pd
 import psutil
 from fastapi import HTTPException
 from loguru import logger
-from rdflib import BNode, Graph, Literal, URIRef
+from rdflib import RDF, BNode, Graph, Literal, URIRef
 
 from scaffold import startup
 from scaffold.bitstomach import bitstomach
@@ -22,6 +22,12 @@ def pipeline(performance_df: pd.DataFrame, staff_number, performance_month):
     performance_df, performance_month = bitstomach.prepare(
         performance_df, staff_number, performance_month
     )
+
+    measures = set(startup.base_graph[: RDF.type : PSDO.performance_measure_content])
+
+    performance_df.attrs["valid_measures"] = [
+        m for m in performance_df.attrs["valid_measures"] if BNode(m) in measures
+    ]
 
     cool_new_super_graph = Graph()
     cool_new_super_graph += startup.base_graph

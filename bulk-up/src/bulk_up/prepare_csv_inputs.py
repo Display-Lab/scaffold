@@ -25,43 +25,17 @@ with open("performance_data.csv", "w", newline="") as file:
             writer.writerows(input_data["Performance_data"][1:])
 
 
-fieldnames = [
-    "staff_number",
-    "Social gain",
-    "Social stayed better",
-    "Worsening",
-    "Improving",
-    "Social loss",
-    "Social stayed worse",
-    "Social better",
-    "Social worse",
-    "Social approach",
-    "Goal gain",
-    "Goal approach",
-    "Display_Format",
-]
 with open("preferences.csv", "w", newline="") as file:
-    writer = csv.DictWriter(file, fieldnames=fieldnames)
+    writer = csv.DictWriter(file, fieldnames=["staff_number", "preferences"])
     writer.writeheader()
     for index, input_file in enumerate(input_files):
         input_data = orjson.loads(input_file.read_bytes())
-        if input_data["Preferences"].get("Utilities", {}).get("Message_Format", {}):
-            preferences = {"staff_number": input_data["Performance_data"][1][0]}
-            preferences.update(
-                input_data["Preferences"].get("Utilities", {}).get("Message_Format", {})
-            )
-            preferences["Display_Format"] = next(
-                (
-                    k
-                    for k, v in input_data["Preferences"]
-                    .get("Utilities", {})
-                    .get("Display_Format", {})
-                    .items()
-                    if v == 1
-                ),
-                None,
-            )
-            writer.writerows([preferences])
+        preferences = {
+            "staff_number": input_data["Performance_data"][1][0],
+            "preferences": orjson.dumps(input_data["Preferences"]).decode(),
+        }
+
+        writer.writerows([preferences])
 
 all_keys = set(["staff_number", "month", "history"])
 for input_file in input_files:

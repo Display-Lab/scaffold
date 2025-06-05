@@ -57,10 +57,4 @@ def prepare(performance_df, staff_number, performance_month):
         ((performance_df["month"] == performance_month) & performance_df["valid"])
     ]["measure"]
 
-    measures = set(startup.base_graph[: RDF.type : PSDO.performance_measure_content])
-
-    performance_df.attrs["valid_measures"] = [
-        m for m in performance_df.attrs["valid_measures"] if BNode(m) in measures
-    ]
-
     return performance_df, performance_month

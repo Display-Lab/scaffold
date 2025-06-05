@@ -134,7 +134,6 @@ def batch_csv(
     ] = False,
 ):
     startup()
-    context.init()
 
     performance_data = pd.read_csv(performance_data_path, parse_dates=["month"])
     success_count = 0
@@ -143,6 +142,7 @@ def batch_csv(
         performance_data["staff_number"].drop_duplicates().head(max_files)
     ):
         try:
+            context.update({})
             result = pipeline(performance_data, provider_id, performance_month)
             if not stats_only:
                 directory = performance_data_path.parent / "messages"
