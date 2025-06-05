@@ -33,7 +33,7 @@ async def template():
 @app.post("/createprecisionfeedback/")
 async def createprecisionfeedback(info: Request):
     req_info = await info.json()
-    
+
     performance_month = get_performance_month(req_info)
     performance_df = pd.DataFrame(
         req_info["Performance_data"][1:], columns=req_info["Performance_data"][0]

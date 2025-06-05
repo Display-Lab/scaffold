@@ -140,7 +140,7 @@ def candidate_resource(performance_data_frame):
 
 
 def test_score(candidate_resource):
-    context.preferences_dict=context.set_preferences({})
+    context.preferences_dict = context.set_preferences({})
     esteemer.score(candidate_resource, MPM, "2023-08-01")
     assert candidate_resource.value(SLOWMO.Score).value == pytest.approx(2.05)
 

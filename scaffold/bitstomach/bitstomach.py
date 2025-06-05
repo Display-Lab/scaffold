@@ -1,7 +1,6 @@
 import pandas as pd
 from rdflib import RDF, BNode, Graph
 
-from scaffold import startup
 from scaffold.bitstomach.signals import SIGNALS
 from scaffold.utils.namespace import PSDO, SLOWMO
 
