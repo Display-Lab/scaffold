@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 from rdflib import RDF, BNode, Graph, Literal, URIRef
 
+from scaffold import context
 from scaffold.bitstomach.bitstomach import prepare
 from scaffold.bitstomach.signals import Achievement, Comparison, Loss, Trend
 from scaffold.esteemer import esteemer
@@ -139,6 +140,7 @@ def candidate_resource(performance_data_frame):
 
 
 def test_score(candidate_resource):
+    context.preferences_dict=context.set_preferences({})
     esteemer.score(candidate_resource, MPM, "2023-08-01")
     assert candidate_resource.value(SLOWMO.Score).value == pytest.approx(2.05)
 

@@ -1,52 +1,43 @@
-import pandas as pd
-
 from scaffold import startup
 
 preferences_dict = {}
 history_dict = {}
 
 
-def update(req_info):
+def create(req_info, staff_number):
     global preferences_dict, history_dict
 
-    if not req_info:
-        history_dict = {}
-        preferences_dict = {}
-        return
+    history_dict = {}
+    preferences_dict = {}
 
     try:
-        preferences_dict = set_preferences(req_info.get("Preferences", {}))
-        history_dict = req_info.get("History", {})
-    except Exception as e:
-        print("context update aborted, see traceback:")
-        raise e
-
-
-def get_preferences(staff_number):
-    global preferences_dict
-
-    if preferences_dict:
-        return preferences_dict
-    try:
-        p = startup.preferences.loc[staff_number, "preferences"]
-        if isinstance(p, pd.Series):
-            p = p.iloc[0]
-        return set_preferences(p)
+        if req_info.get("Preferences", {}):
+            preferences_dict = set_preferences(req_info.get("Preferences", {}))
+        else:
+            p = startup.preferences.loc[staff_number, "preferences"]
+            preferences_dict = set_preferences(p)
     except Exception:
         return set_preferences({})
 
-
-def get_history(staff_number):
-    global history_dict
-
-    if history_dict:
-        return history_dict
     try:
-        staff_data = startup.history[startup.history["staff_number"] == staff_number]
-        history_dict = staff_data.set_index("month")["history"].to_dict()
+        if req_info.get("History", {}):
+            history_dict = req_info.get("History", {})
+        else:
+            staff_data = startup.history[
+                startup.history["staff_number"] == staff_number
+            ]
+            history_dict = staff_data.set_index("month")["history"].to_dict()
     except Exception:
         pass
 
+
+def get_preferences():
+    global preferences_dict
+    return preferences_dict
+
+
+def get_history():
+    global history_dict
     return history_dict
 
 

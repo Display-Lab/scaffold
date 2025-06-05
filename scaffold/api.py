@@ -33,12 +33,12 @@ async def template():
 @app.post("/createprecisionfeedback/")
 async def createprecisionfeedback(info: Request):
     req_info = await info.json()
-    context.update(req_info)
-
+    
     performance_month = get_performance_month(req_info)
     performance_df = pd.DataFrame(
         req_info["Performance_data"][1:], columns=req_info["Performance_data"][0]
     )
+    context.create(req_info, performance_df.at[0, "staff_number"])
     try:
         full_message = pipeline(
             performance_df, performance_df.at[0, "staff_number"], performance_month

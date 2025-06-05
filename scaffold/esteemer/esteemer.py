@@ -33,12 +33,10 @@ def score(candidate: Resource, MPM: dict, performance_month) -> Resource:
     float: score.
     """
 
-    staff_number = candidate.graph.value(
-        BNode("p1"), URIRef("http://example.com/slowmo#IsAboutPerformer")
-    ).value
 
-    history = get_history(staff_number)
-    preferences = get_preferences(staff_number)["Message_Format"]
+
+    history = get_history()
+    preferences = get_preferences()["Message_Format"]
 
     CAUSAL_PATHWAY = {
         "Social Better": {"score": score_better, "rules": rule_social_highest},

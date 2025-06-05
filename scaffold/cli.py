@@ -60,13 +60,12 @@ def batch(
         try:
             input_data = orjson.loads(input_file.read_bytes())
 
-            context.update(input_data)
-
             performance_month = get_performance_month(input_data)
             performance_df = pd.DataFrame(
                 input_data["Performance_data"][1:],
                 columns=input_data["Performance_data"][0],
             )
+            context.create(input_data, performance_df.at[0, "staff_number"])
             try:
                 full_message = pipeline(
                     performance_df,
@@ -142,7 +141,7 @@ def batch_csv(
         performance_data["staff_number"].drop_duplicates().head(max_files)
     ):
         try:
-            context.update({})
+            context.create({}, provider_id)
             result = pipeline(performance_data, provider_id, performance_month)
             if not stats_only:
                 directory = performance_data_path.parent / "messages"

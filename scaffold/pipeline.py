@@ -78,7 +78,7 @@ def pipeline(performance_df: pd.DataFrame, staff_number, performance_month):
         for candidate in candidates:
             esteemer.score(candidate, startup.mpm, performance_month)
     selected_candidate = esteemer.select_candidate(cool_new_super_graph)
-    preferences = esteemer.get_preferences(performance_df.attrs["staff_number"])
+    preferences = esteemer.get_preferences()
 
     if preferences["Display_Format"]:
         cool_new_super_graph.resource(selected_candidate)[SLOWMO.Display] = Literal(
