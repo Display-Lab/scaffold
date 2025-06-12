@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from loguru import logger
 from rdflib import RDF, BNode, Graph, Literal, URIRef
 
-from scaffold import startup
+from scaffold import context, startup
 from scaffold.bitstomach import bitstomach
 from scaffold.candidate_pudding import candidate_pudding
 from scaffold.esteemer import esteemer, utils
@@ -18,9 +18,9 @@ from scaffold.utils.utils import set_logger
 set_logger()
 
 
-def pipeline(performance_df: pd.DataFrame, staff_number, performance_month):
+def pipeline(performance_df: pd.DataFrame, performance_month):
     performance_df, performance_month = bitstomach.prepare(
-        performance_df, staff_number, performance_month
+        performance_df, performance_month
     )
 
     measures = set(startup.base_graph[: RDF.type : PSDO.performance_measure_content])
@@ -31,13 +31,7 @@ def pipeline(performance_df: pd.DataFrame, staff_number, performance_month):
 
     cool_new_super_graph = Graph()
     cool_new_super_graph += startup.base_graph
-    cool_new_super_graph.add(
-        (
-            BNode("p1"),
-            URIRef("http://example.com/slowmo#IsAboutPerformer"),
-            Literal(int(performance_df.attrs["staff_number"])),
-        )
-    )
+
     # BitStomach
     logger.debug("Calling BitStomach from main...")
 
@@ -48,7 +42,7 @@ def pipeline(performance_df: pd.DataFrame, staff_number, performance_month):
         cool_new_super_graph.close()
         detail = {
             "message": "Insufficient significant data found for providing feedback, process aborted.",
-            "staff_number": performance_df.attrs["staff_number"],
+            "staff_number": context.staff_number,
         }
         raise HTTPException(
             status_code=400,

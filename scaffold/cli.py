@@ -65,11 +65,10 @@ def batch(
                 input_data["Performance_data"][1:],
                 columns=input_data["Performance_data"][0],
             )
-            context.create(input_data, performance_df.at[0, "staff_number"])
+            context.create(input_data, performance_df.at[0, "staff_number"], performance_month)
             try:
                 full_message = pipeline(
-                    performance_df,
-                    performance_df.at[0, "staff_number"],
+                    performance_df,                    
                     performance_month,
                 )
                 full_message["message_instance_id"] = input_data["message_instance_id"]
@@ -137,18 +136,18 @@ def batch_csv(
     performance_data = pd.read_csv(performance_data_path, parse_dates=["month"])
     success_count = 0
     failure_count = 0
-    for provider_id in (
+    for staff_number in (
         performance_data["staff_number"].drop_duplicates().head(max_files)
     ):
         try:
-            context.create({}, provider_id)
-            result = pipeline(performance_data, provider_id, performance_month)
+            context.create({}, staff_number, performance_month)
+            result = pipeline(performance_data, performance_month)
             if not stats_only:
                 directory = performance_data_path.parent / "messages"
                 os.makedirs(directory, exist_ok=True)
 
                 new_filename = (
-                    f"Provider_{provider_id} - message for {performance_month}.json"
+                    f"Provider_{staff_number} - message for {performance_month}.json"
                 )
                 output_path = directory / new_filename
 
@@ -157,12 +156,12 @@ def batch_csv(
                 )
                 logger.info(f"Message created at {output_path}")
             else:
-                logger.info(f"✔ Would process: Provider_{provider_id}")
+                logger.info(f"✔ Would process: Provider_{staff_number}")
 
             success_count += 1
 
         except Exception as e:
-            logger.error(f"✘ Failed to process Provider_{provider_id}: {e}")
+            logger.error(f"✘ Failed to process Provider_{staff_number}: {e}")
             failure_count += 1
             result = e.detail
 

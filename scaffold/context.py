@@ -2,14 +2,15 @@ from scaffold import startup
 
 preferences_dict = {}
 history_dict = {}
+staff_number = 0
+performance_month = ""
 
-
-def create(req_info, staff_number):
-    global preferences_dict, history_dict
-
+def create(req_info, staff_num, perf_month):
+    global preferences_dict, history_dict, staff_number
+    staff_number=staff_num
     history_dict = {}
     preferences_dict = {}
-
+    performance_month=perf_month
     try:
         if req_info.get("Preferences", {}):
             preferences_dict = set_preferences(req_info.get("Preferences", {}))

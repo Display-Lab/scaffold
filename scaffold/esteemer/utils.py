@@ -3,6 +3,7 @@ from typing import List
 from rdflib import DCTERMS, RDF, BNode, Graph, URIRef
 from rdflib.resource import Resource
 
+from scaffold import context
 from scaffold.utils import SLOWMO
 
 
@@ -140,9 +141,7 @@ def candidate_as_record(a_candidate: Resource) -> List:
     representation = []
 
     representation.append(
-        a_candidate.graph.value(
-            BNode("p1"), URIRef("http://example.com/slowmo#IsAboutPerformer")
-        ).value
+        context.staff_number
     )
     representation.append(a_candidate.value(SLOWMO.RegardingMeasure).identifier)
     score = a_candidate.value(SLOWMO.Score)

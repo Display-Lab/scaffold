@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
+from scaffold import context
+
 ## Logging setup
 logger.remove()
 logger.add(sys.stdout, colorize=True, format="{level} | {message}")
@@ -53,9 +55,7 @@ class Pictoralist:
                 pathway
             )  # Add string value of rdflib literal to list
         self.base64_image = []  # Initialize as empty key to later fill image into
-        self.staff_ID = int(
-            performance_dataframe["staff_number"].iloc[0]
-        )  # Preserve one instance of staff number before data cleanup
+
 
         # Config settings from main basesettings class
         self.log_level = settings.log_level
@@ -495,7 +495,7 @@ class Pictoralist:
         full_message = {
             "pfkb_version": "0.0.0",  # Need to soft code this so it is accurate
             "pfp_version": "0.2.1",  # Ditto
-            "staff_number": self.staff_ID,
+            "staff_number": context.staff_number,
             "selected_candidate": candidate,
             "selected_comparator": self.comparator_type,
             "performance_month": self.performance_data["month"]

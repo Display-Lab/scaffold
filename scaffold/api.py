@@ -38,10 +38,10 @@ async def createprecisionfeedback(info: Request):
     performance_df = pd.DataFrame(
         req_info["Performance_data"][1:], columns=req_info["Performance_data"][0]
     )
-    context.create(req_info, performance_df.at[0, "staff_number"])
+    context.create(req_info, performance_df.at[0, "staff_number"], performance_month)
     try:
         full_message = pipeline(
-            performance_df, performance_df.at[0, "staff_number"], performance_month
+            performance_df, performance_month
         )
         full_message["message_instance_id"] = req_info["message_instance_id"]
         full_message["performance_data"] = req_info["Performance_data"]
