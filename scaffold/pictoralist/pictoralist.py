@@ -56,7 +56,6 @@ class Pictoralist:
             )  # Add string value of rdflib literal to list
         self.base64_image = []  # Initialize as empty key to later fill image into
 
-
         # Config settings from main basesettings class
         self.log_level = settings.log_level
         self.generate_image = settings.generate_image

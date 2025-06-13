@@ -60,17 +60,19 @@ def batch(
         try:
             input_data = orjson.loads(input_file.read_bytes())
 
-            performance_month = get_performance_month(input_data)
             performance_df = pd.DataFrame(
                 input_data["Performance_data"][1:],
                 columns=input_data["Performance_data"][0],
             )
-            context.create(input_data, performance_df.at[0, "staff_number"], performance_month)
             try:
-                full_message = pipeline(
-                    performance_df,                    
-                    performance_month,
+                performance_month = get_performance_month(
+                    input_data, performance_df["month"].max()
                 )
+                context.create(
+                    input_data, performance_df.at[0, "staff_number"], performance_month
+                )
+
+                full_message = pipeline(performance_df)
                 full_message["message_instance_id"] = input_data["message_instance_id"]
                 full_message["performance_data"] = input_data["Performance_data"]
             except HTTPException as e:
@@ -81,7 +83,6 @@ def batch(
                 directory = input_file.parent / "messages"
                 os.makedirs(directory, exist_ok=True)
 
-                performance_month = input_data.get("performance_month", "unknown_month")
                 new_filename = (
                     f"{input_file.stem} - message for {performance_month}.json"
                 )
@@ -102,7 +103,7 @@ def batch(
 
         add_response(full_message)
         if not stats_only:
-            add_candidates(full_message, input_data["performance_month"])
+            add_candidates(full_message)
 
     logger.info(f"Total files scanned: {len(input_files[:max_files])}")
     logger.info(f"Successful: {success_count}, Failed: {failure_count}")
@@ -141,7 +142,13 @@ def batch_csv(
     ):
         try:
             context.create({}, staff_number, performance_month)
-            result = pipeline(performance_data, performance_month)
+            try:
+                full_message = pipeline(performance_data)
+                # full_message["message_instance_id"] = input_data["message_instance_id"]
+                full_message["performance_data"] = performance_month
+            except Exception as e:
+                # e.detail["message_instance_id"] = input_data["message_instance_id"]
+                raise e
             if not stats_only:
                 directory = performance_data_path.parent / "messages"
                 os.makedirs(directory, exist_ok=True)
@@ -152,7 +159,7 @@ def batch_csv(
                 output_path = directory / new_filename
 
                 output_path.write_bytes(
-                    orjson.dumps(result, option=orjson.OPT_INDENT_2)
+                    orjson.dumps(full_message, option=orjson.OPT_INDENT_2)
                 )
                 logger.info(f"Message created at {output_path}")
             else:
@@ -163,11 +170,11 @@ def batch_csv(
         except Exception as e:
             logger.error(f"✘ Failed to process Provider_{staff_number}: {e}")
             failure_count += 1
-            result = e.detail
+            full_message = e.detail
 
-        add_response(result)
+        add_response(full_message)
         if not stats_only:
-            add_candidates(result, performance_month)
+            add_candidates(full_message)
 
     logger.info(f"Successful: {success_count}, Failed: {failure_count}")
     analyse_responses()

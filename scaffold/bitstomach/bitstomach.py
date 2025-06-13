@@ -32,17 +32,16 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
     return g
 
 
-def prepare(performance_df, performance_month):
+def prepare(performance_df):
     performance_df = performance_df[
         performance_df["staff_number"] == context.staff_number
     ].reset_index(drop=True)
 
-    if not performance_month:
-        performance_month = performance_df["month"].max()
-
     performance_df["goal_comparator_content"] = performance_df["MPOG_goal"]
 
-    performance_df = performance_df[performance_df["month"] <= performance_month]
+    performance_df = performance_df[
+        performance_df["month"] <= context.performance_month
+    ]
 
     performance_df["valid"] = performance_df["denominator"] >= 10
 
@@ -53,7 +52,10 @@ def prepare(performance_df, performance_month):
     performance_df.attrs["measures"] = performance_df["measure"].unique()
 
     performance_df.attrs["valid_measures"] = performance_df[
-        ((performance_df["month"] == performance_month) & performance_df["valid"])
+        (
+            (performance_df["month"] == context.performance_month)
+            & performance_df["valid"]
+        )
     ]["measure"]
 
-    return performance_df, performance_month
+    return performance_df

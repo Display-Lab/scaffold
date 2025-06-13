@@ -5,12 +5,13 @@ history_dict = {}
 staff_number = 0
 performance_month = ""
 
+
 def create(req_info, staff_num, perf_month):
-    global preferences_dict, history_dict, staff_number
-    staff_number=staff_num
+    global preferences_dict, history_dict, staff_number, performance_month
+    staff_number = int(staff_num)
     history_dict = {}
     preferences_dict = {}
-    performance_month=perf_month
+    performance_month = perf_month
     try:
         if req_info.get("Preferences", {}):
             preferences_dict = set_preferences(req_info.get("Preferences", {}))

@@ -140,9 +140,7 @@ def candidates_records(performer_graph: Graph) -> List[List]:
 def candidate_as_record(a_candidate: Resource) -> List:
     representation = []
 
-    representation.append(
-        context.staff_number
-    )
+    representation.append(context.staff_number)
     representation.append(a_candidate.value(SLOWMO.RegardingMeasure).identifier)
     score = a_candidate.value(SLOWMO.Score)
     representation.append(score)

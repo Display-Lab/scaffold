@@ -52,12 +52,12 @@ def startup():
 
         base_graph = manifest_to_graph(settings.manifest)
 
-        if settings.preferences != 'None':
+        if settings.preferences != "None":
             preferences = pd.read_csv(
                 settings.preferences, converters={"preferences": json.loads}
             )
             preferences.set_index("staff_number", inplace=True, drop=False)
-        if settings.history != 'None':
+        if settings.history != "None":
             history = pd.read_csv(
                 settings.history,
                 converters={"history": json.loads},

@@ -34,15 +34,19 @@ async def template():
 async def createprecisionfeedback(info: Request):
     req_info = await info.json()
 
-    performance_month = get_performance_month(req_info)
     performance_df = pd.DataFrame(
         req_info["Performance_data"][1:], columns=req_info["Performance_data"][0]
     )
-    context.create(req_info, performance_df.at[0, "staff_number"], performance_month)
     try:
-        full_message = pipeline(
-            performance_df, performance_month
+        performance_month = get_performance_month(
+            req_info, performance_df["month"].max()
         )
+
+        context.create(
+            req_info, performance_df.at[0, "staff_number"], performance_month
+        )
+
+        full_message = pipeline(performance_df)
         full_message["message_instance_id"] = req_info["message_instance_id"]
         full_message["performance_data"] = req_info["Performance_data"]
     except HTTPException as e:

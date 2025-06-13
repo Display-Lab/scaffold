@@ -1,6 +1,7 @@
 import pandas as pd
 from rdflib import RDF, BNode, Graph
 
+from scaffold import context
 from scaffold.bitstomach import bitstomach
 from scaffold.utils.namespace import PSDO
 
@@ -36,8 +37,9 @@ def test_returns_performance_content_with_multiple_elements():
         [157, "PONV05", "2022-11-01", 40, 0, 40, 82.4, 100.0, 100.0, 90.0],
     ]
     performance_df = pd.DataFrame(perf_data[1:], columns=COLUMNS)
-
-    perf_df, perf_month = bitstomach.prepare(performance_df, 157, "2022-11-01")
+    context.performance_month = "2022-11-01"
+    context.staff_number = 157
+    perf_df = bitstomach.prepare(performance_df)
 
     g = bitstomach.extract_signals(perf_df)
     r = g.resource(BNode("performance_content"))
@@ -57,7 +59,9 @@ def test_fix_up_marks_low_count_as_invalid():
         [157, "BP02", "2022-10-01", 29, 0, 2, 81.7, 100.0, 100.0, 90.0],
     ]
     performance_df = pd.DataFrame(perf_data[1:], columns=COLUMNS)
-    perf_df, perf_month = bitstomach.prepare(performance_df, 157, "2022-11-01")
+    context.performance_month = "2022-11-01"
+    context.staff_number = 157
+    perf_df = bitstomach.prepare(performance_df)
 
     assert "SUS04" in perf_df.attrs["valid_measures"].values
     assert "PONV05" not in perf_df.attrs["valid_measures"].values

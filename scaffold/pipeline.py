@@ -4,7 +4,7 @@ import pandas as pd
 import psutil
 from fastapi import HTTPException
 from loguru import logger
-from rdflib import RDF, BNode, Graph, Literal, URIRef
+from rdflib import RDF, BNode, Graph, Literal
 
 from scaffold import context, startup
 from scaffold.bitstomach import bitstomach
@@ -18,10 +18,8 @@ from scaffold.utils.utils import set_logger
 set_logger()
 
 
-def pipeline(performance_df: pd.DataFrame, performance_month):
-    performance_df, performance_month = bitstomach.prepare(
-        performance_df, performance_month
-    )
+def pipeline(performance_df: pd.DataFrame):
+    performance_df = bitstomach.prepare(performance_df)
 
     measures = set(startup.base_graph[: RDF.type : PSDO.performance_measure_content])
 
@@ -70,7 +68,7 @@ def pipeline(performance_df: pd.DataFrame, performance_month):
             cool_new_super_graph, filter_acceptable=True, measure=measure
         )
         for candidate in candidates:
-            esteemer.score(candidate, startup.mpm, performance_month)
+            esteemer.score(candidate, startup.mpm)
     selected_candidate = esteemer.select_candidate(cool_new_super_graph)
     preferences = esteemer.get_preferences()
 

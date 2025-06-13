@@ -4,6 +4,7 @@ import sys
 import pandas as pd
 from loguru import logger
 
+from scaffold import context
 from scaffold.utils.settings import settings
 
 candidate_df: pd.DataFrame = pd.DataFrame()
@@ -97,12 +98,12 @@ def build_table(grouping_column):
     return report_table
 
 
-def add_candidates(response_data: dict, performance_month: str):
+def add_candidates(response_data: dict):
     global candidate_df
     data = response_data.get("candidates", None)
     if data:
         candidates = pd.DataFrame(data[1:], columns=data[0])
-        candidates["performance_month"] = performance_month
+        candidates["performance_month"] = context.performance_month
         candidate_df = pd.concat([candidate_df, candidates], ignore_index=True)
 
 
@@ -144,8 +145,11 @@ def set_logger():
     )
 
 
-def get_performance_month(req_info):
+def get_performance_month(req_info, max_month):
     performance_month = req_info["performance_month"]
     if settings.performance_month:
         performance_month = settings.settings.performance_month
+
+    if not performance_month:
+        performance_month = max_month
     return performance_month
