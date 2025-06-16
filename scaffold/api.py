@@ -43,10 +43,10 @@ async def createprecisionfeedback(info: Request):
         )
 
         context.create(
-            req_info, performance_df.at[0, "staff_number"], performance_month
+            req_info, performance_df.at[0, "staff_number"], performance_month, performance_df
         )
 
-        full_message = pipeline(performance_df)
+        full_message = pipeline()
         full_message["message_instance_id"] = req_info["message_instance_id"]
         full_message["performance_data"] = req_info["Performance_data"]
     except HTTPException as e:

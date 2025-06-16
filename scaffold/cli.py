@@ -69,10 +69,10 @@ def batch(
                     input_data, performance_df["month"].max()
                 )
                 context.create(
-                    input_data, performance_df.at[0, "staff_number"], performance_month
+                    input_data, performance_df.at[0, "staff_number"], performance_month, performance_df
                 )
 
-                full_message = pipeline(performance_df)
+                full_message = pipeline()
                 full_message["message_instance_id"] = input_data["message_instance_id"]
                 full_message["performance_data"] = input_data["Performance_data"]
             except HTTPException as e:
@@ -141,9 +141,9 @@ def batch_csv(
         performance_data["staff_number"].drop_duplicates().head(max_files)
     ):
         try:
-            context.create({}, staff_number, performance_month)
+            context.create({}, staff_number, performance_month, performance_data)
             try:
-                full_message = pipeline(performance_data)
+                full_message = pipeline()
                 # full_message["message_instance_id"] = input_data["message_instance_id"]
                 full_message["performance_data"] = performance_month
             except Exception as e:

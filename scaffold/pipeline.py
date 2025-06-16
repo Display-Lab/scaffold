@@ -18,13 +18,13 @@ from scaffold.utils.utils import set_logger
 set_logger()
 
 
-def pipeline(performance_df: pd.DataFrame):
-    performance_df = bitstomach.prepare(performance_df)
+def pipeline():
+    
 
     measures = set(startup.base_graph[: RDF.type : PSDO.performance_measure_content])
 
-    performance_df.attrs["valid_measures"] = [
-        m for m in performance_df.attrs["valid_measures"] if BNode(m) in measures
+    context.performance_df.attrs["valid_measures"] = [
+        m for m in context.performance_df.attrs["valid_measures"] if BNode(m) in measures
     ]
 
     cool_new_super_graph = Graph()
@@ -33,7 +33,7 @@ def pipeline(performance_df: pd.DataFrame):
     # BitStomach
     logger.debug("Calling BitStomach from main...")
 
-    g: Graph = bitstomach.extract_signals(performance_df)
+    g: Graph = bitstomach.extract_signals()
 
     performance_content = g.resource(BNode("performance_content"))
     if len(list(performance_content[PSDO.motivating_information])) == 0:
@@ -84,7 +84,6 @@ def pipeline(performance_df: pd.DataFrame):
     if selected_message["message_text"] != "No message selected":
         ## Initialize and run message and display generation:
         pc = Pictoralist(
-            performance_df,
             selected_message,
             settings,
         )

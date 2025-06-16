@@ -6,7 +6,7 @@ from scaffold.bitstomach.signals import SIGNALS
 from scaffold.utils.namespace import PSDO, SLOWMO
 
 
-def extract_signals(perf_df: pd.DataFrame) -> Graph:
+def extract_signals() -> Graph:
     """
     Prepares performance data, loops through measures and calls each signal detect method,
     adds the measure to the signal and adds each signal to the graph as motivating information
@@ -15,11 +15,11 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
     g = Graph()
     r = g.resource(BNode("performance_content"))
     r.set(RDF.type, PSDO.performance_content)
-    if perf_df.empty:
+    if context.performance_df.empty:
         return g
 
-    for measure in perf_df.attrs["valid_measures"]:
-        measure_df = perf_df[perf_df["measure"] == measure].tail(12)
+    for measure in context.performance_df.attrs["valid_measures"]:
+        measure_df = context.performance_df[context.performance_df["measure"] == measure].tail(12)
         for signal_type in SIGNALS:
             signals = signal_type.detect(measure_df)
             if not signals:

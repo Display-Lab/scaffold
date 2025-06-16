@@ -1,13 +1,16 @@
+import pandas as pd
 from scaffold import startup
+from scaffold.bitstomach import bitstomach
 
 preferences_dict = {}
 history_dict = {}
 staff_number = 0
 performance_month = ""
+performance_df:pd.DataFrame 
 
 
-def create(req_info, staff_num, perf_month):
-    global preferences_dict, history_dict, staff_number, performance_month
+def create(req_info, staff_num, perf_month, perf_df: pd.DataFrame):
+    global preferences_dict, history_dict, staff_number, performance_month, performance_df
     staff_number = int(staff_num)
     history_dict = {}
     preferences_dict = {}
@@ -31,6 +34,11 @@ def create(req_info, staff_num, perf_month):
             history_dict = staff_data.set_index("month")["history"].to_dict()
     except Exception:
         pass
+    
+    try:
+        performance_df = bitstomach.prepare(perf_df.copy())
+    except Exception:
+        pass    
 
 
 def get_preferences():
