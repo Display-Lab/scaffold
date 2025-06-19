@@ -4,21 +4,18 @@ import subprocess
 from typing import Annotated
 
 import orjson
-import pandas as pd
 import typer
 from fastapi import HTTPException
 from loguru import logger
 
-from scaffold import context
+from scaffold import context, startup
 from scaffold.pipeline import pipeline
-from scaffold.startup import startup
 from scaffold.utils.utils import (
     add_candidates,
     add_response,
     analyse_candidates,
     analyse_responses,
     extract_number,
-    get_performance_month,
 )
 
 cli = typer.Typer(no_args_is_help=True)
@@ -41,7 +38,7 @@ def batch(
         ),
     ] = False,
 ) -> None:
-    startup()
+    startup.startup()
 
     if file_path.is_file() and file_path.suffix == ".json":
         input_files = [file_path]
@@ -60,17 +57,8 @@ def batch(
         try:
             input_data = orjson.loads(input_file.read_bytes())
 
-            performance_df = pd.DataFrame(
-                input_data["Performance_data"][1:],
-                columns=input_data["Performance_data"][0],
-            )
             try:
-                performance_month = get_performance_month(
-                    input_data, performance_df["month"].max()
-                )
-                context.create(
-                    input_data, performance_df.at[0, "staff_number"], performance_month, performance_df
-                )
+                context.from_req(input_data)
 
                 full_message = pipeline()
                 full_message["message_instance_id"] = input_data["message_instance_id"]
@@ -84,7 +72,7 @@ def batch(
                 os.makedirs(directory, exist_ok=True)
 
                 new_filename = (
-                    f"{input_file.stem} - message for {performance_month}.json"
+                    f"{input_file.stem} - message for {context.performance_month}.json"
                 )
                 output_path = directory / new_filename
 
@@ -132,16 +120,15 @@ def batch_csv(
         ),
     ] = False,
 ):
-    startup()
+    startup.startup(performance_data_path)
 
-    performance_data = pd.read_csv(performance_data_path, parse_dates=["month"])
     success_count = 0
     failure_count = 0
     for staff_number in (
-        performance_data["staff_number"].drop_duplicates().head(max_files)
+        startup.performance_data["staff_number"].drop_duplicates().head(max_files)
     ):
         try:
-            context.create({}, staff_number, performance_month, performance_data)
+            context.from_global(staff_number, performance_month)
             try:
                 full_message = pipeline()
                 # full_message["message_instance_id"] = input_data["message_instance_id"]

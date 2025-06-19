@@ -109,7 +109,8 @@ def performance_data_frame():
     performance_df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
     context.performance_month = "2023-08-01"
     context.staff_number = 157
-    perf_df = prepare(performance_df)
+    context.performance_df = performance_df
+    perf_df = prepare()
     return perf_df
 
 

@@ -39,7 +39,8 @@ def test_returns_performance_content_with_multiple_elements():
     performance_df = pd.DataFrame(perf_data[1:], columns=COLUMNS)
     context.performance_month = "2022-11-01"
     context.staff_number = 157
-    perf_df = bitstomach.prepare(performance_df)
+    context.performance_df = performance_df
+    perf_df = bitstomach.prepare()
 
     g = bitstomach.extract_signals(perf_df)
     r = g.resource(BNode("performance_content"))
@@ -61,7 +62,8 @@ def test_fix_up_marks_low_count_as_invalid():
     performance_df = pd.DataFrame(perf_data[1:], columns=COLUMNS)
     context.performance_month = "2022-11-01"
     context.staff_number = 157
-    perf_df = bitstomach.prepare(performance_df)
+    context.performance_df = performance_df
+    perf_df = bitstomach.prepare()
 
     assert "SUS04" in perf_df.attrs["valid_measures"].values
     assert "PONV05" not in perf_df.attrs["valid_measures"].values

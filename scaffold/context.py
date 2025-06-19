@@ -1,44 +1,87 @@
 import pandas as pd
+from rdflib import Graph
+
 from scaffold import startup
-from scaffold.bitstomach import bitstomach
+from scaffold.utils.utils import get_performance_month
 
 preferences_dict = {}
 history_dict = {}
 staff_number = 0
 performance_month = ""
-performance_df:pd.DataFrame 
+performance_df: pd.DataFrame
+subject_graph = Graph()
 
 
-def create(req_info, staff_num, perf_month, perf_df: pd.DataFrame):
-    global preferences_dict, history_dict, staff_number, performance_month, performance_df
+def from_req(req_info):
+    global \
+        preferences_dict, \
+        history_dict, \
+        staff_number, \
+        performance_month, \
+        performance_df, \
+        subject_graph
+
+    try:
+        performance_df = pd.DataFrame(
+            req_info["Performance_data"][1:], columns=req_info["Performance_data"][0]
+        )
+    except Exception:
+        pass
+
+    performance_month = get_performance_month(req_info, performance_df["month"].max())
+
+    staff_number = int(performance_df.at[0, "staff_number"])
+
+    preferences_dict = {}
+    try:
+        preferences_dict = set_preferences(req_info.get("Preferences", {}))
+    except Exception:
+        return set_preferences({})
+
+    history_dict = {}
+    try:
+        history_dict = req_info.get("History", {})
+    except Exception:
+        pass
+
+    subject_graph = Graph()
+    subject_graph += startup.base_graph
+
+
+def from_global(staff_num, perf_month):
+    global \
+        preferences_dict, \
+        history_dict, \
+        staff_number, \
+        performance_month, \
+        performance_df, \
+        subject_graph
+
     staff_number = int(staff_num)
     history_dict = {}
     preferences_dict = {}
     performance_month = perf_month
     try:
-        if req_info.get("Preferences", {}):
-            preferences_dict = set_preferences(req_info.get("Preferences", {}))
-        else:
-            p = startup.preferences.loc[staff_number, "preferences"]
-            preferences_dict = set_preferences(p)
+        p = startup.preferences.loc[staff_number, "preferences"]
+        preferences_dict = set_preferences(p)
     except Exception:
         return set_preferences({})
 
     try:
-        if req_info.get("History", {}):
-            history_dict = req_info.get("History", {})
-        else:
-            staff_data = startup.history[
-                startup.history["staff_number"] == staff_number
-            ]
-            history_dict = staff_data.set_index("month")["history"].to_dict()
+        staff_data = startup.history[startup.history["staff_number"] == staff_number]
+        history_dict = staff_data.set_index("month")["history"].to_dict()
     except Exception:
         pass
-    
+
     try:
-        performance_df = bitstomach.prepare(perf_df.copy())
+        performance_df = startup.performance_data[
+            startup.performance_data["staff_number"] == staff_number
+        ].reset_index(drop=True)
     except Exception:
-        pass    
+        pass
+
+    subject_graph = Graph()
+    subject_graph += startup.base_graph
 
 
 def get_preferences():

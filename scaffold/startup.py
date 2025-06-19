@@ -1,5 +1,6 @@
 import csv
 import json
+import pathlib
 from io import StringIO
 
 import matplotlib
@@ -25,13 +26,14 @@ preferences: pd.DataFrame = pd.DataFrame(
 history: pd.DataFrame = pd.DataFrame(
     columns=["staff_number", "month", "history"], index=["staff_number"]
 )
+performance_data = pd.DataFrame()
 
 # Set up request session as se, config to handle file URIs with FileAdapter
 se = requests.Session()
 se.mount("file://", FileAdapter())
 
 
-def startup():
+def startup(performance_data_path: pathlib.Path = None):
     ## Log of instance configuration
     logger.debug("Startup configuration for this instance:")
     for attribute in dir(settings):
@@ -40,7 +42,13 @@ def startup():
             logger.debug(f"{attribute}:\t{value}")
 
     try:
-        global base_graph, mpm, default_preferences, preferences, history
+        global \
+            base_graph, \
+            mpm, \
+            default_preferences, \
+            preferences, \
+            history, \
+            performance_data
 
         mpm = load_mpm()
 
@@ -64,6 +72,9 @@ def startup():
                 dtype={"month": str},
             )
             history.set_index("staff_number", inplace=True, drop=False)
+
+        if performance_data_path:
+            performance_data = pd.read_csv(performance_data_path, parse_dates=["month"])
 
     except Exception as e:
         print("Startup aborted, see traceback:")

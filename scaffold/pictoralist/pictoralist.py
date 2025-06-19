@@ -19,12 +19,13 @@ logger.add(sys.stdout, colorize=True, format="{level} | {message}")
 class Pictoralist:
     def __init__(
         self,
+        performance_dataframe,
         selected_candidate,
         settings,
     ):
         ## Setup variables to process selected message
         # Needs cleanup to stop redundant var declaration (those passed directly to prepare_selected_message)
-        self.performance_data = context.performance_df  # Dataframe of recipient perf data (performance_data_df)
+        self.performance_data = performance_dataframe  # Dataframe of recipient perf data (performance_data_df)
 
         # Need refactor
         self.selected_measure = str(
