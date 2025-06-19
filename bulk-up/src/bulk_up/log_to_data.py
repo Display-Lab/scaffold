@@ -4,7 +4,6 @@ import sys
 
 import pandas as pd
 from rdflib import RDF, RDFS, Graph, URIRef
-from scaffold.utils.utils import get_performance_month
 
 module_path = ".."  # run this script from the bulk-up folder. This will add the directory above (which is precision-feedback-pipeline/) to system path to be able to import pipeline modules
 sys.path.append(module_path)
@@ -104,7 +103,8 @@ def generate_response(output_message, input_message):
 
 
 def add_signal_properties(row, output_message, input_message):
-    performance_month = get_performance_month(input_message)
+    performance_month = input_message["performance_month"]
+
     performance_df = pd.DataFrame(
         input_message["Performance_data"][1:],
         columns=input_message["Performance_data"][0],

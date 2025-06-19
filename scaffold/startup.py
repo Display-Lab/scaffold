@@ -27,13 +27,14 @@ history: pd.DataFrame = pd.DataFrame(
     columns=["staff_number", "month", "history"], index=["staff_number"]
 )
 performance_data = pd.DataFrame()
+performance_month = ""
 
 # Set up request session as se, config to handle file URIs with FileAdapter
 se = requests.Session()
 se.mount("file://", FileAdapter())
 
 
-def startup(performance_data_path: pathlib.Path = None):
+def startup(performance_data_path: pathlib.Path = None, performance_m: str = ""):
     ## Log of instance configuration
     logger.debug("Startup configuration for this instance:")
     for attribute in dir(settings):
@@ -48,7 +49,8 @@ def startup(performance_data_path: pathlib.Path = None):
             default_preferences, \
             preferences, \
             history, \
-            performance_data
+            performance_data, \
+            performance_month
 
         mpm = load_mpm()
 
@@ -75,6 +77,12 @@ def startup(performance_data_path: pathlib.Path = None):
 
         if performance_data_path:
             performance_data = pd.read_csv(performance_data_path, parse_dates=["month"])
+
+        if settings.performance_month:
+            performance_month = settings.settings.performance_month
+
+        if performance_m:
+            performance_month = performance_m
 
     except Exception as e:
         print("Startup aborted, see traceback:")

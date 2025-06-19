@@ -143,13 +143,3 @@ def set_logger():
     logger.at_least = (
         lambda lvl: logger.level(lvl).no >= logger.level(settings.log_level).no
     )
-
-
-def get_performance_month(req_info, max_month):
-    performance_month = req_info["performance_month"]
-    if settings.performance_month:
-        performance_month = settings.settings.performance_month
-
-    if not performance_month:
-        performance_month = max_month
-    return performance_month

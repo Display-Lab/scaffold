@@ -120,7 +120,9 @@ def batch_csv(
         ),
     ] = False,
 ):
-    startup.startup(performance_data_path)
+    startup.startup(
+        performance_data_path=performance_data_path, performance_m=performance_month
+    )
 
     success_count = 0
     failure_count = 0
@@ -128,11 +130,11 @@ def batch_csv(
         startup.performance_data["staff_number"].drop_duplicates().head(max_files)
     ):
         try:
-            context.from_global(staff_number, performance_month)
+            context.from_global(staff_number)
             try:
                 full_message = pipeline()
                 # full_message["message_instance_id"] = input_data["message_instance_id"]
-                full_message["performance_data"] = performance_month
+                full_message["performance_data"] = context.performance_month
             except Exception as e:
                 # e.detail["message_instance_id"] = input_data["message_instance_id"]
                 raise e
@@ -140,9 +142,7 @@ def batch_csv(
                 directory = performance_data_path.parent / "messages"
                 os.makedirs(directory, exist_ok=True)
 
-                new_filename = (
-                    f"Provider_{staff_number} - message for {performance_month}.json"
-                )
+                new_filename = f"Provider_{staff_number} - message for {context.performance_month}.json"
                 output_path = directory / new_filename
 
                 output_path.write_bytes(
