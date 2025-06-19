@@ -54,7 +54,7 @@ class Settings:
             "outputs", cast=bool, default=False
         )  # Logging of intermediate files
         self.performance_month = config(
-            "performance_month", default=None
+            "performance_month", cast=str, default=""
         )  # performance_month for instance
         self.use_mi = config("use_mi", cast=bool, default=True)  # use mi
         self.use_preferences = config(

@@ -2,7 +2,6 @@ import pandas as pd
 from rdflib import Graph
 
 from scaffold import startup
-from scaffold.utils.utils import get_performance_month
 
 preferences_dict = {}
 history_dict = {}
@@ -28,7 +27,11 @@ def from_req(req_info):
     except Exception:
         pass
 
-    performance_month = get_performance_month(req_info, performance_df["month"].max())
+    performance_month = startup.performance_month
+    if req_info["performance_month"]:
+        performance_month = req_info["performance_month"]
+    if not performance_month:
+        performance_month = performance_df["month"].max()
 
     staff_number = int(performance_df.at[0, "staff_number"])
 
@@ -48,7 +51,7 @@ def from_req(req_info):
     subject_graph += startup.base_graph
 
 
-def from_global(staff_num, perf_month):
+def from_global(staff_num):
     global \
         preferences_dict, \
         history_dict, \
@@ -58,25 +61,29 @@ def from_global(staff_num, perf_month):
         subject_graph
 
     staff_number = int(staff_num)
-    history_dict = {}
+
+    try:
+        performance_df = startup.performance_data[
+            startup.performance_data["staff_number"] == staff_number
+        ].reset_index(drop=True)
+    except Exception:
+        pass
+
+    performance_month = startup.performance_month
+    if not performance_month:
+        performance_month = performance_df["month"].max()
+
     preferences_dict = {}
-    performance_month = perf_month
     try:
         p = startup.preferences.loc[staff_number, "preferences"]
         preferences_dict = set_preferences(p)
     except Exception:
         return set_preferences({})
 
+    history_dict = {}
     try:
         staff_data = startup.history[startup.history["staff_number"] == staff_number]
         history_dict = staff_data.set_index("month")["history"].to_dict()
-    except Exception:
-        pass
-
-    try:
-        performance_df = startup.performance_data[
-            startup.performance_data["staff_number"] == staff_number
-        ].reset_index(drop=True)
     except Exception:
         pass
 
