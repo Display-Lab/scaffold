@@ -3,6 +3,7 @@ from typing import Optional
 from rdflib import RDF, BNode, Graph, Literal, URIRef
 from rdflib.resource import Resource
 
+from scaffold import context
 from scaffold.bitstomach.signals import Signal
 from scaffold.utils.namespace import CPO, IAO, PSDO, RO, SCHEMA, SLOWMO
 
@@ -110,16 +111,20 @@ def add_convenience_properties(candidate: Resource):
     return candidate
 
 
-def create_candidates(graph: Graph):
+def create_candidates():
     # measures = graph[: RDF.type : PSDO.performance_measure_content]
     # How do we get the measures for all MI?
     measures: set[BNode] = set(
-        graph.objects(None, PSDO.motivating_information / SLOWMO.RegardingMeasure)
+        context.subject_graph.objects(
+            None, PSDO.motivating_information / SLOWMO.RegardingMeasure
+        )
     )
     for measure in measures:
-        measure_resource = graph.resource(measure)
-        for template in graph[: RDF.type : PERFORMANCE_SUMMARY_DISPLAY_TEMPLATE]:
-            template_resource = graph.resource(template)
+        measure_resource = context.subject_graph.resource(measure)
+        for template in context.subject_graph[
+            : RDF.type : PERFORMANCE_SUMMARY_DISPLAY_TEMPLATE
+        ]:
+            template_resource = context.subject_graph.resource(template)
             candidate = create_candidate(measure_resource, template_resource)
             if not candidate:
                 continue

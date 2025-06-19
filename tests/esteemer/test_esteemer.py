@@ -107,20 +107,17 @@ def performance_data_frame():
     ]
 
     performance_df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
-    perf_df, perf_month = prepare(performance_df, 157, "2023-08-01")
+    context.performance_month = "2023-08-01"
+    context.staff_number = 157
+    context.performance_df = performance_df
+    perf_df = prepare()
     return perf_df
 
 
 @pytest.fixture
 def candidate_resource(performance_data_frame):
     graph = Graph()
-    graph.add(
-        (
-            BNode("p1"),
-            URIRef("http://example.com/slowmo#IsAboutPerformer"),
-            Literal(int(performance_data_frame.attrs["staff_number"])),
-        )
-    )
+
     candidate_resource = graph.resource(BNode())
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.peer_90th_percentile_benchmark
     candidate_resource[SLOWMO.AcceptableBy] = Literal("Social Better")
@@ -141,7 +138,8 @@ def candidate_resource(performance_data_frame):
 
 def test_score(candidate_resource):
     context.preferences_dict = context.set_preferences({})
-    esteemer.score(candidate_resource, MPM, "2023-08-01")
+    context.performance_month = "2023-08-01"
+    esteemer.score(candidate_resource, MPM)
     assert candidate_resource.value(SLOWMO.Score).value == pytest.approx(2.05)
 
 
@@ -189,15 +187,13 @@ def test_get_trend_info():
 
 
 def test_no_history_signal_is_score_0(candidate_resource):
-    assert esteemer.score_history(candidate_resource, {}, {}, "2023-08-01") == 1.0
+    assert esteemer.score_history(candidate_resource, {}, {}) == 1.0
 
-    assert esteemer.score_history(candidate_resource, None, {}, "2023-08-01") == 1.0
+    assert esteemer.score_history(candidate_resource, None, {}) == 1.0
 
 
 def test_history_with_two_recurrances(candidate_resource, history):
-    score = esteemer.score_history(
-        candidate_resource, history, MPM["Social Better"], "2023-08-01"
-    )
+    score = esteemer.score_history(candidate_resource, history, MPM["Social Better"])
 
     assert score == pytest.approx(0.586589)
 

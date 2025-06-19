@@ -5,6 +5,7 @@ from typing import List
 from rdflib import XSD, BNode, Graph, Literal, URIRef
 from rdflib.resource import Resource
 
+from scaffold import context
 from scaffold.bitstomach.signals import (
     Achievement,
     Approach,
@@ -20,7 +21,7 @@ from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
 
 
-def score(candidate: Resource, MPM: dict, performance_month) -> Resource:
+def score(candidate: Resource, MPM: dict) -> Resource:
     """
     calculates score.
 
@@ -69,9 +70,7 @@ def score(candidate: Resource, MPM: dict, performance_month) -> Resource:
     candidate[URIRef("motivating_score")] = Literal(mi_score, datatype=XSD.double)
 
     # History
-    history_score = score_history(
-        candidate, history, MPM[causal_pathway], performance_month
-    )
+    history_score = score_history(candidate, history, MPM[causal_pathway])
     candidate[URIRef("history_score")] = Literal(history_score, datatype=XSD.double)
 
     # Preferences
@@ -274,7 +273,7 @@ def comparator_moderators(candidate, motivating_informations, signal: Signal):
     return scoring_detail
 
 
-def score_history(candidate: Resource, history, mpm: dict, performance_month) -> float:
+def score_history(candidate: Resource, history, mpm: dict) -> float:
     """
     calculates history sub-score.
 
@@ -293,7 +292,11 @@ def score_history(candidate: Resource, history, mpm: dict, performance_month) ->
 
     signals = History.detect(
         history,
-        {datetime.fromisoformat(performance_month): History.to_element(candidate)},
+        {
+            datetime.fromisoformat(context.performance_month): History.to_element(
+                candidate
+            )
+        },
     )
 
     if not signals:

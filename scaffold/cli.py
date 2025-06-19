@@ -4,21 +4,18 @@ import subprocess
 from typing import Annotated
 
 import orjson
-import pandas as pd
 import typer
 from fastapi import HTTPException
 from loguru import logger
 
-from scaffold import context
+from scaffold import context, startup
 from scaffold.pipeline import pipeline
-from scaffold.startup import startup
 from scaffold.utils.utils import (
     add_candidates,
     add_response,
     analyse_candidates,
     analyse_responses,
     extract_number,
-    get_performance_month,
 )
 
 cli = typer.Typer(no_args_is_help=True)
@@ -41,7 +38,7 @@ def batch(
         ),
     ] = False,
 ) -> None:
-    startup()
+    startup.startup()
 
     if file_path.is_file() and file_path.suffix == ".json":
         input_files = [file_path]
@@ -60,18 +57,10 @@ def batch(
         try:
             input_data = orjson.loads(input_file.read_bytes())
 
-            performance_month = get_performance_month(input_data)
-            performance_df = pd.DataFrame(
-                input_data["Performance_data"][1:],
-                columns=input_data["Performance_data"][0],
-            )
-            context.create(input_data, performance_df.at[0, "staff_number"])
             try:
-                full_message = pipeline(
-                    performance_df,
-                    performance_df.at[0, "staff_number"],
-                    performance_month,
-                )
+                context.from_req(input_data)
+
+                full_message = pipeline()
                 full_message["message_instance_id"] = input_data["message_instance_id"]
                 full_message["performance_data"] = input_data["Performance_data"]
             except HTTPException as e:
@@ -82,9 +71,8 @@ def batch(
                 directory = input_file.parent / "messages"
                 os.makedirs(directory, exist_ok=True)
 
-                performance_month = input_data.get("performance_month", "unknown_month")
                 new_filename = (
-                    f"{input_file.stem} - message for {performance_month}.json"
+                    f"{input_file.stem} - message for {context.performance_month}.json"
                 )
                 output_path = directory / new_filename
 
@@ -103,7 +91,7 @@ def batch(
 
         add_response(full_message)
         if not stats_only:
-            add_candidates(full_message, input_data["performance_month"])
+            add_candidates(full_message)
 
     logger.info(f"Total files scanned: {len(input_files[:max_files])}")
     logger.info(f"Successful: {success_count}, Failed: {failure_count}")
@@ -132,43 +120,48 @@ def batch_csv(
         ),
     ] = False,
 ):
-    startup()
+    startup.startup(performance_data_path)
 
-    performance_data = pd.read_csv(performance_data_path, parse_dates=["month"])
     success_count = 0
     failure_count = 0
-    for provider_id in (
-        performance_data["staff_number"].drop_duplicates().head(max_files)
+    for staff_number in (
+        startup.performance_data["staff_number"].drop_duplicates().head(max_files)
     ):
         try:
-            context.create({}, provider_id)
-            result = pipeline(performance_data, provider_id, performance_month)
+            context.from_global(staff_number, performance_month)
+            try:
+                full_message = pipeline()
+                # full_message["message_instance_id"] = input_data["message_instance_id"]
+                full_message["performance_data"] = performance_month
+            except Exception as e:
+                # e.detail["message_instance_id"] = input_data["message_instance_id"]
+                raise e
             if not stats_only:
                 directory = performance_data_path.parent / "messages"
                 os.makedirs(directory, exist_ok=True)
 
                 new_filename = (
-                    f"Provider_{provider_id} - message for {performance_month}.json"
+                    f"Provider_{staff_number} - message for {performance_month}.json"
                 )
                 output_path = directory / new_filename
 
                 output_path.write_bytes(
-                    orjson.dumps(result, option=orjson.OPT_INDENT_2)
+                    orjson.dumps(full_message, option=orjson.OPT_INDENT_2)
                 )
                 logger.info(f"Message created at {output_path}")
             else:
-                logger.info(f"✔ Would process: Provider_{provider_id}")
+                logger.info(f"✔ Would process: Provider_{staff_number}")
 
             success_count += 1
 
         except Exception as e:
-            logger.error(f"✘ Failed to process Provider_{provider_id}: {e}")
+            logger.error(f"✘ Failed to process Provider_{staff_number}: {e}")
             failure_count += 1
-            result = e.detail
+            full_message = e.detail
 
-        add_response(result)
+        add_response(full_message)
         if not stats_only:
-            add_candidates(result, performance_month)
+            add_candidates(full_message)
 
     logger.info(f"Successful: {success_count}, Failed: {failure_count}")
     analyse_responses()
