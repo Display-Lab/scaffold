@@ -1,7 +1,7 @@
 import pandas as pd
 from rdflib import RDF, BNode, Graph
 
-from scaffold import context
+from scaffold import context, startup
 from scaffold.bitstomach import bitstomach
 from scaffold.utils.namespace import PSDO
 
@@ -40,6 +40,12 @@ def test_returns_performance_content_with_multiple_elements():
     context.performance_month = "2022-11-01"
     context.staff_number = 157
     context.performance_df = performance_df
+    
+    g = Graph()
+    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("SUS04"), RDF.type, PSDO.performance_measure_content))
+    startup.base_graph = g
+    
     perf_df = bitstomach.prepare()
 
     g = bitstomach.extract_signals(perf_df)
@@ -63,9 +69,17 @@ def test_fix_up_marks_low_count_as_invalid():
     context.performance_month = "2022-11-01"
     context.staff_number = 157
     context.performance_df = performance_df
+    
+    g = Graph()
+    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("SUS04"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("BP02"), RDF.type, PSDO.performance_measure_content))
+    startup.base_graph = g
+    
     perf_df = bitstomach.prepare()
 
-    assert "SUS04" in perf_df.attrs["valid_measures"].values
-    assert "PONV05" not in perf_df.attrs["valid_measures"].values
-    assert "BP01" not in perf_df.attrs["valid_measures"].values
-    assert "BP02" not in perf_df.attrs["valid_measures"].values
+    assert "SUS04" in perf_df.attrs["valid_measures"]
+    assert "PONV05" not in perf_df.attrs["valid_measures"]
+    assert "BP01" not in perf_df.attrs["valid_measures"]
+    assert "BP02" not in perf_df.attrs["valid_measures"]
