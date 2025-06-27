@@ -20,12 +20,6 @@ set_logger()
 def pipeline():
     performance_df = bitstomach.prepare()
 
-    measures = set(startup.base_graph[: RDF.type : PSDO.performance_measure_content])
-
-    performance_df.attrs["valid_measures"] = [
-        m for m in performance_df.attrs["valid_measures"] if BNode(m) in measures
-    ]
-
     # BitStomach
     logger.debug("Calling BitStomach from main...")
 

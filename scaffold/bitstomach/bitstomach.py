@@ -1,7 +1,7 @@
 import pandas as pd
 from rdflib import RDF, BNode, Graph
 
-from scaffold import context
+from scaffold import context, startup
 from scaffold.bitstomach.signals import SIGNALS
 from scaffold.utils.namespace import PSDO, SLOWMO
 
@@ -55,5 +55,11 @@ def prepare():
             & performance_df["valid"]
         )
     ]["measure"]
+    
+    measures = set(startup.base_graph[: RDF.type : PSDO.performance_measure_content])
+
+    performance_df.attrs["valid_measures"] = [
+        m for m in performance_df.attrs["valid_measures"] if BNode(m) in measures
+    ]
 
     return performance_df
