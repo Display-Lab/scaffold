@@ -6,7 +6,8 @@ import uuid
 import pandas as pd
 
 # Path to the directory containing input files
-INPUT_DIR = os.environ.setdefault("INPUT_DIR", "/home/faridsei/dev/test/MPOG/2024-09_h")
+os.environ.pop("INPUT_DIR", None)
+INPUT_DIR = os.environ.setdefault("INPUT_DIR", "S:/PCRC 166 Landis-Lewis/Final Data/ControlArmInputMessagesWithSimulatedHistory/2024-09_h")
 
 
 def extract_number(filename):
@@ -78,6 +79,42 @@ def main():
         "%Y-%m-%d"
     )
     performance_data_df["measureScore[x].range"] = None
+    df_providers = pd.read_excel(r"S:\PCRC 166 Landis-Lewis\Final Data\Precison Feedback Data 2025-03-07.xlsx", sheet_name="Provider")
+    performance_data_df = performance_data_df.merge(
+        df_providers[["Provider_Number", "Institution", "Professional_Role"]],
+        left_on="subject",
+        right_on="Provider_Number",
+        how="left"
+    )
+    comparator_df = performance_data_df[
+        [
+            "measure",
+            "period.start",
+            "period.end" ,
+            "peer_average_comparator",
+            "peer_75th_percentile_benchmark",
+            "peer_90th_percentile_benchmark",
+            "MPOG_goal",
+            "Institution",
+            "Professional_Role"
+        ]
+    ]
+
+    
+    subject_data_df = performance_data_df[["subject", "Institution","Professional_Role"]].drop_duplicates()
+    subject_data_df["type"] = "Practitioner"
+
+
+
+    subject_data_df.rename(
+        columns={
+            "subject": "PractitionerRole.practitioner",
+            "Institution":"PractitionerRole.organization",
+            "Professional_Role":"PractitionerRole.code"
+        },
+        inplace=True,
+    )
+    
     performance_data_df = performance_data_df[
         [
             "identifier",
@@ -90,12 +127,7 @@ def main():
             "measureScore[x].range",
         ]
     ]
-
-    subject_data_df = performance_data_df[["subject"]].drop_duplicates()
-    subject_data_df["type"] = "Practitioner"
-    subject_data_df["PractitionerRole.code"] = ""
-    subject_data_df["PractitionerRole.organization"] = ""
-
+    
     preferences_data_df = pd.DataFrame(
         preferences_rows, columns=["subject", "preferences.json"]
     )
@@ -115,14 +147,55 @@ def main():
         ["subject", "period.start", "period.end", "history.json"]
     ]
 
-    subject_data_df.rename(
+    comparator_df = comparator_df.drop_duplicates()
+    comparator_df = comparator_df.melt(
+        id_vars=[
+            "measure", "period.start", "period.end", "Institution", "Professional_Role"
+        ],
+        value_vars=[
+            "peer_average_comparator",
+            "peer_75th_percentile_benchmark",
+            "peer_90th_percentile_benchmark",
+            "MPOG_goal"
+        ],
+        var_name="group.code",    # new column for the original column names
+        value_name="measureScore[x].rate"  # new column for the values
+    )
+    comparator_df.rename(
         columns={
-            "subject": "PractitionerRole.practitioner"
+            "Institution":"group.subject",
+            "Professional_Role":"PractitionerRole.code"
         },
         inplace=True,
     )
+    comparator_df["identifier"] = [
+        str(uuid.uuid4()) for _ in range(len(comparator_df))
+    ]
+    comparator_df=comparator_df[
+        [
+            "identifier",
+            "measure",
+            "period.start",
+            "measureScore[x].rate",
+            "period.end",
+            "group.subject",
+            "group.code",
+            "PractitionerRole.code"
+        ]
+    ]
+    
+    type_mapping = {
+        "peer_average_comparator": "http://purl.obolibrary.org/obo/PSDO_0000126",
+        "peer_75th_percentile_benchmark": "http://purl.obolibrary.org/obo/PSDO_0000128",
+        "peer_90th_percentile_benchmark": "http://purl.obolibrary.org/obo/PSDO_0000129",
+        "MPOG_goal": "http://purl.obolibrary.org/obo/PSDO_0000094"
+    }
+    
+    comparator_df["group.code"] = comparator_df["group.code"].replace(type_mapping)
 
-    performance_data_df.to_csv("PerformanceData.csv", index=False)
+    
+    performance_data_df.to_csv("PerformanceMeasureReport.csv", index=False)
+    comparator_df.to_csv("ComparatorMeasureReport.csv", index=False)
     subject_data_df.to_csv("PractitionerRole.csv", index=False)
     preferences_data_df.to_csv("Preference.csv", index=False)
     history_data_df.to_csv("MessageHistory.csv", index=False)
