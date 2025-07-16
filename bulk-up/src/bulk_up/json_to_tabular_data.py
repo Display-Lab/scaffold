@@ -57,14 +57,14 @@ def main():
         columns={
             "staff_number": "subject",
             "month": "period.start",
-            "denominator": "measureScore[x].denominator",
+            "denominator": "measureScore.denominator",
         },
         inplace=True,
     )
 
-    performance_data_df["measureScore[x].rate"] = (
+    performance_data_df["measureScore.rate"] = (
         performance_data_df["passed_count"]
-        / performance_data_df["measureScore[x].denominator"]
+        / performance_data_df["measureScore.denominator"]
     )
 
     performance_data_df["period.end"] = performance_data_df["period.start"]
@@ -78,7 +78,7 @@ def main():
     performance_data_df["period.end"] = performance_data_df["period.end"].dt.strftime(
         "%Y-%m-%d"
     )
-    performance_data_df["measureScore[x].range"] = None
+    performance_data_df["measureScore.range"] = None
     df_providers = pd.read_excel(r"S:\PCRC 166 Landis-Lewis\Final Data\Precison Feedback Data 2025-03-07.xlsx", sheet_name="Provider")
     performance_data_df = performance_data_df.merge(
         df_providers[["Provider_Number", "Institution", "Professional_Role"]],
@@ -122,15 +122,16 @@ def main():
             "subject",
             "period.start",
             "period.end",
-            "measureScore[x].rate",
-            "measureScore[x].denominator",
-            "measureScore[x].range",
+            "measureScore.rate",
+            "measureScore.denominator",
+            "measureScore.range",
         ]
     ]
     
     preferences_data_df = pd.DataFrame(
         preferences_rows, columns=["subject", "preferences.json"]
     )
+    preferences_data_df = preferences_data_df[preferences_data_df["preferences.json"] != {}]
 
     history_data_df = pd.DataFrame(
         history_rows, columns=["subject", "period.start", "history.json"]
@@ -159,7 +160,7 @@ def main():
             "MPOG_goal"
         ],
         var_name="group.code",    # new column for the original column names
-        value_name="measureScore[x].rate"  # new column for the values
+        value_name="measureScore.rate"  # new column for the values
     )
     comparator_df.rename(
         columns={
@@ -176,7 +177,7 @@ def main():
             "identifier",
             "measure",
             "period.start",
-            "measureScore[x].rate",
+            "measureScore.rate",
             "period.end",
             "group.subject",
             "group.code",
