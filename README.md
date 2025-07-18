@@ -69,18 +69,19 @@ Change back to the root of scaffold
 cd scaffold
 ```
 
-Update the `.env.local` file and change `path/to/knowledge-base` to point to the local knowledge base that you just checked out. (Don't remove the `file://` for preferences and manifest.)
+Update the `.env.local` file and change `path/to/knowledge-base` to point to the local knowledge base that you just checked out. (Don't remove the `file://` for default_preferences and manifest.)
 
 ```properties
 # .env.local
-preferences=file:///Users/bob/knowledge-base/preferences.json 
+default_preferences=file:///Users/bob/knowledge-base/preferences.json 
 mpm=/Users/bob/knowledge-base/prioritization_algorithms/motivational_potential_model.csv
 manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
 ...
 ```
 
-Run SCAFFOLD API
-
+##### Run SCAFFOLD API 
+There are two different ways to run SCAFFOLD API:
+1. Run SCAFFOLD API using uvicorn 
 ```zsh
 ENV_PATH=.env.local uvicorn scaffold.api:app
 # Expect to see a server start message like this "INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)"
@@ -91,8 +92,12 @@ You can use Postman or your favorite tool to send a message and check the result
 ```zsh
 curl --data "@tests/test_cases/input_message.json" http://localhost:8000/createprecisionfeedback/
 ```
+2. Run SCAFFOLD API using CLI (`pipeline web` command )
 
-Run SCAFFOLD CLI
+```zsh
+ENV_PATH=/user/.../dev.env pipeline web
+```
+##### Run SCAFFOLD CLI with JSON inputs
 First install the python app. Then use the following command to run the pipeline on one json input file
 
 ```zsh
@@ -106,18 +111,25 @@ ENV_PATH=/user/.../dev.env pipeline batch '/path/to/input/folder/' --max-files 5
 ```
 Use --max-files if you need to limit the number of files to process.
 
-Use the following command to run the pipeline passing preformance_data, history and preferences as separate CSV files
+##### Run SCAFFOLD CLI with CSV inputs
+First install the python app. Then update the `.env.local` file and add links to history and preferences csv files along with other parameters mentioned earlier (manifest, default_preferences and mpm). 
+
+```properties
+# .env.local
+default_preferences=file:///Users/bob/knowledge-base/preferences.json 
+mpm=/Users/bob/knowledge-base/prioritization_algorithms/motivational_potential_model.csv
+manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
+preferences=/Users/bob/data/preferences.csv
+history=/Users/bob/data/history.csv
+...
+```
+Then use the following command to run the pipeline passing performance data csv file
 
 ```zsh
-ENV_PATH=/user/.../dev.env pipeline batch_csv '/path/to/performance/data/file.csv' '/path/to/preferences/file.csv' '/path/to/history/file.csv' --performance-month {performance month i.e. 2024-05-01} --max-files 500
+ENV_PATH=/user/.../dev.env pipeline batch_csv '/path/to/performance/data/file.csv' --performance-month {performance month i.e. 2024-05-01} --max-files 500
 ```
-Use --performance-month to set the performance month for batch_csv command.
+Use --performance-month to set the performance month for batch_csv command and optional --max-files to limit the cases to process for development .
 
-Use the following command to run the pipeline api
-
-```zsh
-ENV_PATH=/user/.../dev.env pipeline web
-```
 
 ## Environment variables
 
