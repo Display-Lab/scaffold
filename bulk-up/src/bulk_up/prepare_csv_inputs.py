@@ -13,7 +13,7 @@ def extract_number(filename):
         return float("inf")  # Return infinity if no numeric part found
 
 
-file_path = Path("/home/faridsei/dev/test/2024-06-24/2024-05-01/")
+file_path = Path("/home/faridsei/dev/code/scaffold/bulk-up/random_performance_data/")
 input_files = sorted(file_path.glob("*.json"), key=extract_number)
 with open("performance_data.csv", "w", newline="") as file:
     writer = csv.writer(file)

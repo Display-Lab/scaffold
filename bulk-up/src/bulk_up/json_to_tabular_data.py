@@ -7,7 +7,7 @@ import pandas as pd
 
 # Path to the directory containing input files
 os.environ.pop("INPUT_DIR", None)
-INPUT_DIR = os.environ.setdefault("INPUT_DIR", "S:/PCRC 166 Landis-Lewis/Final Data/ControlArmInputMessagesWithSimulatedHistory/2024-09_h")
+INPUT_DIR = os.environ.setdefault("INPUT_DIR", "/home/faridsei/dev/code/scaffold/bulk-up/random_performance_data/with_h")
 
 
 def extract_number(filename):
@@ -27,6 +27,7 @@ def main():
     input_files = sorted(
         [f for f in os.listdir(INPUT_DIR) if f.endswith(".json")], key=extract_number
     )
+    df_providers = pd.DataFrame(columns=["Provider_Number", "Institution", "Professional_Role"])
 
     for filename in input_files:
         with open(os.path.join(INPUT_DIR, filename), "r") as file:
@@ -47,6 +48,9 @@ def main():
                     for key, value in history_data.items()
                 ]
             )
+            if data["institution_id"]:
+                df_providers.loc[len(df_providers)] = [performance_data[1][0], data["institution_id"], "resident"]
+
 
     performance_data_df = pd.DataFrame(performance_rows, columns=columns)
     performance_data_df["identifier"] = [
@@ -79,7 +83,8 @@ def main():
         "%Y-%m-%d"
     )
     performance_data_df["measureScore.range"] = None
-    df_providers = pd.read_excel(r"S:\PCRC 166 Landis-Lewis\Final Data\Precison Feedback Data 2025-03-07.xlsx", sheet_name="Provider")
+    if df_providers.empty:
+        df_providers = pd.read_excel(r"S:\PCRC 166 Landis-Lewis\Final Data\Precison Feedback Data 2025-03-07.xlsx", sheet_name="Provider")
     performance_data_df = performance_data_df.merge(
         df_providers[["Provider_Number", "Institution", "Professional_Role"]],
         left_on="subject",

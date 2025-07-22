@@ -6,6 +6,43 @@ from pathlib import Path
 
 from dateutil.relativedelta import relativedelta
 
+
+def generate_preferences(probability=0.035):
+    if random.random() > probability:
+        return {}
+
+    def random_float(min_val, max_val, decimals=2):
+        return round(random.uniform(min_val, max_val), decimals)
+
+    # Randomly choose one of the display formats to be 1
+    display_options = ["Bar chart", "Line chart", "Text-only", "System-generated"]
+    selected_display = random.choice(display_options)
+    display_format = {
+        option: 1 if option == selected_display else 0 for option in display_options
+    }
+
+    preferences = {
+        "Utilities": {
+            "Message_Format": {
+                "Social gain": str(random_float(0.01, 0.1)),
+                "Social stayed better": str(random_float(-0.2, -0.05)),
+                "Worsening": str(random_float(-0.2, -0.05)),
+                "Improving": str(random_float(-0.2, -0.05)),
+                "Social loss": str(random_float(0.5, 0.8)),
+                "Social stayed worse": str(random_float(-0.7, -0.4)),
+                "Social better": str(random_float(-1.4, -1.0)),
+                "Social worse": str(random_float(0.3, 0.6)),
+                "Social approach": str(random_float(0.8, 1.1)),
+                "Goal gain": str(random_float(0.01, 0.08)),
+                "Goal approach": str(random_float(0.8, 1.1)),
+            },
+            "Display_Format": display_format,
+        }
+    }
+
+    return preferences
+
+
 # Variables
 performance_month = "2025-01-01"
 performance_date = datetime.strptime(performance_month, "%Y-%m-%d")
@@ -52,7 +89,7 @@ institutions = list(range(1, 51))
 num_months = 12
 months = [
     (performance_date - relativedelta(months=i)).strftime("%Y-%m-%d")
-    for i in reversed(range(0, num_months ))
+    for i in reversed(range(0, num_months))
 ]
 
 # Output directory
@@ -137,7 +174,7 @@ for institution in institutions:
                 ],
             ],
             "History": {},
-            "Preferences": {},
+            "Preferences": generate_preferences(),
             "debug": "no",
         }
 
@@ -153,7 +190,7 @@ for institution in institutions:
 
                 # Build row
                 row = [
-                    staff_number,
+                    global_staff_counter,
                     measure,
                     month,
                     passed_count,
