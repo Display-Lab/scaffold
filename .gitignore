@@ -31,3 +31,4 @@ PFPenv/
 .env.local
 .ruff_cache/
 .pytest_cache/
+bulk-up/random_performance_data/
