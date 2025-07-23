@@ -63,9 +63,49 @@ def from_global(staff_num):
     staff_number = int(staff_num)
 
     try:
-        performance_df = startup.performance_data[
-            startup.performance_data["staff_number"] == staff_number
+        performance_df = startup.performance_measure_report[
+            startup.performance_measure_report["subject"] == staff_number
         ].reset_index(drop=True)
+        
+        # first simple attempt to read and prepare tabular data
+        performance_df["staff_number"] = performance_df["subject"]
+        performance_df["month"] = performance_df["period.start"]
+        performance_df["denominator"] = performance_df["measureScore.denominator"]
+        performance_df["passed_count"] = performance_df["measureScore.rate"] * performance_df["measureScore.denominator"]
+        performance_df["flagged_count"] = performance_df["denominator"] - performance_df["passed_count"]
+        performance_enriched = performance_df.merge(
+            startup.practitioner_role,
+            how='left',
+            left_on='staff_number',
+            right_on='PractitionerRole.practitioner'
+        )
+        
+        group_code_map = {
+            "http://purl.obolibrary.org/obo/PSDO_0000126": "peer_average_comparator",
+            "http://purl.obolibrary.org/obo/PSDO_0000128": "peer_75th_percentile_benchmark",
+            "http://purl.obolibrary.org/obo/PSDO_0000129": "peer_90th_percentile_benchmark",
+            "http://purl.obolibrary.org/obo/PSDO_0000094": "MPOG_goal"
+        }
+        comparator_measure_report = startup.comparator_measure_report.copy()
+        comparator_measure_report["group_code_label"] = comparator_measure_report["group.code"].map(group_code_map)
+        pivoted_comparator = comparator_measure_report.pivot_table(
+        index=["period.start", "measure", "group.subject", "PractitionerRole.code"],
+            columns="group_code_label",
+            values="measureScore.rate"
+        ).reset_index()
+        
+        final_df = performance_enriched.merge(
+            pivoted_comparator,
+            how="left",
+            left_on=["period.start", "measure", "PractitionerRole.organization", "PractitionerRole.code"],
+            right_on=["period.start", "measure", "group.subject", "PractitionerRole.code"]
+        ).drop(columns=["group.subject"])
+        
+        performance_df = final_df[["staff_number", "measure", "month", "passed_count", "flagged_count", "denominator", "peer_average_comparator", "peer_75th_percentile_benchmark", "peer_90th_percentile_benchmark", "MPOG_goal"]]
+        startup.history["month"] = startup.history["period.start"]
+        startup.history["staff_number"] = startup.history["subject"]
+        startup.preferences["staff_number"] = startup.preferences["subject"]
+        startup.preferences["preferences"] = startup.preferences["preferences.json"]
     except Exception:
         pass
 
