@@ -39,7 +39,7 @@ def from_req(req_info):
     try:
         preferences_dict = set_preferences(req_info.get("Preferences", {}))
     except Exception:
-        return set_preferences({})
+        preferences_dict = set_preferences({})
 
     history_dict = {}
     try:
@@ -78,7 +78,7 @@ def from_global(staff_num):
         p = startup.preferences.loc[staff_number, "preferences"]
         preferences_dict = set_preferences(p)
     except Exception:
-        return set_preferences({})
+        preferences_dict = set_preferences({})
 
     history_dict = {}
     try:
