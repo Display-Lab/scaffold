@@ -1,3 +1,5 @@
+import ast
+
 import pandas as pd
 from rdflib import Graph
 
@@ -5,7 +7,7 @@ from scaffold import startup
 
 preferences_dict = {}
 history_dict = {}
-staff_number = 0
+subject = 0
 performance_month = ""
 performance_df: pd.DataFrame
 subject_graph = Graph()
@@ -15,7 +17,7 @@ def from_req(req_info):
     global \
         preferences_dict, \
         history_dict, \
-        staff_number, \
+        subject, \
         performance_month, \
         performance_df, \
         subject_graph
@@ -31,9 +33,9 @@ def from_req(req_info):
     if req_info["performance_month"]:
         performance_month = req_info["performance_month"]
     if not performance_month:
-        performance_month = performance_df["month"].max()
+        performance_month = performance_df["period.start"].max()
 
-    staff_number = int(performance_df.at[0, "staff_number"])
+    subject = int(performance_df.at[0, "staff_number"])
 
     preferences_dict = {}
     try:
@@ -51,79 +53,85 @@ def from_req(req_info):
     subject_graph += startup.base_graph
 
 
-def from_global(staff_num):
+def from_global(subject_num):
     global \
         preferences_dict, \
         history_dict, \
-        staff_number, \
+        subject, \
         performance_month, \
         performance_df, \
         subject_graph
 
-    staff_number = int(staff_num)
+    subject = int(subject_num)
 
     try:
         performance_df = startup.performance_measure_report[
-            startup.performance_measure_report["subject"] == staff_number
+            startup.performance_measure_report["subject"] == subject
         ].reset_index(drop=True)
-        
-        # first simple attempt to read and prepare tabular data
-        performance_df["staff_number"] = performance_df["subject"]
-        performance_df["month"] = performance_df["period.start"]
-        performance_df["denominator"] = performance_df["measureScore.denominator"]
-        performance_df["passed_count"] = performance_df["measureScore.rate"] * performance_df["measureScore.denominator"]
-        performance_df["flagged_count"] = performance_df["denominator"] - performance_df["passed_count"]
+
+        # prepare performance data
         performance_enriched = performance_df.merge(
             startup.practitioner_role,
-            how='left',
-            left_on='staff_number',
-            right_on='PractitionerRole.practitioner'
+            how="left",
+            left_on="subject",
+            right_on="PractitionerRole.practitioner",
         )
-        
+
         group_code_map = {
             "http://purl.obolibrary.org/obo/PSDO_0000126": "peer_average_comparator",
             "http://purl.obolibrary.org/obo/PSDO_0000128": "peer_75th_percentile_benchmark",
             "http://purl.obolibrary.org/obo/PSDO_0000129": "peer_90th_percentile_benchmark",
-            "http://purl.obolibrary.org/obo/PSDO_0000094": "MPOG_goal"
+            "http://purl.obolibrary.org/obo/PSDO_0000094": "MPOG_goal",
         }
         comparator_measure_report = startup.comparator_measure_report.copy()
-        comparator_measure_report["group_code_label"] = comparator_measure_report["group.code"].map(group_code_map)
+        comparator_measure_report["group_code_label"] = comparator_measure_report[
+            "group.code"
+        ].map(group_code_map)
         pivoted_comparator = comparator_measure_report.pivot_table(
-        index=["period.start", "measure", "group.subject", "PractitionerRole.code"],
+            index=["period.start", "measure", "group.subject", "PractitionerRole.code"],
             columns="group_code_label",
-            values="measureScore.rate"
+            values="measureScore.rate",
         ).reset_index()
-        
+
         final_df = performance_enriched.merge(
             pivoted_comparator,
             how="left",
-            left_on=["period.start", "measure", "PractitionerRole.organization", "PractitionerRole.code"],
-            right_on=["period.start", "measure", "group.subject", "PractitionerRole.code"]
+            left_on=[
+                "period.start",
+                "measure",
+                "PractitionerRole.organization",
+                "PractitionerRole.code",
+            ],
+            right_on=[
+                "period.start",
+                "measure",
+                "group.subject",
+                "PractitionerRole.code",
+            ],
         ).drop(columns=["group.subject"])
-        
-        performance_df = final_df[["staff_number", "measure", "month", "passed_count", "flagged_count", "denominator", "peer_average_comparator", "peer_75th_percentile_benchmark", "peer_90th_percentile_benchmark", "MPOG_goal"]]
-        startup.history["month"] = startup.history["period.start"]
-        startup.history["staff_number"] = startup.history["subject"]
-        startup.preferences["staff_number"] = startup.preferences["subject"]
-        startup.preferences["preferences"] = startup.preferences["preferences.json"]
+
+        performance_df = final_df.copy()
     except Exception:
         pass
 
     performance_month = startup.performance_month
     if not performance_month:
-        performance_month = performance_df["month"].max()
+        performance_month = performance_df["period.start"].max()
 
     preferences_dict = {}
     try:
-        p = startup.preferences.loc[staff_number, "preferences"]
+        p = startup.preferences.loc[subject, "preferences.json"]
         preferences_dict = set_preferences(p)
     except Exception:
         preferences_dict = set_preferences({})
 
     history_dict = {}
     try:
-        staff_data = startup.history[startup.history["staff_number"] == staff_number]
-        history_dict = staff_data.set_index("month")["history"].to_dict()
+        history_data = startup.history[startup.history["subject"] == subject].copy()
+        history_data["history.json"] = history_data["history.json"].apply(
+            ast.literal_eval
+        )
+        history_dict = history_data.set_index("period.start")["history.json"].to_dict()
     except Exception:
         pass
 

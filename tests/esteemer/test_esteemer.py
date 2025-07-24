@@ -90,25 +90,24 @@ def history():
 def performance_data_frame():
     performance_data = [
         [
-            "staff_number",
+            "subject",
             "measure",
-            "month",
-            "passed_count",
-            "flagged_count",
-            "denominator",
+            "period.start",
+            "measureScore.rate",
+            "measureScore.denominator",
             "peer_average_comparator",
             "peer_75th_percentile_benchmark",
             "peer_90th_percentile_benchmark",
             "MPOG_goal",
         ],
-        [157, "PONV05", "2023-06-01", 93, 0, 100, 84.0, 88.0, 90.0, 99.0],
-        [157, "PONV05", "2023-07-01", 94, 0, 100, 84.0, 88.0, 90.0, 99.0],
-        [157, "PONV05", "2023-08-01", 95, 0, 100, 84.0, 88.0, 90.0, 99.0],
+        [157, "PONV05", "2023-06-01", 0.93, 100, 84.0, 88.0, 90.0, 99.0],
+        [157, "PONV05", "2023-07-01", 0.94, 100, 84.0, 88.0, 90.0, 99.0],
+        [157, "PONV05", "2023-08-01", 0.95, 100, 84.0, 88.0, 90.0, 99.0],
     ]
 
     performance_df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
     context.performance_month = "2023-08-01"
-    context.staff_number = 157
+    context.subject = 157
     context.performance_df = performance_df
     perf_df = prepare()
     return perf_df
@@ -214,14 +213,14 @@ def test_social_better_score(performance_data_frame):
 def test_social_worse_score():
     data_frame = pd.DataFrame(
         {
-            "passed_rate": [0.92, 0.91, 0.88],
+            "measureScore.rate": [0.92, 0.91, 0.88],
             "valid": [True, True, True],
-            "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+            "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
         },
         columns=[
-            "month",
+            "period.start",
             "valid",
-            "passed_rate",
+            "measureScore.rate",
             "peer_average_comparator",
             "peer_75th_percentile_benchmark",
             "peer_90th_percentile_benchmark",
@@ -250,9 +249,9 @@ def test_improving_score():
     motivating_informations = Trend.detect(
         pd.DataFrame(
             {
-                "passed_rate": [0.89, 0.90, 0.91],
+                "measureScore.rate": [0.89, 0.90, 0.91],
                 "valid": True,
-                "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+                "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
             },  # slope 1.0
         )
     )
@@ -270,9 +269,9 @@ def test_worsening_score():
     motivating_informations = Trend.detect(
         pd.DataFrame(
             {
-                "passed_rate": [0.91, 0.90, 0.89],
+                "measureScore.rate": [0.91, 0.90, 0.89],
                 "valid": True,
-                "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+                "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
             },  # slope 1.0
         )
     )
@@ -285,14 +284,14 @@ def test_worsening_score():
 def test_goal_gain_score():
     data_frame = pd.DataFrame(
         {
-            "passed_rate": [0.88, 0.89, 0.91],
+            "measureScore.rate": [0.88, 0.89, 0.91],
             "valid": [True, True, True],
-            "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+            "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
         },
         columns=[
-            "month",
+            "period.start",
             "valid",
-            "passed_rate",
+            "measureScore.rate",
             "peer_average_comparator",
             "peer_75th_percentile_benchmark",
             "peer_90th_percentile_benchmark",
@@ -316,14 +315,14 @@ def test_goal_gain_score():
 def test_goal_loss_score():
     data_frame = pd.DataFrame(
         {
-            "passed_rate": [0.92, 0.91, 0.88],
+            "measureScore.rate": [0.92, 0.91, 0.88],
             "valid": [True, True, True],
-            "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+            "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
         },
         columns=[
-            "month",
+            "period.start",
             "valid",
-            "passed_rate",
+            "measureScore.rate",
             "peer_average_comparator",
             "peer_75th_percentile_benchmark",
             "peer_90th_percentile_benchmark",

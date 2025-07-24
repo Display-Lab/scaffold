@@ -38,24 +38,18 @@ def prepare():
     performance_df["goal_comparator_content"] = performance_df["MPOG_goal"]
 
     performance_df = performance_df[
-        performance_df["month"] <= context.performance_month
+        performance_df["period.start"] <= context.performance_month
     ]
 
-    performance_df["valid"] = performance_df["denominator"] >= 10
-
-    performance_df["passed_rate"] = (
-        performance_df["passed_count"] / performance_df["denominator"]
-    )
-
-    performance_df.attrs["measures"] = performance_df["measure"].unique()
+    performance_df["valid"] = performance_df["measureScore.denominator"] >= 10
 
     performance_df.attrs["valid_measures"] = performance_df[
         (
-            (performance_df["month"] == context.performance_month)
+            (performance_df["period.start"] == context.performance_month)
             & performance_df["valid"]
         )
     ]["measure"]
-    
+
     measures = set(startup.base_graph[: RDF.type : PSDO.performance_measure_content])
 
     performance_df.attrs["valid_measures"] = [

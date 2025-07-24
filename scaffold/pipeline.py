@@ -3,7 +3,7 @@ import os
 import psutil
 from fastapi import HTTPException
 from loguru import logger
-from rdflib import RDF, BNode, Graph, Literal
+from rdflib import BNode, Graph, Literal
 
 from scaffold import context, startup
 from scaffold.bitstomach import bitstomach
@@ -30,7 +30,7 @@ def pipeline():
         context.subject_graph.close()
         detail = {
             "message": "Insufficient significant data found for providing feedback, process aborted.",
-            "staff_number": context.staff_number,
+            "subject": context.subject,
         }
         raise HTTPException(
             status_code=400,

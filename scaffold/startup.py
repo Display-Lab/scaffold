@@ -22,10 +22,10 @@ mpm: dict = {}
 default_preferences: dict = {}
 base_graph: Graph = Graph()
 preferences: pd.DataFrame = pd.DataFrame(
-    columns=["staff_number", "preferences"], index=["staff_number"]
+    columns=["subject", "preference.json"], index=["subject"]
 )
 history: pd.DataFrame = pd.DataFrame(
-    columns=["staff_number", "month", "history"], index=["staff_number"]
+    columns=["subject", "period.start", "history.json"], index=["subject"]
 )
 # performance_data = pd.DataFrame()
 performance_measure_report = pd.DataFrame()
@@ -83,10 +83,18 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             history.set_index("subject", inplace=True, drop=False)
 
         if performance_data_path:
-            performance_measure_report = pd.read_csv(os.path.join(performance_data_path,"PerformanceMeasureReport.csv"), parse_dates=["period.start","period.end"])
-            comparator_measure_report = pd.read_csv(os.path.join(performance_data_path,"ComparatorMeasureReport.csv"), parse_dates=["period.start","period.end"])
-            practitioner_role = pd.read_csv(os.path.join(performance_data_path,"PractitionerRole.csv"))
-        
+            performance_measure_report = pd.read_csv(
+                os.path.join(performance_data_path, "PerformanceMeasureReport.csv"),
+                parse_dates=["period.start", "period.end"],
+            )
+            comparator_measure_report = pd.read_csv(
+                os.path.join(performance_data_path, "ComparatorMeasureReport.csv"),
+                parse_dates=["period.start", "period.end"],
+            )
+            practitioner_role = pd.read_csv(
+                os.path.join(performance_data_path, "PractitionerRole.csv")
+            )
+
         if settings.performance_month:
             performance_month = settings.settings.performance_month
 

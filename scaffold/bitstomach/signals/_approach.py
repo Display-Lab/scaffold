@@ -155,7 +155,9 @@ class Approach(Signal):
 
         comparator_id = comparator.value(RDF.type).identifier
 
-        gaps = perf_data["passed_rate"] - perf_data[comp_cols[comparator_id]] / 100
+        gaps = (
+            perf_data["measureScore.rate"] - perf_data[comp_cols[comparator_id]] / 100
+        )
 
         # find the number of consecutive negative gaps
         diff_reversed = gaps.values[:-1][::-1]

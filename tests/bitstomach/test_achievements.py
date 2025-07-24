@@ -14,34 +14,30 @@ def perf_data() -> pd.DataFrame:
     performance_data = [
         [
             "valid",
-            "staff_number",
+            "subject",
             "measure",
-            "month",
-            "passed_rate",
-            "passed_count",
-            "flagged_count",
-            "denominator",
+            "period.start",
+            "measureScore.rate",
+            "measureScore.denominator",
             "peer_average_comparator",
             "peer_75th_percentile_benchmark",
             "peer_90th_percentile_benchmark",
             "goal_comparator_content",
         ],
-        [True, 157, "BP01", "2022-08-01", 0.85, 90.0, 0, 100.0, 85.0, 88.0, 90.0, 99.0],
+        [True, 157, "BP01", "2022-08-01", 0.85, 100.0, 85.0, 88.0, 90.0, 99.0],
         [
             True,
             157,
             "BP01",
             "2022-09-01",
             0.86,
-            91.0,
-            0,
             100.0,
             85.0,
             89.0,
             91.0,
             100.0,
         ],
-        [True, 157, "BP01", "2022-10-01", 0.97, 92.0, 0, 100.0, 80.0, 85.0, 90.0, 95.0],
+        [True, 157, "BP01", "2022-10-01", 0.97, 100.0, 80.0, 85.0, 90.0, 95.0],
     ]
     df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
     df.attrs["performance_month"] = "2022-10-01"
@@ -136,7 +132,7 @@ perf_level_test_set = [
     "perf_level, comparator_values, types, condition", perf_level_test_set
 )
 def test_detect_signals(perf_level, comparator_values, types, condition, perf_data):
-    perf_data2 = perf_data.assign(passed_rate=perf_level)
+    perf_data2 = perf_data.assign(**{"measureScore.rate": perf_level})
 
     perf_data2.iloc[:, -4:] = comparator_values
 
@@ -157,14 +153,14 @@ def test_detect(perf_data):
     assert streap_length == 2
 
     new_row = pd.DataFrame(
-        {"passed_rate": [0.81], "peer_90th_percentile_benchmark": 90.0}
+        {"measureScore.rate": [0.81], "peer_90th_percentile_benchmark": 90.0}
     )
     perf_data = pd.concat([new_row, perf_data], ignore_index=True)
     streap_length = Achievement._detect(perf_data, comparator)
     assert streap_length == 3
 
     new_row = pd.DataFrame(
-        {"passed_rate": [0.91], "peer_90th_percentile_benchmark": 90.0}
+        {"measureScore.rate": [0.91], "peer_90th_percentile_benchmark": 90.0}
     )
     perf_data = pd.concat([new_row, perf_data], ignore_index=True)
     streap_length = Achievement._detect(perf_data, comparator)

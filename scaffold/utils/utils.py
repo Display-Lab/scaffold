@@ -15,7 +15,7 @@ def analyse_responses():
     global response_df
 
     r2 = (
-        response_df.groupby("causal_pathway")["staff_number"]
+        response_df.groupby("causal_pathway")["subject"]
         .agg(count=("count"))
         .reset_index()
     )
@@ -112,7 +112,7 @@ def add_response(response_data):
     selected_candidate = response_data.get("selected_candidate", None)
 
     response_dict: dict = {
-        "staff_number": [response_data.get("staff_number", None)],
+        "subject": [response_data.get("subject", None)],
         "causal_pathway": selected_candidate["acceptable_by"]
         if selected_candidate
         else [None],

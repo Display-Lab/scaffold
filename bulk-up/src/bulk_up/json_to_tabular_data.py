@@ -7,7 +7,10 @@ import pandas as pd
 
 # Path to the directory containing input files
 os.environ.pop("INPUT_DIR", None)
-INPUT_DIR = os.environ.setdefault("INPUT_DIR", "/home/faridsei/dev/code/scaffold/bulk-up/random_performance_data/with_h")
+INPUT_DIR = os.environ.setdefault(
+    "INPUT_DIR",
+    "/home/faridsei/dev/code/scaffold/bulk-up/random_performance_data/with_h",
+)
 
 
 def extract_number(filename):
@@ -27,7 +30,9 @@ def main():
     input_files = sorted(
         [f for f in os.listdir(INPUT_DIR) if f.endswith(".json")], key=extract_number
     )
-    df_providers = pd.DataFrame(columns=["Provider_Number", "Institution", "Professional_Role"])
+    df_providers = pd.DataFrame(
+        columns=["Provider_Number", "Institution", "Professional_Role"]
+    )
 
     for filename in input_files:
         with open(os.path.join(INPUT_DIR, filename), "r") as file:
@@ -49,8 +54,11 @@ def main():
                 ]
             )
             if data["institution_id"]:
-                df_providers.loc[len(df_providers)] = [performance_data[1][0], data["institution_id"], "resident"]
-
+                df_providers.loc[len(df_providers)] = [
+                    performance_data[1][0],
+                    data["institution_id"],
+                    "resident",
+                ]
 
     performance_data_df = pd.DataFrame(performance_rows, columns=columns)
     performance_data_df["identifier"] = [
@@ -84,42 +92,44 @@ def main():
     )
     performance_data_df["measureScore.range"] = None
     if df_providers.empty:
-        df_providers = pd.read_excel(r"S:\PCRC 166 Landis-Lewis\Final Data\Precison Feedback Data 2025-03-07.xlsx", sheet_name="Provider")
+        df_providers = pd.read_excel(
+            r"S:\PCRC 166 Landis-Lewis\Final Data\Precison Feedback Data 2025-03-07.xlsx",
+            sheet_name="Provider",
+        )
     performance_data_df = performance_data_df.merge(
         df_providers[["Provider_Number", "Institution", "Professional_Role"]],
         left_on="subject",
         right_on="Provider_Number",
-        how="left"
+        how="left",
     )
     comparator_df = performance_data_df[
         [
             "measure",
             "period.start",
-            "period.end" ,
+            "period.end",
             "peer_average_comparator",
             "peer_75th_percentile_benchmark",
             "peer_90th_percentile_benchmark",
             "MPOG_goal",
             "Institution",
-            "Professional_Role"
+            "Professional_Role",
         ]
     ]
 
-    
-    subject_data_df = performance_data_df[["subject", "Institution","Professional_Role"]].drop_duplicates()
+    subject_data_df = performance_data_df[
+        ["subject", "Institution", "Professional_Role"]
+    ].drop_duplicates()
     subject_data_df["type"] = "Practitioner"
-
-
 
     subject_data_df.rename(
         columns={
             "subject": "PractitionerRole.practitioner",
-            "Institution":"PractitionerRole.organization",
-            "Professional_Role":"PractitionerRole.code"
+            "Institution": "PractitionerRole.organization",
+            "Professional_Role": "PractitionerRole.code",
         },
         inplace=True,
     )
-    
+
     performance_data_df = performance_data_df[
         [
             "identifier",
@@ -132,11 +142,13 @@ def main():
             "measureScore.range",
         ]
     ]
-    
+
     preferences_data_df = pd.DataFrame(
         preferences_rows, columns=["subject", "preferences.json"]
     )
-    preferences_data_df = preferences_data_df[preferences_data_df["preferences.json"] != {}]
+    preferences_data_df = preferences_data_df[
+        preferences_data_df["preferences.json"] != {}
+    ]
 
     history_data_df = pd.DataFrame(
         history_rows, columns=["subject", "period.start", "history.json"]
@@ -156,28 +168,30 @@ def main():
     comparator_df = comparator_df.drop_duplicates()
     comparator_df = comparator_df.melt(
         id_vars=[
-            "measure", "period.start", "period.end", "Institution", "Professional_Role"
+            "measure",
+            "period.start",
+            "period.end",
+            "Institution",
+            "Professional_Role",
         ],
         value_vars=[
             "peer_average_comparator",
             "peer_75th_percentile_benchmark",
             "peer_90th_percentile_benchmark",
-            "MPOG_goal"
+            "MPOG_goal",
         ],
-        var_name="group.code",    # new column for the original column names
-        value_name="measureScore.rate"  # new column for the values
+        var_name="group.code",  # new column for the original column names
+        value_name="measureScore.rate",  # new column for the values
     )
     comparator_df.rename(
         columns={
-            "Institution":"group.subject",
-            "Professional_Role":"PractitionerRole.code"
+            "Institution": "group.subject",
+            "Professional_Role": "PractitionerRole.code",
         },
         inplace=True,
     )
-    comparator_df["identifier"] = [
-        str(uuid.uuid4()) for _ in range(len(comparator_df))
-    ]
-    comparator_df=comparator_df[
+    comparator_df["identifier"] = [str(uuid.uuid4()) for _ in range(len(comparator_df))]
+    comparator_df = comparator_df[
         [
             "identifier",
             "measure",
@@ -186,26 +200,25 @@ def main():
             "period.end",
             "group.subject",
             "group.code",
-            "PractitionerRole.code"
+            "PractitionerRole.code",
         ]
     ]
-    
+
     type_mapping = {
         "peer_average_comparator": "http://purl.obolibrary.org/obo/PSDO_0000126",
         "peer_75th_percentile_benchmark": "http://purl.obolibrary.org/obo/PSDO_0000128",
         "peer_90th_percentile_benchmark": "http://purl.obolibrary.org/obo/PSDO_0000129",
-        "MPOG_goal": "http://purl.obolibrary.org/obo/PSDO_0000094"
+        "MPOG_goal": "http://purl.obolibrary.org/obo/PSDO_0000094",
     }
-    
+
     comparator_df["group.code"] = comparator_df["group.code"].replace(type_mapping)
 
-    
     performance_data_df.to_csv("PerformanceMeasureReport.csv", index=False)
     comparator_df.to_csv("ComparatorMeasureReport.csv", index=False)
     subject_data_df.to_csv("PractitionerRole.csv", index=False)
     preferences_data_df.to_csv("Preference.csv", index=False)
     history_data_df.to_csv("MessageHistory.csv", index=False)
-    
+
     # with pd.ExcelWriter("output.xlsx", engine="openpyxl") as writer:
     #     performance_data_df.to_excel(writer, sheet_name="performance data", index=False)
     #     subject_data_df.to_excel(writer, sheet_name="PractitionerRole", index=False)

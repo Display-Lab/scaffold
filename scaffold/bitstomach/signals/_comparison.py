@@ -85,7 +85,7 @@ class Comparison(Signal):
         for comparator in comp_cols:
             comparator_value = perf_data[-1:][comparator] / 100
 
-            gap = perf_data[-1:]["passed_rate"] - comparator_value
+            gap = perf_data[-1:]["measureScore.rate"] - comparator_value
             gaps[comparator] = (gap.item(), comparator_value.item())
 
         return gaps

@@ -34,12 +34,19 @@ class Trend(Signal):
 
     @staticmethod
     def last_three_month_are_valid_and_consecutive(perf_data: pd.DataFrame):
-        if perf_data["passed_rate"].count() < 3 or not perf_data[-3:]["valid"].all():
+        if (
+            perf_data["measureScore.rate"].count() < 3
+            or not perf_data[-3:]["valid"].all()
+        ):
             return False
 
-        current_month = pd.to_datetime(perf_data.loc[perf_data.index[-1], "month"])
-        last_month = pd.to_datetime(perf_data.loc[perf_data.index[-2], "month"])
-        last_last_month = pd.to_datetime(perf_data.loc[perf_data.index[-3], "month"])
+        current_month = pd.to_datetime(
+            perf_data.loc[perf_data.index[-1], "period.start"]
+        )
+        last_month = pd.to_datetime(perf_data.loc[perf_data.index[-2], "period.start"])
+        last_last_month = pd.to_datetime(
+            perf_data.loc[perf_data.index[-3], "period.start"]
+        )
         if current_month - relativedelta(months=1) != last_month:
             return False
 
@@ -88,7 +95,7 @@ class Trend(Signal):
         calcolates the slope of a monotonically increasing or decreasing trend over three month.
         """
 
-        performance_rates = perf_data["passed_rate"]
+        performance_rates = perf_data["measureScore.rate"]
         change_this_month = performance_rates.iloc[-1] - performance_rates.iloc[-2]
         change_last_month = performance_rates.iloc[-2] - performance_rates.iloc[-3]
 
