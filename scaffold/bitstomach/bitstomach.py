@@ -35,8 +35,6 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
 def prepare():
     performance_df = context.performance_df
 
-    performance_df["goal_comparator_content"] = performance_df["MPOG_goal"]
-
     performance_df = performance_df[
         performance_df["period.start"] <= context.performance_month
     ]

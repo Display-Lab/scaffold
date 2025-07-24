@@ -146,17 +146,11 @@ class Loss(Signal):
         """
         calculates the number of consecutive negative gaps prior to this months positive gap.
         """
-        comp_cols = {
-            PSDO["peer_average_comparator"]: "peer_average_comparator",
-            PSDO["peer_75th_percentile_benchmark"]: "peer_75th_percentile_benchmark",
-            PSDO["peer_90th_percentile_benchmark"]: "peer_90th_percentile_benchmark",
-            PSDO["goal_comparator_content"]: "goal_comparator_content",
-        }
 
         comparator_id = comparator.value(RDF.type).identifier
 
         gaps = (
-            perf_data["measureScore.rate"] - perf_data[comp_cols[comparator_id]] / 100
+            perf_data["measureScore.rate"] - perf_data[str(comparator_id)] / 100
         )
 
         # find the number of consecutive positive gaps

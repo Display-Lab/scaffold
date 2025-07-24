@@ -77,19 +77,9 @@ def from_global(subject_num):
             right_on="PractitionerRole.practitioner",
         )
 
-        group_code_map = {
-            "http://purl.obolibrary.org/obo/PSDO_0000126": "peer_average_comparator",
-            "http://purl.obolibrary.org/obo/PSDO_0000128": "peer_75th_percentile_benchmark",
-            "http://purl.obolibrary.org/obo/PSDO_0000129": "peer_90th_percentile_benchmark",
-            "http://purl.obolibrary.org/obo/PSDO_0000094": "MPOG_goal",
-        }
-        comparator_measure_report = startup.comparator_measure_report.copy()
-        comparator_measure_report["group_code_label"] = comparator_measure_report[
-            "group.code"
-        ].map(group_code_map)
-        pivoted_comparator = comparator_measure_report.pivot_table(
+        pivoted_comparator = startup.comparator_measure_report.pivot_table(
             index=["period.start", "measure", "group.subject", "PractitionerRole.code"],
-            columns="group_code_label",
+            columns="group.code",
             values="measureScore.rate",
         ).reset_index()
 
