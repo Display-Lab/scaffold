@@ -1,3 +1,4 @@
+import json
 import pandas as pd
 from rdflib import RDF, BNode, Graph
 
@@ -11,12 +12,42 @@ COLUMNS = [
     "period.start",
     "measureScore.rate",
     "measureScore.denominator",
-    "peer_average_comparator",
-    "peer_75th_percentile_benchmark",
-    "peer_90th_percentile_benchmark",
-    "MPOG_goal",
+    "http://purl.obolibrary.org/obo/PSDO_0000126",
+    "http://purl.obolibrary.org/obo/PSDO_0000128",
+    "http://purl.obolibrary.org/obo/PSDO_0000129",
+    "http://purl.obolibrary.org/obo/PSDO_0000094",
 ]
 
+comparators = [
+    {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
+        "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"]            
+    },
+    {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
+        "@type": [
+            "http://purl.obolibrary.org/obo/PSDO_0000093",
+            "http://purl.obolibrary.org/obo/PSDO_0000095",
+        ]
+    },
+    {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
+        "@type": [
+            "http://purl.obolibrary.org/obo/PSDO_0000093",
+            "http://purl.obolibrary.org/obo/PSDO_0000095",
+        ]
+    },
+    {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
+        "@type": [
+            "http://purl.obolibrary.org/obo/PSDO_0000093",
+            "http://purl.obolibrary.org/obo/PSDO_0000095",
+        ]
+    },
+]
+jsonld_str = json.dumps(comparators)
+
+context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
 
 def test_extract_signals_return_a_graph():
     df = pd.DataFrame()

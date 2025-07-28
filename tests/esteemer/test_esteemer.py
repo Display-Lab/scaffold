@@ -1,3 +1,4 @@
+import json
 import pandas as pd
 import pytest
 from rdflib import RDF, BNode, Graph, Literal, URIRef
@@ -59,6 +60,36 @@ MPM = {
     },
 }
 
+comparators = [
+    {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
+        "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"]            
+    },
+    {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
+        "@type": [
+            "http://purl.obolibrary.org/obo/PSDO_0000093",
+            "http://purl.obolibrary.org/obo/PSDO_0000095",
+        ]
+    },
+    {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
+        "@type": [
+            "http://purl.obolibrary.org/obo/PSDO_0000093",
+            "http://purl.obolibrary.org/obo/PSDO_0000095",
+        ]
+    },
+    {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
+        "@type": [
+            "http://purl.obolibrary.org/obo/PSDO_0000093",
+            "http://purl.obolibrary.org/obo/PSDO_0000095",
+        ]
+    },
+]
+jsonld_str = json.dumps(comparators)
+
+context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
 
 @pytest.fixture
 def history():
@@ -95,10 +126,10 @@ def performance_data_frame():
             "period.start",
             "measureScore.rate",
             "measureScore.denominator",
-            "peer_average_comparator",
-            "peer_75th_percentile_benchmark",
-            "peer_90th_percentile_benchmark",
-            "MPOG_goal",
+            "http://purl.obolibrary.org/obo/PSDO_0000126",
+            "http://purl.obolibrary.org/obo/PSDO_0000128",
+            "http://purl.obolibrary.org/obo/PSDO_0000129",
+            "http://purl.obolibrary.org/obo/PSDO_0000094",
         ],
         [157, "PONV05", "2023-06-01", 0.93, 100, 84.0, 88.0, 90.0, 99.0],
         [157, "PONV05", "2023-07-01", 0.94, 100, 84.0, 88.0, 90.0, 99.0],
@@ -221,10 +252,10 @@ def test_social_worse_score():
             "period.start",
             "valid",
             "measureScore.rate",
-            "peer_average_comparator",
-            "peer_75th_percentile_benchmark",
-            "peer_90th_percentile_benchmark",
-            "goal_comparator_content",
+            "http://purl.obolibrary.org/obo/PSDO_0000126",
+            "http://purl.obolibrary.org/obo/PSDO_0000128",
+            "http://purl.obolibrary.org/obo/PSDO_0000129",
+            "http://purl.obolibrary.org/obo/PSDO_0000094",
         ],
     )
     data_frame[data_frame.columns[-4:]] = [90.0, 92.0, 94.0, 90.0]
@@ -292,10 +323,10 @@ def test_goal_gain_score():
             "period.start",
             "valid",
             "measureScore.rate",
-            "peer_average_comparator",
-            "peer_75th_percentile_benchmark",
-            "peer_90th_percentile_benchmark",
-            "goal_comparator_content",
+            "http://purl.obolibrary.org/obo/PSDO_0000126",
+            "http://purl.obolibrary.org/obo/PSDO_0000128",
+            "http://purl.obolibrary.org/obo/PSDO_0000129",
+            "http://purl.obolibrary.org/obo/PSDO_0000094",
         ],
     )
 
@@ -323,10 +354,10 @@ def test_goal_loss_score():
             "period.start",
             "valid",
             "measureScore.rate",
-            "peer_average_comparator",
-            "peer_75th_percentile_benchmark",
-            "peer_90th_percentile_benchmark",
-            "goal_comparator_content",
+            "http://purl.obolibrary.org/obo/PSDO_0000126",
+            "http://purl.obolibrary.org/obo/PSDO_0000128",
+            "http://purl.obolibrary.org/obo/PSDO_0000129",
+            "http://purl.obolibrary.org/obo/PSDO_0000094",
         ],
     )
     data_frame[data_frame.columns[-4:]] = [90.0, 92.0, 94.0, 90.0]

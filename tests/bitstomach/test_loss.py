@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 import pandas as pd
@@ -5,6 +6,7 @@ import pytest
 from rdflib import RDF, BNode, Graph, Literal
 from rdflib.resource import Resource
 
+from scaffold import context
 from scaffold.bitstomach.signals import Loss
 from scaffold.utils.namespace import PSDO, SLOWMO
 
@@ -19,10 +21,10 @@ def perf_data() -> pd.DataFrame:
             "period.start",
             "measureScore.rate",
             "measureScore.denominator",
-            "peer_average_comparator",
-            "peer_75th_percentile_benchmark",
-            "peer_90th_percentile_benchmark",
-            "goal_comparator_content",
+            "http://purl.obolibrary.org/obo/PSDO_0000126",
+            "http://purl.obolibrary.org/obo/PSDO_0000128",
+            "http://purl.obolibrary.org/obo/PSDO_0000129",
+            "http://purl.obolibrary.org/obo/PSDO_0000094",
         ],
         [True, 157, "BP01", "2022-08-01", 0.97, 100.0, 85.0, 88.0, 90.0, 95.0],
         [True, 157, "BP01", "2022-09-01", 0.96, 100.0, 85.0, 89.0, 91.0, 95.0],
@@ -30,6 +32,37 @@ def perf_data() -> pd.DataFrame:
     ]
     df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
     df.attrs["performance_month"] = "2022-10-01"
+    
+    comparators = [
+        {
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
+            "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"]            
+        },
+        {
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
+            "@type": [
+                "http://purl.obolibrary.org/obo/PSDO_0000093",
+                "http://purl.obolibrary.org/obo/PSDO_0000095",
+            ]
+        },
+        {
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
+            "@type": [
+                "http://purl.obolibrary.org/obo/PSDO_0000093",
+                "http://purl.obolibrary.org/obo/PSDO_0000095",
+            ]
+        },
+        {
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
+            "@type": [
+                "http://purl.obolibrary.org/obo/PSDO_0000093",
+                "http://purl.obolibrary.org/obo/PSDO_0000095",
+            ]
+        },
+    ]
+    jsonld_str = json.dumps(comparators)
+
+    context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
     return df
 
 
@@ -151,14 +184,14 @@ def test_detect(perf_data):
     assert streap_length == 2
 
     new_row = pd.DataFrame(
-        {"measureScore.rate": [0.98], "goal_comparator_content": 95.0}
+        {"measureScore.rate": [0.98], "http://purl.obolibrary.org/obo/PSDO_0000094": 95.0}
     )
     perf_data = pd.concat([new_row, perf_data], ignore_index=True)
     streap_length = Loss._detect(perf_data, comparator)
     assert streap_length == 3
 
     new_row = pd.DataFrame(
-        {"measureScore.rate": [0.94], "goal_comparator_content": 95.0}
+        {"measureScore.rate": [0.94], "http://purl.obolibrary.org/obo/PSDO_0000094": 95.0}
     )
     perf_data = pd.concat([new_row, perf_data], ignore_index=True)
     streap_length = Loss._detect(perf_data, comparator)

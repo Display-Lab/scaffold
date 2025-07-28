@@ -1,3 +1,4 @@
+import json
 from typing import List, Tuple
 
 import pandas as pd
@@ -5,6 +6,7 @@ import pytest
 from rdflib import RDF, BNode, Graph, Literal
 from rdflib.resource import Resource
 
+from scaffold import context
 from scaffold.bitstomach.signals import Comparison
 from scaffold.utils.namespace import PSDO, SLOWMO
 
@@ -27,10 +29,10 @@ def perf_data() -> pd.DataFrame:
             "period.start",
             "measureScore.rate",
             "measureScore.denominator",
-            "peer_average_comparator",
-            "peer_75th_percentile_benchmark",
-            "peer_90th_percentile_benchmark",
-            "goal_comparator_content",
+            "http://purl.obolibrary.org/obo/PSDO_0000126",
+            "http://purl.obolibrary.org/obo/PSDO_0000128",
+            "http://purl.obolibrary.org/obo/PSDO_0000129",
+            "http://purl.obolibrary.org/obo/PSDO_0000094",
         ],
         [True, 157, "BP01", "2022-08-01", 0.85, 100.0, 84.0, 88.0, 90.0, 99.0],
         [
@@ -46,6 +48,37 @@ def perf_data() -> pd.DataFrame:
             100.0,
         ],
     ]
+    
+    comparators = [
+        {
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
+            "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"]            
+        },
+        {
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
+            "@type": [
+                "http://purl.obolibrary.org/obo/PSDO_0000093",
+                "http://purl.obolibrary.org/obo/PSDO_0000095",
+            ]
+        },
+        {
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
+            "@type": [
+                "http://purl.obolibrary.org/obo/PSDO_0000093",
+                "http://purl.obolibrary.org/obo/PSDO_0000095",
+            ]
+        },
+        {
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
+            "@type": [
+                "http://purl.obolibrary.org/obo/PSDO_0000093",
+                "http://purl.obolibrary.org/obo/PSDO_0000095",
+            ]
+        },
+    ]
+    jsonld_str = json.dumps(comparators)
+
+    context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
     return pd.DataFrame(performance_data[1:], columns=performance_data[0])
 
 
@@ -82,7 +115,7 @@ def test_multiple_gap_values(perf_data):
 
     assert 4 == len(signals)
 
-    expected_gap_sizes = [0.05, 0.01, -0.01, -0.1]
+    expected_gap_sizes = [-0.1,0.05, 0.01, -0.01]
 
     for index, signal in enumerate(signals):
         v = signal.value(SLOWMO.PerformanceGapSize).value
@@ -94,7 +127,7 @@ def test_comparator_node(perf_data):
 
     signals = signal.detect(perf_data)
 
-    expected_comparator_values = [0.85, 0.89, 0.91, 1.0]
+    expected_comparator_values = [ 1.0, 0.85, 0.89, 0.91]
 
     for index, signal in enumerate(signals):
         assert Literal(expected_comparator_values[index]) == signal.value(
@@ -149,7 +182,7 @@ def test_comparison_has_super_type(perf_data):
 
     signals = signal.detect(perf_data)
 
-    s = signals[0]
+    s = signals[1]
     assert s.graph.resource(PSDO.motivating_information) in s[RDF.type]
     assert s.graph.resource(PSDO.performance_gap_content) in s[RDF.type]
     assert s.graph.resource(PSDO.positive_performance_gap_content) in s[RDF.type]
@@ -167,7 +200,7 @@ def test_can_get_dispositions(perf_data, perf_info):
     signal = Comparison()
     signals = signal.detect(perf_data)
 
-    s = signals[0]  # positive performance gap to peer average
+    s = signals[1]  # positive performance gap to peer average
 
     perf_content.add(PSDO.motivating_information, s)
     g += s.graph
@@ -186,4 +219,4 @@ def test_can_get_dispositions(perf_data, perf_info):
 def test_detect1(perf_data):
     gaps: dict = Comparison._detect(perf_data[-1:])
 
-    assert gaps["peer_90th_percentile_benchmark"][0] == pytest.approx(-0.01)
+    assert gaps["http://purl.obolibrary.org/obo/PSDO_0000129"][0] == pytest.approx(-0.01)
