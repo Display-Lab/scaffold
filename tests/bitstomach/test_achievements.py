@@ -6,10 +6,10 @@ import pytest
 from rdflib import RDF, BNode, Graph, Literal
 from rdflib.resource import Resource
 
+from scaffold import context
 from scaffold.bitstomach.signals import Achievement
 from scaffold.bitstomach.signals._comparison import Comparison
 from scaffold.utils.namespace import PSDO, SLOWMO
-from scaffold import context
 
 
 @pytest.fixture
@@ -47,28 +47,28 @@ def perf_data() -> pd.DataFrame:
     comparators = [
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
-            "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"]            
+            "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"],
         },
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
             "@type": [
                 "http://purl.obolibrary.org/obo/PSDO_0000093",
                 "http://purl.obolibrary.org/obo/PSDO_0000095",
-            ]
+            ],
         },
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
             "@type": [
                 "http://purl.obolibrary.org/obo/PSDO_0000093",
                 "http://purl.obolibrary.org/obo/PSDO_0000095",
-            ]
+            ],
         },
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
             "@type": [
                 "http://purl.obolibrary.org/obo/PSDO_0000093",
                 "http://purl.obolibrary.org/obo/PSDO_0000095",
-            ]
+            ],
         },
     ]
     jsonld_str = json.dumps(comparators)
@@ -112,9 +112,12 @@ def test_signal_properties(perf_data):
     signals = Achievement.detect(perf_data)
     signal = None
     for s in signals:
-        if str(Comparison.comparator_type(s)) == 'http://purl.obolibrary.org/obo/PSDO_0000128':
-            signal= s
-    
+        if (
+            str(Comparison.comparator_type(s))
+            == "http://purl.obolibrary.org/obo/PSDO_0000128"
+        ):
+            signal = s
+
     assert isinstance(signal, Resource)
 
     slope = signal.value(SLOWMO.PerformanceTrendSlope).value
@@ -191,14 +194,20 @@ def test_detect(perf_data):
     assert streap_length == 2
 
     new_row = pd.DataFrame(
-        {"measureScore.rate": [0.81], "http://purl.obolibrary.org/obo/PSDO_0000129": 90.0}
+        {
+            "measureScore.rate": [0.81],
+            "http://purl.obolibrary.org/obo/PSDO_0000129": 90.0,
+        }
     )
     perf_data = pd.concat([new_row, perf_data], ignore_index=True)
     streap_length = Achievement._detect(perf_data, comparator)
     assert streap_length == 3
 
     new_row = pd.DataFrame(
-        {"measureScore.rate": [0.91], "http://purl.obolibrary.org/obo/PSDO_0000129": 90.0}
+        {
+            "measureScore.rate": [0.91],
+            "http://purl.obolibrary.org/obo/PSDO_0000129": 90.0,
+        }
     )
     perf_data = pd.concat([new_row, perf_data], ignore_index=True)
     streap_length = Achievement._detect(perf_data, comparator)

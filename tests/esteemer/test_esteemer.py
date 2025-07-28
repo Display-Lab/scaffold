@@ -1,4 +1,5 @@
 import json
+
 import pandas as pd
 import pytest
 from rdflib import RDF, BNode, Graph, Literal, URIRef
@@ -63,33 +64,34 @@ MPM = {
 comparators = [
     {
         "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
-        "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"]            
+        "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"],
     },
     {
         "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
         "@type": [
             "http://purl.obolibrary.org/obo/PSDO_0000093",
             "http://purl.obolibrary.org/obo/PSDO_0000095",
-        ]
+        ],
     },
     {
         "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
         "@type": [
             "http://purl.obolibrary.org/obo/PSDO_0000093",
             "http://purl.obolibrary.org/obo/PSDO_0000095",
-        ]
+        ],
     },
     {
         "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
         "@type": [
             "http://purl.obolibrary.org/obo/PSDO_0000093",
             "http://purl.obolibrary.org/obo/PSDO_0000095",
-        ]
+        ],
     },
 ]
 jsonld_str = json.dumps(comparators)
 
 context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
+
 
 @pytest.fixture
 def history():

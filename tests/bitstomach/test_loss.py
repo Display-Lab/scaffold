@@ -32,32 +32,32 @@ def perf_data() -> pd.DataFrame:
     ]
     df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
     df.attrs["performance_month"] = "2022-10-01"
-    
+
     comparators = [
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
-            "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"]            
+            "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"],
         },
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
             "@type": [
                 "http://purl.obolibrary.org/obo/PSDO_0000093",
                 "http://purl.obolibrary.org/obo/PSDO_0000095",
-            ]
+            ],
         },
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
             "@type": [
                 "http://purl.obolibrary.org/obo/PSDO_0000093",
                 "http://purl.obolibrary.org/obo/PSDO_0000095",
-            ]
+            ],
         },
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
             "@type": [
                 "http://purl.obolibrary.org/obo/PSDO_0000093",
                 "http://purl.obolibrary.org/obo/PSDO_0000095",
-            ]
+            ],
         },
     ]
     jsonld_str = json.dumps(comparators)
@@ -184,14 +184,20 @@ def test_detect(perf_data):
     assert streap_length == 2
 
     new_row = pd.DataFrame(
-        {"measureScore.rate": [0.98], "http://purl.obolibrary.org/obo/PSDO_0000094": 95.0}
+        {
+            "measureScore.rate": [0.98],
+            "http://purl.obolibrary.org/obo/PSDO_0000094": 95.0,
+        }
     )
     perf_data = pd.concat([new_row, perf_data], ignore_index=True)
     streap_length = Loss._detect(perf_data, comparator)
     assert streap_length == 3
 
     new_row = pd.DataFrame(
-        {"measureScore.rate": [0.94], "http://purl.obolibrary.org/obo/PSDO_0000094": 95.0}
+        {
+            "measureScore.rate": [0.94],
+            "http://purl.obolibrary.org/obo/PSDO_0000094": 95.0,
+        }
     )
     perf_data = pd.concat([new_row, perf_data], ignore_index=True)
     streap_length = Loss._detect(perf_data, comparator)

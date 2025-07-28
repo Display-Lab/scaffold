@@ -75,7 +75,9 @@ class Comparison(Signal):
         """Calculate gap from levels and comparators"""
 
         gaps: dict = {}
-        for comparator in context.subject_graph.subjects(RDF.type, PSDO.comparator_content):
+        for comparator in context.subject_graph.subjects(
+            RDF.type, PSDO.comparator_content
+        ):
             comparator_iri = str(comparator)
             comparator_value = perf_data[-1:][comparator_iri] / 100
             gap = perf_data[-1:]["measureScore.rate"] - comparator_value

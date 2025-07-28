@@ -48,32 +48,32 @@ def perf_data() -> pd.DataFrame:
             100.0,
         ],
     ]
-    
+
     comparators = [
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
-            "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"]            
+            "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"],
         },
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
             "@type": [
                 "http://purl.obolibrary.org/obo/PSDO_0000093",
                 "http://purl.obolibrary.org/obo/PSDO_0000095",
-            ]
+            ],
         },
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
             "@type": [
                 "http://purl.obolibrary.org/obo/PSDO_0000093",
                 "http://purl.obolibrary.org/obo/PSDO_0000095",
-            ]
+            ],
         },
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
             "@type": [
                 "http://purl.obolibrary.org/obo/PSDO_0000093",
                 "http://purl.obolibrary.org/obo/PSDO_0000095",
-            ]
+            ],
         },
     ]
     jsonld_str = json.dumps(comparators)
@@ -115,7 +115,7 @@ def test_multiple_gap_values(perf_data):
 
     assert 4 == len(signals)
 
-    expected_gap_sizes = [-0.1,0.05, 0.01, -0.01]
+    expected_gap_sizes = [-0.1, 0.05, 0.01, -0.01]
 
     for index, signal in enumerate(signals):
         v = signal.value(SLOWMO.PerformanceGapSize).value
@@ -127,7 +127,7 @@ def test_comparator_node(perf_data):
 
     signals = signal.detect(perf_data)
 
-    expected_comparator_values = [ 1.0, 0.85, 0.89, 0.91]
+    expected_comparator_values = [1.0, 0.85, 0.89, 0.91]
 
     for index, signal in enumerate(signals):
         assert Literal(expected_comparator_values[index]) == signal.value(
@@ -219,4 +219,6 @@ def test_can_get_dispositions(perf_data, perf_info):
 def test_detect1(perf_data):
     gaps: dict = Comparison._detect(perf_data[-1:])
 
-    assert gaps["http://purl.obolibrary.org/obo/PSDO_0000129"][0] == pytest.approx(-0.01)
+    assert gaps["http://purl.obolibrary.org/obo/PSDO_0000129"][0] == pytest.approx(
+        -0.01
+    )
