@@ -14,7 +14,9 @@ class Trend(Signal):
     signal_type = PSDO.performance_trend_content
 
     @staticmethod
-    def detect(perf_data: pd.DataFrame) -> Optional[List[Resource]]:
+    def detect(
+        perf_data: pd.DataFrame, comparator_data=None
+    ) -> Optional[List[Resource]]:
         """
         detects trend signals that are monotonic increasing or decreasing over three month. The trend slope is recorded as moderator.
         trend type is PSDO.performance_trend_content (positive or negative)

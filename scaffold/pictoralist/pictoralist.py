@@ -26,10 +26,13 @@ class Pictoralist:
         ## Setup variables to process selected message
         # Needs cleanup to stop redundant var declaration (those passed directly to prepare_selected_message)
         self.performance_data = performance_dataframe  # Dataframe of recipient perf data (performance_data_df)
-        self.performance_data["passed_count"] = (
-            self.performance_data["measureScore.rate"]
-            * self.performance_data["measureScore.denominator"]
-        )
+        self.performance_data["passed_count"] = [
+            int(x)
+            for x in (
+                self.performance_data["measureScore.rate"]
+                * self.performance_data["measureScore.denominator"]
+            )
+        ]
         # Need refactor
         self.selected_measure = str(
             selected_candidate["measure_name"]

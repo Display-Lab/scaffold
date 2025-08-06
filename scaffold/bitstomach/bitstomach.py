@@ -19,9 +19,14 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
         return g
 
     for measure in perf_df.attrs["valid_measures"]:
-        measure_df = perf_df[perf_df["measure"] == measure].tail(12)
+        measure_df = (
+            perf_df[perf_df["measure"] == measure].tail(12).sort_values("period.start")
+        )
+        comparator_df = context.comparator_df[
+            context.comparator_df["measure"] == measure
+        ].sort_values("period.start")
         for signal_type in SIGNALS:
-            signals = signal_type.detect(measure_df)
+            signals = signal_type.detect(measure_df, comparator_df)
             if not signals:
                 continue
 

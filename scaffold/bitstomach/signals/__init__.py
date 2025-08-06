@@ -10,6 +10,10 @@ class Signal:
     signal_type: URIRef
 
     @classmethod
+    def detect(self, performance_df, comparator_df=None):
+        raise NotImplementedError("Subclasses must implement detect()")
+
+    @classmethod
     def select(cls, signals: List[Resource]) -> List[Resource]:
         """
         select method filters motivating information using the signal type

@@ -22,28 +22,41 @@ def perf_data() -> pd.DataFrame:
             "period.start",
             "measureScore.rate",
             "measureScore.denominator",
-            "http://purl.obolibrary.org/obo/PSDO_0000126",
-            "http://purl.obolibrary.org/obo/PSDO_0000128",
-            "http://purl.obolibrary.org/obo/PSDO_0000129",
-            "http://purl.obolibrary.org/obo/PSDO_0000094",
         ],
-        [True, 157, "BP01", "2022-08-01", 0.85, 100.0, 85.0, 88.0, 90.0, 99.0],
-        [
-            True,
-            157,
-            "BP01",
-            "2022-09-01",
-            0.86,
-            100.0,
-            85.0,
-            89.0,
-            91.0,
-            100.0,
-        ],
-        [True, 157, "BP01", "2022-10-01", 0.97, 100.0, 80.0, 85.0, 90.0, 95.0],
+        [True, 157, "BP01", "2022-08-01", 0.85, 100.0],
+        [True, 157, "BP01", "2022-09-01", 0.86, 100.0],
+        [True, 157, "BP01", "2022-10-01", 0.97, 100.0],
     ]
     df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
     df.attrs["performance_month"] = "2022-10-01"
+
+    return df
+
+
+@pytest.fixture
+def comparator_data() -> pd.DataFrame:
+    comparator_data = [
+        [
+            "measure",
+            "period.start",
+            "measureScore.rate",
+            "group.code",
+        ],
+        ["BP01", "2022-08-01", 85.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP01", "2022-08-01", 88.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["BP01", "2022-08-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["BP01", "2022-08-01", 99.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP01", "2022-09-01", 85.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP01", "2022-09-01", 89.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["BP01", "2022-09-01", 91.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["BP01", "2022-09-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP01", "2022-10-01", 80.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP01", "2022-10-01", 85.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["BP01", "2022-10-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["BP01", "2022-10-01", 95.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+    ]
+    comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
+
     comparators = [
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
@@ -74,7 +87,7 @@ def perf_data() -> pd.DataFrame:
     jsonld_str = json.dumps(comparators)
 
     context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
-    return df
+    return comparator_df
 
 
 def test_achievement_is_rdf_type():
@@ -105,11 +118,11 @@ def test_disposition():
 
 def test_detect_handles_empty_datframe():
     with pytest.raises(ValueError):
-        Achievement.detect(pd.DataFrame())
+        Achievement.detect(pd.DataFrame(), pd.DataFrame())
 
 
-def test_signal_properties(perf_data):
-    signals = Achievement.detect(perf_data)
+def test_signal_properties(perf_data, comparator_data):
+    signals = Achievement.detect(perf_data, comparator_data)
     signal = None
     for s in signals:
         if (
@@ -172,12 +185,14 @@ perf_level_test_set = [
 @pytest.mark.parametrize(
     "perf_level, comparator_values, types, condition", perf_level_test_set
 )
-def test_detect_signals(perf_level, comparator_values, types, condition, perf_data):
+def test_detect_signals(
+    perf_level, comparator_values, types, condition, perf_data, comparator_data
+):
     perf_data2 = perf_data.assign(**{"measureScore.rate": perf_level})
 
-    perf_data2.iloc[:, -4:] = comparator_values
-
-    signals = Achievement.detect(perf_data2)
+    # perf_data2.iloc[:, -4:] = comparator_values
+    comparator_data["measureScore.rate"] = comparator_values * 3
+    signals = Achievement.detect(perf_data2, comparator_data)
 
     comparators = {
         s.value(SLOWMO.RegardingComparator / RDF.type).identifier for s in signals
@@ -186,39 +201,60 @@ def test_detect_signals(perf_level, comparator_values, types, condition, perf_da
     assert comparators == types, condition + " failed"
 
 
-def test_detect(perf_data):
+def test_detect(perf_data, comparator_data):
     g: Graph = Graph()
     comparator = g.resource(BNode())
     comparator[RDF.type] = PSDO.peer_90th_percentile_benchmark
-    streap_length = Achievement._detect(perf_data, comparator)
+    streap_length = Achievement._detect(perf_data, comparator, comparator_data)
     assert streap_length == 2
 
-    new_row = pd.DataFrame(
+    new_row_perf = pd.DataFrame(
         {
+            "period.start": "2022-07-01",
             "measureScore.rate": [0.81],
-            "http://purl.obolibrary.org/obo/PSDO_0000129": 90.0,
         }
     )
-    perf_data = pd.concat([new_row, perf_data], ignore_index=True)
-    streap_length = Achievement._detect(perf_data, comparator)
+    new_row_comp = pd.DataFrame(
+        {
+            "period.start": "2022-07-01",
+            "measureScore.rate": [90.0],
+            "group.code": "http://purl.obolibrary.org/obo/PSDO_0000129",
+        }
+    )
+    perf_data = pd.concat([new_row_perf, perf_data], ignore_index=True)
+    comparator_data = pd.concat([new_row_comp, comparator_data], ignore_index=True)
+    streap_length = Achievement._detect(perf_data, comparator, comparator_data)
     assert streap_length == 3
 
-    new_row = pd.DataFrame(
+    new_row_perf = pd.DataFrame(
         {
+            "period.start": "2022-06-01",
             "measureScore.rate": [0.91],
-            "http://purl.obolibrary.org/obo/PSDO_0000129": 90.0,
         }
     )
-    perf_data = pd.concat([new_row, perf_data], ignore_index=True)
-    streap_length = Achievement._detect(perf_data, comparator)
+
+    new_row_comp = pd.DataFrame(
+        {
+            "period.start": "2022-06-01",
+            "measureScore.rate": [90.0],
+            "group.code": "http://purl.obolibrary.org/obo/PSDO_0000129",
+        }
+    )
+    perf_data = pd.concat([new_row_perf, perf_data], ignore_index=True)
+    comparator_data = pd.concat([new_row_comp, comparator_data], ignore_index=True)
+    streap_length = Achievement._detect(perf_data, comparator, comparator_data)
     assert streap_length == 3
     pass
 
 
-def test_only_current_month_no_achievement(perf_data):
-    assert [] == Achievement.detect(perf_data[-2:])  # Prior month but no trend
-    assert [] == Achievement.detect(perf_data[-1:])  # only current month
-    assert [] != Achievement.detect(perf_data[:])  # three months
+def test_only_current_month_no_achievement(perf_data, comparator_data):
+    assert [] == Achievement.detect(
+        perf_data[-2:], comparator_data
+    )  # Prior month but no trend
+    assert [] == Achievement.detect(
+        perf_data[-1:], comparator_data
+    )  # only current month
+    assert [] != Achievement.detect(perf_data[:], comparator_data)  # three months
 
 
 def test_moderators_return_dictionary():

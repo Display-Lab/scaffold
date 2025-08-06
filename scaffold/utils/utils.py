@@ -4,7 +4,7 @@ import sys
 import pandas as pd
 from loguru import logger
 
-from scaffold import context
+from scaffold import context, startup
 from scaffold.utils.settings import settings
 
 candidate_df: pd.DataFrame = pd.DataFrame()
@@ -143,3 +143,30 @@ def set_logger():
     logger.at_least = (
         lambda lvl: logger.level(lvl).no >= logger.level(settings.log_level).no
     )
+
+
+def merge_and_pivot(performance_df):
+    # prepare performance data
+    performance_enriched = performance_df.merge(
+        startup.practitioner_role,
+        how="left",
+        left_on="subject",
+        right_on="PractitionerRole.practitioner",
+    )
+
+    pivoted_comparator = context.comparator_df.pivot_table(
+        index=["period.start", "measure", "group.subject", "PractitionerRole.code"],
+        columns="group.code",
+        values="measureScore.rate",
+    ).reset_index()
+
+    final_df = performance_enriched.merge(
+        pivoted_comparator,
+        how="left",
+        left_on=["period.start", "measure"],
+        right_on=["period.start", "measure"],
+    )
+
+    performance_df = final_df.copy()
+
+    return performance_df

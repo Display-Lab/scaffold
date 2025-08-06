@@ -104,19 +104,24 @@ def test_resource_selects_pos_or_neg():
 
 
 def test_select_ignores_signals_of_a_different_type():
+    comparator_data = [
+        [
+            "period.start",
+            "measureScore.rate",
+            "group.code",
+        ],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+    ]
+    comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
     r1 = Comparison().detect(
         pd.DataFrame(
-            columns=[
-                "valid",
-                "measure",
-                "measureScore.rate",
-                "http://purl.obolibrary.org/obo/PSDO_0000126",
-                "http://purl.obolibrary.org/obo/PSDO_0000128",
-                "http://purl.obolibrary.org/obo/PSDO_0000129",
-                "http://purl.obolibrary.org/obo/PSDO_0000094",
-            ],
-            data=[[True, "PONV05", 80, 90, 90, 90, 90]],
-        )
+            columns=["period.start", "valid", "measure", "measureScore.rate"],
+            data=[["2023-11-01", True, "PONV05", 0.80]],
+        ),
+        comparator_df,
     )
 
     r2 = Trend.detect(

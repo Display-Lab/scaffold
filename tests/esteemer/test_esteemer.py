@@ -128,14 +128,10 @@ def performance_data_frame():
             "period.start",
             "measureScore.rate",
             "measureScore.denominator",
-            "http://purl.obolibrary.org/obo/PSDO_0000126",
-            "http://purl.obolibrary.org/obo/PSDO_0000128",
-            "http://purl.obolibrary.org/obo/PSDO_0000129",
-            "http://purl.obolibrary.org/obo/PSDO_0000094",
         ],
-        [157, "PONV05", "2023-06-01", 0.93, 100, 84.0, 88.0, 90.0, 99.0],
-        [157, "PONV05", "2023-07-01", 0.94, 100, 84.0, 88.0, 90.0, 99.0],
-        [157, "PONV05", "2023-08-01", 0.95, 100, 84.0, 88.0, 90.0, 99.0],
+        [157, "PONV05", "2023-06-01", 0.93, 100],
+        [157, "PONV05", "2023-07-01", 0.94, 100],
+        [157, "PONV05", "2023-08-01", 0.95, 100],
     ]
 
     performance_df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
@@ -147,7 +143,33 @@ def performance_data_frame():
 
 
 @pytest.fixture
-def candidate_resource(performance_data_frame):
+def comparator_data_frame():
+    comparator_data = [
+        [
+            "measure",
+            "period.start",
+            "measureScore.rate",
+            "group.code",
+        ],
+        ["PONV05", "2023-06-01", 84.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["PONV05", "2023-06-01", 88.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["PONV05", "2023-06-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["PONV05", "2023-06-01", 99.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["PONV05", "2023-07-01", 84.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["PONV05", "2023-07-01", 88.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["PONV05", "2023-07-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["PONV05", "2023-07-01", 99.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["PONV05", "2023-08-01", 84.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["PONV05", "2023-08-01", 88.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["PONV05", "2023-08-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["PONV05", "2023-08-01", 99.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+    ]
+    comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
+    return comparator_df
+
+
+@pytest.fixture
+def candidate_resource(performance_data_frame, comparator_data_frame):
     graph = Graph()
 
     candidate_resource = graph.resource(BNode())
@@ -156,7 +178,9 @@ def candidate_resource(performance_data_frame):
     candidate_resource[SLOWMO.AncestorTemplate] = URIRef(TEMPLATE_A)
     candidate_resource[SLOWMO.RegardingMeasure] = BNode("PONV05")
 
-    motivating_informations = Comparison.detect(performance_data_frame)
+    motivating_informations = Comparison.detect(
+        performance_data_frame, comparator_data_frame
+    )
 
     performance_content = graph.resource(BNode("performance_content"))
     for s in motivating_informations:
@@ -230,13 +254,15 @@ def test_history_with_two_recurrances(candidate_resource, history):
     assert score == pytest.approx(0.586589)
 
 
-def test_social_better_score(performance_data_frame):
+def test_social_better_score(performance_data_frame, comparator_data_frame):
     graph = Graph()
     candidate_resource = graph.resource(BNode())
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.peer_90th_percentile_benchmark
     candidate_resource[SLOWMO.AcceptableBy] = Literal("Social Better")
 
-    motivating_informations = Comparison.detect(performance_data_frame)
+    motivating_informations = Comparison.detect(
+        performance_data_frame, comparator_data_frame
+    )
     score = esteemer.score_better(
         candidate_resource, motivating_informations, MPM["Social Better"]
     )
@@ -260,14 +286,33 @@ def test_social_worse_score():
             "http://purl.obolibrary.org/obo/PSDO_0000094",
         ],
     )
-    data_frame[data_frame.columns[-4:]] = [90.0, 92.0, 94.0, 90.0]
+    comparator_data = [
+        [
+            "period.start",
+            "measureScore.rate",
+            "group.code",
+        ],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2023-11-01", 92.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2023-11-01", 94.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["2023-12-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2023-12-01", 92.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2023-12-01", 94.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2023-12-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["2024-01-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2024-01-01", 92.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2024-01-01", 94.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2024-01-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+    ]
+    comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
 
     graph = Graph()
     candidate_resource = graph.resource(BNode())
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.peer_average_comparator
     candidate_resource[SLOWMO.AcceptableBy] = Literal("Social Worse")
 
-    motivating_informations = Comparison.detect(data_frame)
+    motivating_informations = Comparison.detect(data_frame, comparator_df)
     score = esteemer.score_worse(
         candidate_resource, motivating_informations, MPM["Social Worse"]
     )
@@ -321,24 +366,35 @@ def test_goal_gain_score():
             "valid": [True, True, True],
             "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
         },
-        columns=[
-            "period.start",
-            "valid",
-            "measureScore.rate",
-            "http://purl.obolibrary.org/obo/PSDO_0000126",
-            "http://purl.obolibrary.org/obo/PSDO_0000128",
-            "http://purl.obolibrary.org/obo/PSDO_0000129",
-            "http://purl.obolibrary.org/obo/PSDO_0000094",
-        ],
+        columns=["period.start", "valid", "measureScore.rate"],
     )
 
-    data_frame[data_frame.columns[-4:]] = [90.0, 92.0, 94.0, 90.0]
+    comparator_data = [
+        [
+            "period.start",
+            "measureScore.rate",
+            "group.code",
+        ],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2023-11-01", 92.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2023-11-01", 94.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["2023-12-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2023-12-01", 92.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2023-12-01", 94.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2023-12-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["2024-01-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2024-01-01", 92.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2024-01-01", 94.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2024-01-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+    ]
+    comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
     graph = Graph()
     candidate_resource = graph.resource(BNode())
     candidate_resource[SLOWMO.AcceptableBy] = Literal("Goal Gain")
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.goal_comparator_content
 
-    motivating_informations = Achievement.detect(data_frame)
+    motivating_informations = Achievement.detect(data_frame, comparator_df)
     score = esteemer.score_gain(
         candidate_resource, motivating_informations, MPM["Goal Gain"]
     )
@@ -352,24 +408,35 @@ def test_goal_loss_score():
             "valid": [True, True, True],
             "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
         },
-        columns=[
-            "period.start",
-            "valid",
-            "measureScore.rate",
-            "http://purl.obolibrary.org/obo/PSDO_0000126",
-            "http://purl.obolibrary.org/obo/PSDO_0000128",
-            "http://purl.obolibrary.org/obo/PSDO_0000129",
-            "http://purl.obolibrary.org/obo/PSDO_0000094",
-        ],
+        columns=["period.start", "valid", "measureScore.rate"],
     )
-    data_frame[data_frame.columns[-4:]] = [90.0, 92.0, 94.0, 90.0]
+    comparator_data = [
+        [
+            "period.start",
+            "measureScore.rate",
+            "group.code",
+        ],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2023-11-01", 92.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2023-11-01", 94.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["2023-12-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2023-12-01", 92.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2023-12-01", 94.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2023-12-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["2024-01-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2024-01-01", 92.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2024-01-01", 94.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2024-01-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+    ]
+    comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
 
     graph = Graph()
     candidate_resource = graph.resource(BNode())
     candidate_resource[SLOWMO.AcceptableBy] = Literal("Goal Loss")
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.goal_comparator_content
 
-    motivating_informations = Loss.detect(data_frame)
+    motivating_informations = Loss.detect(data_frame, comparator_df)
     score = esteemer.score_loss(
         candidate_resource, motivating_informations, MPM["Goal Loss"]
     )

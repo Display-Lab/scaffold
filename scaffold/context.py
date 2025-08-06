@@ -10,6 +10,7 @@ history_dict = {}
 subject = 0
 performance_month = ""
 performance_df: pd.DataFrame
+comparator_df: pd.DataFrame
 subject_graph = Graph()
 
 
@@ -60,7 +61,8 @@ def from_global(subject_num):
         subject, \
         performance_month, \
         performance_df, \
-        subject_graph
+        subject_graph, \
+        comparator_df
 
     subject = int(subject_num)
 
@@ -68,39 +70,15 @@ def from_global(subject_num):
         performance_df = startup.performance_measure_report[
             startup.performance_measure_report["subject"] == subject
         ].reset_index(drop=True)
-
-        # prepare performance data
-        performance_enriched = performance_df.merge(
-            startup.practitioner_role,
-            how="left",
-            left_on="subject",
-            right_on="PractitionerRole.practitioner",
-        )
-
-        pivoted_comparator = startup.comparator_measure_report.pivot_table(
-            index=["period.start", "measure", "group.subject", "PractitionerRole.code"],
-            columns="group.code",
-            values="measureScore.rate",
-        ).reset_index()
-
-        final_df = performance_enriched.merge(
-            pivoted_comparator,
-            how="left",
-            left_on=[
-                "period.start",
-                "measure",
-                "PractitionerRole.organization",
-                "PractitionerRole.code",
-            ],
-            right_on=[
-                "period.start",
-                "measure",
-                "group.subject",
-                "PractitionerRole.code",
-            ],
-        ).drop(columns=["group.subject"])
-
-        performance_df = final_df.copy()
+        practitioner_role = startup.practitioner_role[
+            startup.practitioner_role["PractitionerRole.practitioner"] == subject
+        ].copy()
+        org_id = practitioner_role.iloc[0]["PractitionerRole.organization"]
+        role = practitioner_role.iloc[0]["PractitionerRole.code"]
+        comparator_df = startup.comparator_measure_report[
+            (startup.comparator_measure_report["group.subject"] == org_id)
+            & (startup.comparator_measure_report["PractitionerRole.code"] == role)
+        ].reset_index(drop=True)
     except Exception:
         pass
 

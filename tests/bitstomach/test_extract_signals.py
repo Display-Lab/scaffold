@@ -13,10 +13,6 @@ COLUMNS = [
     "period.start",
     "measureScore.rate",
     "measureScore.denominator",
-    "http://purl.obolibrary.org/obo/PSDO_0000126",
-    "http://purl.obolibrary.org/obo/PSDO_0000128",
-    "http://purl.obolibrary.org/obo/PSDO_0000129",
-    "http://purl.obolibrary.org/obo/PSDO_0000094",
 ]
 
 comparators = [
@@ -64,11 +60,34 @@ def test_extract_signals_return_a_graph():
 def test_returns_performance_content_with_multiple_elements():
     perf_data = [
         COLUMNS,
-        [157, "SUS04", "2022-10-01", 100, 29, 81.7, 100.0, 100.0, 90.0],
-        [157, "SUS04", "2022-11-01", 100, 29, 81.7, 100.0, 100.0, 90.0],
-        [157, "PONV05", "2022-11-01", 100, 40, 82.4, 100.0, 100.0, 90.0],
+        [157, "SUS04", "2022-10-01", 1, 100],
+        [157, "SUS04", "2022-11-01", 1, 100],
+        [157, "PONV05", "2022-11-01", 1, 100],
     ]
     performance_df = pd.DataFrame(perf_data[1:], columns=COLUMNS)
+
+    comparator_data = [
+        [
+            "measure",
+            "period.start",
+            "measureScore.rate",
+            "group.code",
+        ],
+        ["SUS04", "2022-10-01", 81.7, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["SUS04", "2022-10-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["SUS04", "2022-10-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["SUS04", "2022-10-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["SUS04", "2022-11-01", 81.7, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["SUS04", "2022-11-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["SUS04", "2022-11-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["SUS04", "2022-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["PONV05", "2022-11-01", 82.4, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["PONV05", "2022-11-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["PONV05", "2022-11-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["PONV05", "2022-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+    ]
+    comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
+    context.comparator_df = comparator_df
     context.performance_month = "2022-11-01"
     context.subject = 157
     context.performance_df = performance_df
@@ -92,10 +111,10 @@ def test_returns_performance_content_with_multiple_elements():
 def test_fix_up_marks_low_count_as_invalid():
     perf_data = [
         COLUMNS,
-        [157, "SUS04", "2022-11-01", 100, 29, 81.7, 100.0, 100.0, 90.0],
-        [157, "PONV05", "2022-11-01", 100, 4, 82.4, 100.0, 100.0, 90.0],
-        [157, "BP01", "2022-10-01", 100, 40, 82.4, 100.0, 100.0, 90.0],
-        [157, "BP02", "2022-10-01", 100, 29, 81.7, 100.0, 100.0, 90.0],
+        [157, "SUS04", "2022-11-01", 1, 29],
+        [157, "PONV05", "2022-11-01", 1, 4],
+        [157, "BP01", "2022-10-01", 1, 40],
+        [157, "BP02", "2022-10-01", 1, 2],
     ]
     performance_df = pd.DataFrame(perf_data[1:], columns=COLUMNS)
     context.performance_month = "2022-11-01"

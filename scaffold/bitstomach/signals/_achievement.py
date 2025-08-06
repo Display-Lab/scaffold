@@ -13,7 +13,9 @@ class Achievement(Signal):
     signal_type = PSDO.achievement_content
 
     @staticmethod
-    def detect(perf_data: pd.DataFrame) -> Optional[List[Resource]]:
+    def detect(
+        perf_data: pd.DataFrame, comparator_data: pd.DataFrame
+    ) -> Optional[List[Resource]]:
         if perf_data.empty:
             raise ValueError
 
@@ -26,13 +28,13 @@ class Achievement(Signal):
 
         positive_comparison_signals = [
             s
-            for s in Comparison.detect(perf_data)
+            for s in Comparison.detect(perf_data, comparator_data)
             if s[RDF.type : PSDO.positive_performance_gap_content]
         ]
 
         negative_prior_month_comparisons = [
             s
-            for s in Comparison.detect(perf_data.iloc[:-1], tiered_comparators=False)
+            for s in Comparison.detect(perf_data.iloc[:-1], comparator_data)
             if s[RDF.type : PSDO.negative_performance_gap_content]
         ]
 
@@ -55,7 +57,9 @@ class Achievement(Signal):
                 continue
 
             streak_length = Achievement._detect(
-                perf_data, comparison_signal.value(SLOWMO.RegardingComparator)
+                perf_data,
+                comparison_signal.value(SLOWMO.RegardingComparator),
+                comparator_data,
             )
 
             mi = Achievement._resource(
@@ -142,17 +146,27 @@ class Achievement(Signal):
         return mods
 
     @staticmethod
-    def _detect(perf_data: pd.DataFrame, comparator: Resource) -> float:
+    def _detect(
+        perf_data: pd.DataFrame, comparator: Resource, comparator_data: pd.DataFrame
+    ) -> float:
         """
         calculates the number of consecutive negative gaps prior to this months positive gap.
         """
 
         comparator_id = comparator.value(RDF.type).identifier
 
-        gaps = perf_data["measureScore.rate"] - perf_data[str(comparator_id)] / 100
+        comparator_values = comparator_data[
+            comparator_data["group.code"] == str(comparator_id)
+        ][["period.start", "measureScore.rate"]]
+        comparator_values = comparator_values.rename(
+            columns={"measureScore.rate": "comparator"}
+        )
+        merged = pd.merge(perf_data, comparator_values, on="period.start", how="left")
+        gaps = merged["measureScore.rate"] - merged["comparator"] / 100
 
         # find the number of consecutive negative gaps
         diff_reversed = gaps.values[:-1][::-1]
+
         end_negative_gaps_index = np.argmax(diff_reversed >= 0)
         if end_negative_gaps_index == 0:
             consecutive_negative_gaps = len(diff_reversed)

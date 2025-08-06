@@ -12,7 +12,7 @@ from scaffold.esteemer import esteemer, utils
 from scaffold.pictoralist.pictoralist import Pictoralist
 from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
-from scaffold.utils.utils import set_logger
+from scaffold.utils.utils import merge_and_pivot, set_logger
 
 set_logger()
 
@@ -74,7 +74,7 @@ def pipeline():
     if selected_message["message_text"] != "No message selected":
         ## Initialize and run message and display generation:
         pc = Pictoralist(
-            performance_df,
+            merge_and_pivot(performance_df),
             selected_message,
             settings,
         )
