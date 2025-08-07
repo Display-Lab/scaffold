@@ -12,6 +12,7 @@ performance_month = ""
 performance_df: pd.DataFrame
 comparator_df: pd.DataFrame
 subject_graph = Graph()
+practitioner_role = pd.DataFrame()
 
 
 def from_req(req_info):
@@ -21,11 +22,22 @@ def from_req(req_info):
         subject, \
         performance_month, \
         performance_df, \
-        subject_graph
+        subject_graph, \
+        comparator_df, \
+        practitioner_role
 
     try:
         performance_df = pd.DataFrame(
-            req_info["Performance_data"][1:], columns=req_info["Performance_data"][0]
+            req_info["performance_measurer_report"][1:],
+            columns=req_info["performance_measurer_report"][0],
+        )
+        comparator_df = pd.DataFrame(
+            req_info["comparator_measurer_report"][1:],
+            columns=req_info["comparator_measurer_report"][0],
+        )
+
+        practitioner_role = pd.DataFrame(
+            req_info["PractitionerRole"][1:], columns=req_info["PractitionerRole"][0]
         )
     except Exception:
         pass
@@ -36,7 +48,7 @@ def from_req(req_info):
     if not performance_month:
         performance_month = performance_df["period.start"].max()
 
-    subject = int(performance_df.at[0, "staff_number"])
+    subject = int(req_info["subject"])
 
     preferences_dict = {}
     try:
@@ -62,7 +74,8 @@ def from_global(subject_num):
         performance_month, \
         performance_df, \
         subject_graph, \
-        comparator_df
+        comparator_df, \
+        practitioner_role
 
     subject = int(subject_num)
 

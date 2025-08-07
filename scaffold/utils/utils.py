@@ -4,7 +4,7 @@ import sys
 import pandas as pd
 from loguru import logger
 
-from scaffold import context, startup
+from scaffold import context
 from scaffold.utils.settings import settings
 
 candidate_df: pd.DataFrame = pd.DataFrame()
@@ -148,7 +148,7 @@ def set_logger():
 def merge_and_pivot(performance_df):
     # prepare performance data
     performance_enriched = performance_df.merge(
-        startup.practitioner_role,
+        context.practitioner_role,
         how="left",
         left_on="subject",
         right_on="PractitionerRole.practitioner",

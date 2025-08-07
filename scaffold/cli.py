@@ -62,7 +62,12 @@ def batch(
 
                 full_message = pipeline()
                 full_message["message_instance_id"] = input_data["message_instance_id"]
-                full_message["performance_data"] = input_data["Performance_data"]
+                full_message["performance_measurer_report"] = input_data[
+                    "performance_measurer_report"
+                ]
+                full_message["comparator_measurer_report"] = input_data[
+                    "comparator_measurer_report"
+                ]
             except HTTPException as e:
                 e.detail["message_instance_id"] = input_data["message_instance_id"]
                 raise e
