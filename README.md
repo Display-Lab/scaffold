@@ -1,8 +1,14 @@
 # SCAFFOLD
 
-SCAFFOLD (Scalable Coaching and Appreciation Feedback For Optimal Learning and Decision-making) is a precision feedback system, implemented as a software pipeline to enhance performance reporting systems and dashboards. The underlying model of precision feedback is captured in [this conceptual model](https://onlinelibrary.wiley.com/doi/full/10.1002/lrh2.10419).
+SCAFFOLD (Scalable Coaching and Appreciation Feedback For Optimal Learning and Decision-making) is a precision feedback system for healthcare organizations that can enhance feedback reports, emails, and dashboards with coaching and appreciation messages and visualizations. 
 
-Read through our [wiki pages](https://github.com/Display-Lab/scaffold/wiki) for more detail on testing. Please note that this wiki might not be completely up to date.
+Some examples of messages SCAFFOLD can generate are "You reached the top performer benchmark", “You are not a top performer”, “You may have an opportunity to improve”, “Your team reached the goal”, and “Congratulations on the exceptionally high quality of care your team has provided”.
+
+SCAFFOLD is implemented as a software pipeline that processes performance data to produce messages, and requires a knowledge base containing a collection of feedback message templates and prioritization algorithms, among other things. The [Precision Feedback Knowledge Base](https://github.com/Display-Lab/knowledge-base) contains examples of messages and algorithms that can be downloaded and customized for use with SCAFFOLD.
+
+## System Architecture
+
+<img width="1913" height="667" alt="scaffold_architecture" src="https://github.com/user-attachments/assets/5051b7bc-caa4-46ee-ac0a-f295d109124b" />
 
 ## Quick start
 
