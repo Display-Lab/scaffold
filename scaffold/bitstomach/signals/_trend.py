@@ -7,6 +7,7 @@ from rdflib.resource import Resource
 
 from scaffold.bitstomach.signals import Signal
 from scaffold.utils import PSDO, SLOWMO
+from scaffold.utils.settings import settings
 
 
 class Trend(Signal):
@@ -24,7 +25,7 @@ class Trend(Signal):
         if perf_data.empty:
             raise ValueError
 
-        if not Trend.last_three_month_are_valid_and_consecutive(perf_data):
+        if not Trend.last_three_periods_are_valid_and_consecutive(perf_data):
             return []
 
         slope = Trend._detect(perf_data)
@@ -35,24 +36,24 @@ class Trend(Signal):
         return [Trend._resource(slope)]
 
     @staticmethod
-    def last_three_month_are_valid_and_consecutive(perf_data: pd.DataFrame):
+    def last_three_periods_are_valid_and_consecutive(perf_data: pd.DataFrame):
         if (
             perf_data["measureScore.rate"].count() < 3
             or not perf_data[-3:]["valid"].all()
         ):
             return False
 
-        current_month = pd.to_datetime(
+        current_period = pd.to_datetime(
             perf_data.loc[perf_data.index[-1], "period.start"]
         )
-        last_month = pd.to_datetime(perf_data.loc[perf_data.index[-2], "period.start"])
-        last_last_month = pd.to_datetime(
+        last_period = pd.to_datetime(perf_data.loc[perf_data.index[-2], "period.start"])
+        last_last_period = pd.to_datetime(
             perf_data.loc[perf_data.index[-3], "period.start"]
         )
-        if current_month - relativedelta(months=1) != last_month:
+        if current_period - relativedelta(months=1*settings.meas_period ) != last_period:
             return False
 
-        if current_month - relativedelta(months=2) != last_last_month:
+        if current_period - relativedelta(months=2*settings.meas_period) != last_last_period:
             return False
 
         return True

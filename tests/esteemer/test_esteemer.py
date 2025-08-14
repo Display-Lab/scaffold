@@ -9,6 +9,7 @@ from scaffold.bitstomach.bitstomach import prepare
 from scaffold.bitstomach.signals import Achievement, Comparison, Loss, Trend
 from scaffold.esteemer import esteemer
 from scaffold.utils.namespace import PSDO, SLOWMO
+from scaffold.utils.settings import settings
 
 TEMPLATE_A = "https://repo.metadatacenter.org/template-instances/9e71ec9e-26f3-442a-8278-569bcd58e708"
 MPM = {

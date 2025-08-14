@@ -47,6 +47,7 @@ def score(candidate: Resource, MPM: dict) -> Resource:
         "Social Gain": {"score": score_gain, "rules": rule_social_highest},
         "Social Loss": {"score": score_loss, "rules": rule_social_lowest},
         "Goal Worse": {"score": score_worse, "rules": null_rule},
+        "Goal Better": {"score": score_better, "rules": null_rule},
         "Goal Approach": {"score": score_approach, "rules": null_rule},
         "Social Approach": {"score": score_approach, "rules": rule_social_lowest},
     }
@@ -289,7 +290,7 @@ def score_history(candidate: Resource, history, mpm: dict) -> float:
 
     # turn candidate resource into a 'history' element for the current month
     g: Graph = candidate.graph
-
+    history.pop(context.performance_month, None)
     signals = History.detect(
         history,
         {
