@@ -1,13 +1,13 @@
-from datetime import datetime
 import json
+from datetime import datetime
 
 import pandas as pd
 import pytest
-from rdflib import RDF, XSD, BNode, Graph, Literal, URIRef
+from rdflib import XSD, BNode, Graph, Literal, URIRef
 
 from scaffold import context
 from scaffold.bitstomach.bitstomach import prepare
-from scaffold.bitstomach.signals import Achievement, Comparison, Loss, Trend
+from scaffold.bitstomach.signals import Comparison
 from scaffold.esteemer import esteemer
 from scaffold.esteemer.signals._history import History
 from scaffold.utils.namespace import PSDO, SLOWMO
@@ -193,11 +193,12 @@ def candidate_resource(performance_data_frame, comparator_data_frame):
 
     return candidate_resource
 
+
 def test_history_with_two_recurrances(candidate_resource, history):
     score = esteemer.score_history(candidate_resource, history, MPM["Social Better"])
 
     assert score == pytest.approx(0.586589)
-    
+
     signal = History.detect(
         history,
         {
@@ -212,18 +213,14 @@ def test_history_with_two_recurrances(candidate_resource, history):
     assert signal.value(URIRef("message_recurrence")) == Literal(
         2, datatype=XSD.integer
     )
-    
-    assert signal.value(URIRef("message_recency")) == Literal(
-        2, datatype=XSD.integer
-    )
+
+    assert signal.value(URIRef("message_recency")) == Literal(2, datatype=XSD.integer)
 
     assert signal.value(URIRef("measure_recurrence")) == Literal(
         4, datatype=XSD.integer
     )
-    
-    assert signal.value(URIRef("measure_recency")) == Literal(
-        1, datatype=XSD.integer
-    )
+
+    assert signal.value(URIRef("measure_recency")) == Literal(1, datatype=XSD.integer)
 
 
 @pytest.fixture
@@ -302,7 +299,9 @@ def comparator_data_frame_periodic():
 
 
 @pytest.fixture
-def candidate_resource_periodic(performance_data_frame_periodic, comparator_data_frame_periodic):
+def candidate_resource_periodic(
+    performance_data_frame_periodic, comparator_data_frame_periodic
+):
     graph = Graph()
 
     candidate_resource = graph.resource(BNode())
@@ -324,11 +323,16 @@ def candidate_resource_periodic(performance_data_frame_periodic, comparator_data
 
     return candidate_resource
 
-def test_history_with_two_recurrances_periodic(candidate_resource_periodic, history_periodic):
-    score = esteemer.score_history(candidate_resource_periodic, history_periodic, MPM["Social Better"])
+
+def test_history_with_two_recurrances_periodic(
+    candidate_resource_periodic, history_periodic
+):
+    score = esteemer.score_history(
+        candidate_resource_periodic, history_periodic, MPM["Social Better"]
+    )
 
     assert score == pytest.approx(0.70325174)
-    
+
     signal = History.detect(
         history_periodic,
         {
@@ -343,15 +347,11 @@ def test_history_with_two_recurrances_periodic(candidate_resource_periodic, hist
     assert signal.value(URIRef("message_recurrence")) == Literal(
         2, datatype=XSD.integer
     )
-    
-    assert signal.value(URIRef("message_recency")) == Literal(
-        6, datatype=XSD.integer
-    )
+
+    assert signal.value(URIRef("message_recency")) == Literal(6, datatype=XSD.integer)
 
     assert signal.value(URIRef("measure_recurrence")) == Literal(
         4, datatype=XSD.integer
     )
-    
-    assert signal.value(URIRef("measure_recency")) == Literal(
-        3, datatype=XSD.integer
-    )
+
+    assert signal.value(URIRef("measure_recency")) == Literal(3, datatype=XSD.integer)

@@ -1,11 +1,9 @@
 from datetime import datetime
-from typing import List
 
 import pytest
-from rdflib import RDF, XSD, BNode, Graph, Literal, URIRef
+from rdflib import XSD, Literal, URIRef
 
 from scaffold.esteemer.signals import History
-from scaffold.utils import SLOWMO
 
 TEMPLATE_A = "https://repo.metadatacenter.org/template-instances/9e71ec9e-26f3-442a-8278-569bcd58e708"
 
@@ -34,7 +32,8 @@ def history():
             "measure": "PONV05",
         },
     }
-    
+
+
 @pytest.fixture
 def history_periodic():
     return {
@@ -60,6 +59,7 @@ def history_periodic():
         },
     }
 
+
 def test_history_detect_signal(history):
     signal = History.detect(
         history,
@@ -75,19 +75,14 @@ def test_history_detect_signal(history):
     assert signal.value(URIRef("message_recurrence")) == Literal(
         2, datatype=XSD.integer
     )
-    
-    assert signal.value(URIRef("message_recency")) == Literal(
-        5, datatype=XSD.integer
-    )
+
+    assert signal.value(URIRef("message_recency")) == Literal(5, datatype=XSD.integer)
 
     assert signal.value(URIRef("measure_recurrence")) == Literal(
         4, datatype=XSD.integer
     )
-    
-    assert signal.value(URIRef("measure_recency")) == Literal(
-        4, datatype=XSD.integer
-    )
 
+    assert signal.value(URIRef("measure_recency")) == Literal(4, datatype=XSD.integer)
 
 
 def test_history_detect_signal_periodic_data(history_periodic):
@@ -105,15 +100,11 @@ def test_history_detect_signal_periodic_data(history_periodic):
     assert signal.value(URIRef("message_recurrence")) == Literal(
         2, datatype=XSD.integer
     )
-    
-    assert signal.value(URIRef("message_recency")) == Literal(
-        6, datatype=XSD.integer
-    )
+
+    assert signal.value(URIRef("message_recency")) == Literal(6, datatype=XSD.integer)
 
     assert signal.value(URIRef("measure_recurrence")) == Literal(
         4, datatype=XSD.integer
     )
-    
-    assert signal.value(URIRef("measure_recency")) == Literal(
-        3, datatype=XSD.integer
-    )
+
+    assert signal.value(URIRef("measure_recency")) == Literal(3, datatype=XSD.integer)

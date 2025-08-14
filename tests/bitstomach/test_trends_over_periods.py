@@ -1,14 +1,12 @@
-from typing import List
-from unittest.mock import Mock, patch
-
 import pandas as pd
 import pytest
-from rdflib import RDF, BNode, Graph, Literal
+from rdflib import Literal
 from rdflib.resource import Resource
 
-from scaffold.bitstomach.signals import Comparison, Trend
-from scaffold.utils import PSDO, SLOWMO
+from scaffold.bitstomach.signals import Trend
+from scaffold.utils import SLOWMO
 from scaffold.utils.settings import settings
+
 
 @pytest.fixture(autouse=True)
 def reset_global():
@@ -27,7 +25,7 @@ def test_no_trend_returns_none():
         )
     )
     assert mi == []
-    
+
     mi = Trend.detect(
         pd.DataFrame(
             {
@@ -74,7 +72,7 @@ def test_trend_as_resource():
     assert Trend.is_rdf_type_of(signal)
     # assert signal.value(RDF.type).identifier == PSDO.performance_trend_content
     assert signal.value(SLOWMO.PerformanceTrendSlope) == Literal(1.0)
-    settings.meas_period = 3 
+    settings.meas_period = 3
     signal = Trend.detect(
         pd.DataFrame(
             {
@@ -90,4 +88,3 @@ def test_trend_as_resource():
     assert Trend.is_rdf_type_of(signal)
     # assert signal.value(RDF.type).identifier == PSDO.performance_trend_content
     assert signal.value(SLOWMO.PerformanceTrendSlope) == Literal(1.0)
-

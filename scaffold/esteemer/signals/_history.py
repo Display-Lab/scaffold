@@ -81,9 +81,7 @@ class History(Signal):
         return mods
 
     @staticmethod
-    def _detect(
-        history: dict, current: dict
-    ) -> Tuple[float, float, float, float]:
+    def _detect(history: dict, current: dict) -> Tuple[float, float, float, float]:
         message_recurrence = 0
         message_recency = 0
         measure_recurrence = 0

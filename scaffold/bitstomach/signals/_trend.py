@@ -50,10 +50,16 @@ class Trend(Signal):
         last_last_period = pd.to_datetime(
             perf_data.loc[perf_data.index[-3], "period.start"]
         )
-        if current_period - relativedelta(months=1*settings.meas_period ) != last_period:
+        if (
+            current_period - relativedelta(months=1 * settings.meas_period)
+            != last_period
+        ):
             return False
 
-        if current_period - relativedelta(months=2*settings.meas_period) != last_last_period:
+        if (
+            current_period - relativedelta(months=2 * settings.meas_period)
+            != last_last_period
+        ):
             return False
 
         return True

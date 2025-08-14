@@ -1,9 +1,8 @@
 import json
-from typing import List
 
 import pandas as pd
 import pytest
-from rdflib import RDF, BNode, Graph, Literal
+from rdflib import Graph
 from rdflib.resource import Resource
 
 from scaffold import context
@@ -11,7 +10,6 @@ from scaffold.bitstomach.signals import Achievement
 from scaffold.bitstomach.signals._comparison import Comparison
 from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
-
 
 comparators = [
     {
@@ -44,10 +42,12 @@ jsonld_str = json.dumps(comparators)
 
 context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
 
+
 @pytest.fixture(autouse=True)
 def reset_global():
     yield
     settings.meas_period = 1
+
 
 @pytest.fixture
 def perf_data() -> pd.DataFrame:
@@ -69,6 +69,7 @@ def perf_data() -> pd.DataFrame:
 
     return df
 
+
 @pytest.fixture
 def perf_data_quarterly() -> pd.DataFrame:
     performance_data = [
@@ -88,6 +89,7 @@ def perf_data_quarterly() -> pd.DataFrame:
     df.attrs["performance_month"] = "2022-10-01"
 
     return df
+
 
 @pytest.fixture
 def comparator_data() -> pd.DataFrame:
@@ -113,7 +115,6 @@ def comparator_data() -> pd.DataFrame:
     ]
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
 
-    
     return comparator_df
 
 
@@ -140,7 +141,7 @@ def comparator_data_quarterly() -> pd.DataFrame:
         ["BP01", "2022-10-01", 95.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
     ]
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
-    
+
     return comparator_df
 
 
@@ -188,6 +189,7 @@ def test_signal_properties_quarterly(perf_data_quarterly, comparator_data_quarte
     gap = signal.value(SLOWMO.PriorPerformanceGapSize).value
     assert gap == pytest.approx(-0.03)
 
+
 perf_level_test_set = [
     (
         [0.67, 0.79, 0.97],
@@ -225,4 +227,3 @@ perf_level_test_set = [
         "no trend",
     ),
 ]
-
