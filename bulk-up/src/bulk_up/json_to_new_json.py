@@ -2,6 +2,7 @@ import json
 import os
 import re
 import uuid
+from pathlib import Path
 
 import pandas as pd
 
@@ -9,8 +10,11 @@ import pandas as pd
 os.environ.pop("INPUT_DIR", None)
 INPUT_DIR = os.environ.setdefault(
     "INPUT_DIR",
-    "/home/faridsei/dev/code/scaffold/bulk-up/random_performance_data/with_h",
+    "/home/faridsei/dev/code/scaffold/bulk-up/random_performance_data/data_with_h",
 )
+
+output_dir = Path("random_performance_data/data_with_h_new_format")
+output_dir.mkdir(exist_ok=True)
 
 
 def extract_number(filename):
@@ -91,11 +95,7 @@ def main():
         "%Y-%m-%d"
     )
     performance_data_df["measureScore.range"] = None
-    if df_providers.empty:
-        df_providers = pd.read_excel(
-            r"S:\PCRC 166 Landis-Lewis\Final Data\Precison Feedback Data 2025-03-07.xlsx",
-            sheet_name="Provider",
-        )
+
     performance_data_df = performance_data_df.merge(
         df_providers[["Provider_Number", "Institution", "Professional_Role"]],
         left_on="subject",
@@ -213,17 +213,43 @@ def main():
 
     comparator_df["group.code"] = comparator_df["group.code"].replace(type_mapping)
 
-    performance_data_df.to_csv("PerformanceMeasureReport.csv", index=False)
-    comparator_df.to_csv("ComparatorMeasureReport.csv", index=False)
-    subject_data_df.to_csv("PractitionerRole.csv", index=False)
-    preferences_data_df.to_csv("Preference.csv", index=False)
-    history_data_df.to_csv("MessageHistory.csv", index=False)
+    for filename in input_files:
+        with open(os.path.join(INPUT_DIR, filename), "r") as file:
+            data = json.load(file)
+            subject = data["Performance_data"][1][0]
 
-    # with pd.ExcelWriter("output.xlsx", engine="openpyxl") as writer:
-    #     performance_data_df.to_excel(writer, sheet_name="performance data", index=False)
-    #     subject_data_df.to_excel(writer, sheet_name="PractitionerRole", index=False)
-    #     preferences_data_df.to_excel(writer, sheet_name="preference data", index=False)
-    #     history_data_df.to_excel(writer, sheet_name="message history data", index=False)
+            data_with_new_format = {
+                "message_instance_id": f"{str(uuid.uuid4())}",
+                "performance_month": data["performance_month"],
+                "subject": subject,
+                "PractitionerRole": [
+                    [
+                        "PractitionerRole.practitioner",
+                        "PractitionerRole.organization",
+                        "PractitionerRole.code",
+                        "type",
+                    ],
+                    [subject, data["institution_id"], "resident", "Practitioner"],
+                ],
+                "performance_measurer_report": [performance_data_df.columns.tolist()]
+                + performance_data_df[
+                    performance_data_df["subject"] == subject
+                ].values.tolist(),
+                "comparator_measurer_report": [comparator_df.columns.tolist()]
+                + comparator_df[
+                    comparator_df["group.subject"] == data["institution_id"]
+                ].values.tolist(),
+                "History": data["History"],
+                "Preferences": data["Preferences"],
+                "debug": "no",
+            }
+
+            file_name = f"Provider_{str(subject)}.json"
+            file_path = output_dir / file_name
+
+            # Write JSON file
+            with open(file_path, "w") as f:
+                json.dump(data_with_new_format, f, indent=2)
 
 
 if __name__ == "__main__":

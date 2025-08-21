@@ -62,7 +62,12 @@ def batch(
 
                 full_message = pipeline()
                 full_message["message_instance_id"] = input_data["message_instance_id"]
-                full_message["performance_data"] = input_data["Performance_data"]
+                full_message["performance_measurer_report"] = input_data[
+                    "performance_measurer_report"
+                ]
+                full_message["comparator_measurer_report"] = input_data[
+                    "comparator_measurer_report"
+                ]
             except HTTPException as e:
                 e.detail["message_instance_id"] = input_data["message_instance_id"]
                 raise e
@@ -104,7 +109,9 @@ def batch(
 def batch_csv(
     performance_data_path: Annotated[
         pathlib.Path,
-        typer.Argument(help="Path to a CSV file containing performance data"),
+        typer.Argument(
+            help="Path to a the folder containing ingestion CSV files for Performance Measure Report, Comparator Measure Report and Practitioner Role"
+        ),
     ],
     max_files: Annotated[
         int, typer.Option("--max-files", help="Maximum number of files to process")
@@ -126,11 +133,11 @@ def batch_csv(
 
     success_count = 0
     failure_count = 0
-    for staff_number in (
-        startup.performance_data["staff_number"].drop_duplicates().head(max_files)
+    for subject in (
+        startup.performance_measure_report["subject"].drop_duplicates().head(max_files)
     ):
         try:
-            context.from_global(staff_number)
+            context.from_global(subject)
             try:
                 full_message = pipeline()
                 # full_message["message_instance_id"] = input_data["message_instance_id"]
@@ -142,7 +149,9 @@ def batch_csv(
                 directory = performance_data_path.parent / "messages"
                 os.makedirs(directory, exist_ok=True)
 
-                new_filename = f"Provider_{staff_number} - message for {context.performance_month}.json"
+                new_filename = (
+                    f"Provider_{subject} - message for {context.performance_month}.json"
+                )
                 output_path = directory / new_filename
 
                 output_path.write_bytes(
@@ -150,12 +159,12 @@ def batch_csv(
                 )
                 logger.info(f"Message created at {output_path}")
             else:
-                logger.info(f"✔ Would process: Provider_{staff_number}")
+                logger.info(f"✔ Would process: Provider_{subject}")
 
             success_count += 1
 
         except Exception as e:
-            logger.error(f"✘ Failed to process Provider_{staff_number}: {e}")
+            logger.error(f"✘ Failed to process Provider_{subject}: {e}")
             failure_count += 1
             full_message = e.detail
 

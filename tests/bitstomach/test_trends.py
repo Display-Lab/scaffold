@@ -20,8 +20,8 @@ def test_no_trend_returns_none():
     mi = Trend.detect(
         pd.DataFrame(
             {
-                "passed_rate": [90, 90, 90],
-                "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+                "measureScore.rate": [90, 90, 90],
+                "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
                 "valid": True,
             },
         )
@@ -32,17 +32,17 @@ def test_no_trend_returns_none():
 ## Signal detection tests
 def test_trend_is_detected():
     slope = Trend._detect(
-        pd.DataFrame(columns=["passed_rate"], data=[[90], [91], [92]])
+        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [91], [92]])
     )
     assert slope == 1
 
     slope = Trend._detect(
-        pd.DataFrame(columns=["passed_rate"], data=[[90], [92], [94]])
+        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [94]])
     )
     assert slope == 2
 
     slope = Trend._detect(
-        pd.DataFrame(columns=["passed_rate"], data=[[90], [92], [90], [92], [94]])
+        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [90], [92], [94]])
     )
     assert slope == 2
 
@@ -51,8 +51,8 @@ def test_trend_as_resource():
     signal = Trend.detect(
         pd.DataFrame(
             {
-                "passed_rate": [90, 91, 92],
-                "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+                "measureScore.rate": [90, 91, 92],
+                "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
                 "valid": True,
             },
         )
@@ -104,27 +104,32 @@ def test_resource_selects_pos_or_neg():
 
 
 def test_select_ignores_signals_of_a_different_type():
+    comparator_data = [
+        [
+            "period.start",
+            "measureScore.rate",
+            "group.code",
+        ],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2023-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+    ]
+    comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
     r1 = Comparison().detect(
         pd.DataFrame(
-            columns=[
-                "valid",
-                "measure",
-                "passed_rate",
-                "peer_average_comparator",
-                "peer_75th_percentile_benchmark",
-                "peer_90th_percentile_benchmark",
-                "goal_comparator_content",
-            ],
-            data=[[True, "PONV05", 80, 90, 90, 90, 90]],
-        )
+            columns=["period.start", "valid", "measure", "measureScore.rate"],
+            data=[["2023-11-01", True, "PONV05", 0.80]],
+        ),
+        comparator_df,
     )
 
     r2 = Trend.detect(
         pd.DataFrame(
             {
-                "passed_rate": [89, 90, 91],
+                "measureScore.rate": [89, 90, 91],
                 "valid": True,
-                "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+                "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
             },
         )
     )
@@ -154,18 +159,18 @@ def test_trend_identity():
     r1 = Trend.detect(
         pd.DataFrame(
             {
-                "passed_rate": [89, 90, 91],
+                "measureScore.rate": [89, 90, 91],
                 "valid": True,
-                "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+                "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
             },
         )
     )
     r2 = Trend.detect(
         pd.DataFrame(
             {
-                "passed_rate": [89, 90, 91],
+                "measureScore.rate": [89, 90, 91],
                 "valid": True,
-                "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+                "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
             },
         )
     )
@@ -185,9 +190,9 @@ def test_partial_mock(mock_detect: Mock):
     signal = Trend.detect(
         pd.DataFrame(
             {
-                "passed_rate": [89, 90, 91],
+                "measureScore.rate": [89, 90, 91],
                 "valid": True,
-                "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+                "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
             },  # slope 1.0
         )
     )
@@ -209,9 +214,9 @@ def test_partial_mock_with_patch_decorator(mock_detect: Mock):
     signal = Trend.detect(
         pd.DataFrame(
             {
-                "passed_rate": [89, 90, 91],
+                "measureScore.rate": [89, 90, 91],
                 "valid": True,
-                "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+                "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
             },  # slope 1.0
         )
     )
@@ -226,9 +231,9 @@ def test_partial_mock_using_with():
         signal = Trend.detect(
             pd.DataFrame(
                 {
-                    "passed_rate": [89, 90, 91],
+                    "measureScore.rate": [89, 90, 91],
                     "valid": True,
-                    "month": ["2023-11-01", "2023-12-01", "2024-01-01"],
+                    "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
                 },  # slope 1.0
             )
         )

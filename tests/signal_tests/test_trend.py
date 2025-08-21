@@ -8,26 +8,25 @@ def message() -> dict:
     return {
         "Performance_data": [
             [
-                "staff_number",
+                "subject",
                 "measure",
-                "month",
-                "passed_count",
-                "flagged_count",
-                "denominator",
+                "period.start",
+                "measureScore.rate",
+                "measureScore.denominator",
                 "peer_average_comparator",
                 "peer_75th_percentile_benchmark",
                 "peer_90th_percentile_benchmark",
                 "MPOG_goal",
             ],
-            [1, "BP01", "2022-12-01", 19, 0, 19, 83.0, 100.0, 100.0, 90.0],
-            [1, "BP01", "2023-01-01", 46, 0, 46, 83.0, 100.0, 100.0, 90.0],
-            [1, "BP01", "2023-02-01", 58, 0, 58, 83.3, 100.0, 100.0, 90.0],
-            [1, "BP01", "2023-03-01", 68, 0, 68, 83.6, 100.0, 100.0, 90.0],
-            [1, "BP01", "2023-04-01", 49, 0, 49, 84.7, 100.0, 100.0, 90.0],
-            [1, "BP01", "2023-05-01", 96, 0, 96, 84.5, 100.0, 100.0, 90.0],
-            [1, "BP01", "2023-06-01", 91, 0, 91, 84.8, 100.0, 100.0, 90.0],
-            [1, "BP01", "2023-07-01", 74, 0, 74, 84.6, 100.0, 100.0, 90.0],
-            [1, "BP01", "2023-08-01", 41, 1, 42, 84.9, 100.0, 100.0, 90.0],
+            [1, "BP01", "2022-12-01", 19, 19, 83.0, 100.0, 100.0, 90.0],
+            [1, "BP01", "2023-01-01", 46, 46, 83.0, 100.0, 100.0, 90.0],
+            [1, "BP01", "2023-02-01", 58, 58, 83.3, 100.0, 100.0, 90.0],
+            [1, "BP01", "2023-03-01", 68, 68, 83.6, 100.0, 100.0, 90.0],
+            [1, "BP01", "2023-04-01", 49, 49, 84.7, 100.0, 100.0, 90.0],
+            [1, "BP01", "2023-05-01", 96, 96, 84.5, 100.0, 100.0, 90.0],
+            [1, "BP01", "2023-06-01", 91, 91, 84.8, 100.0, 100.0, 90.0],
+            [1, "BP01", "2023-07-01", 74, 74, 84.6, 100.0, 100.0, 90.0],
+            [1, "BP01", "2023-08-01", 97.62, 42, 84.9, 100.0, 100.0, 90.0],
         ]
     }
 
@@ -37,12 +36,11 @@ def perf(message: dict) -> pd.DataFrame:
 
     perf = pd.DataFrame(columns=perf_data[0], data=perf_data[1:])
 
-    perf["valid"] = perf["denominator"] >= 10
-    perf["passed_rate"] = perf["passed_count"] / perf["denominator"]
-    perf["passed_change"] = perf["passed_rate"].diff()
-    perf["month"] = pd.to_datetime(perf["month"])
+    perf["valid"] = perf["measureScore.denominator"] >= 10
+    perf["passed_change"] = perf["measureScore.rate"].diff()
+    perf["period.start"] = pd.to_datetime(perf["period.start"])
     perf["pos_trend"] = (
-        perf["passed_rate"]
+        perf["measureScore.rate"]
         .rolling(window=3)
         .apply(lambda x: (x.is_monotonic_increasing and x.is_unique))[2:]
         .astype(bool)
@@ -71,7 +69,7 @@ detection_test_set = [
 
 @pytest.mark.parametrize("perf_level, expected, condition", detection_test_set)
 def test_trend__detect(perf_level: list, expected: float, condition: str):
-    perf = pd.DataFrame({"passed_rate": perf_level})
+    perf = pd.DataFrame({"measureScore.rate": perf_level})
     slope = Trend._detect(perf)
 
     assert slope == pytest.approx(expected), condition + " failed"

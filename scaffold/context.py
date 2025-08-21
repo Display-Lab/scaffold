@@ -1,3 +1,5 @@
+import ast
+
 import pandas as pd
 from rdflib import Graph
 
@@ -5,24 +7,37 @@ from scaffold import startup
 
 preferences_dict = {}
 history_dict = {}
-staff_number = 0
+subject = 0
 performance_month = ""
 performance_df: pd.DataFrame
+comparator_df: pd.DataFrame
 subject_graph = Graph()
+practitioner_role = pd.DataFrame()
 
 
 def from_req(req_info):
     global \
         preferences_dict, \
         history_dict, \
-        staff_number, \
+        subject, \
         performance_month, \
         performance_df, \
-        subject_graph
+        subject_graph, \
+        comparator_df, \
+        practitioner_role
 
     try:
         performance_df = pd.DataFrame(
-            req_info["Performance_data"][1:], columns=req_info["Performance_data"][0]
+            req_info["performance_measurer_report"][1:],
+            columns=req_info["performance_measurer_report"][0],
+        )
+        comparator_df = pd.DataFrame(
+            req_info["comparator_measurer_report"][1:],
+            columns=req_info["comparator_measurer_report"][0],
+        )
+
+        practitioner_role = pd.DataFrame(
+            req_info["PractitionerRole"][1:], columns=req_info["PractitionerRole"][0]
         )
     except Exception:
         pass
@@ -31,9 +46,9 @@ def from_req(req_info):
     if req_info["performance_month"]:
         performance_month = req_info["performance_month"]
     if not performance_month:
-        performance_month = performance_df["month"].max()
+        performance_month = performance_df["period.start"].max()
 
-    staff_number = int(performance_df.at[0, "staff_number"])
+    subject = int(req_info["subject"])
 
     preferences_dict = {}
     try:
@@ -51,39 +66,53 @@ def from_req(req_info):
     subject_graph += startup.base_graph
 
 
-def from_global(staff_num):
+def from_global(subject_num):
     global \
         preferences_dict, \
         history_dict, \
-        staff_number, \
+        subject, \
         performance_month, \
         performance_df, \
-        subject_graph
+        subject_graph, \
+        comparator_df, \
+        practitioner_role
 
-    staff_number = int(staff_num)
+    subject = int(subject_num)
 
     try:
-        performance_df = startup.performance_data[
-            startup.performance_data["staff_number"] == staff_number
+        performance_df = startup.performance_measure_report[
+            startup.performance_measure_report["subject"] == subject
+        ].reset_index(drop=True)
+        practitioner_role = startup.practitioner_role[
+            startup.practitioner_role["PractitionerRole.practitioner"] == subject
+        ].copy()
+        org_id = practitioner_role.iloc[0]["PractitionerRole.organization"]
+        role = practitioner_role.iloc[0]["PractitionerRole.code"]
+        comparator_df = startup.comparator_measure_report[
+            (startup.comparator_measure_report["group.subject"] == org_id)
+            & (startup.comparator_measure_report["PractitionerRole.code"] == role)
         ].reset_index(drop=True)
     except Exception:
         pass
 
     performance_month = startup.performance_month
     if not performance_month:
-        performance_month = performance_df["month"].max()
+        performance_month = performance_df["period.start"].max()
 
     preferences_dict = {}
     try:
-        p = startup.preferences.loc[staff_number, "preferences"]
+        p = startup.preferences.loc[subject, "preferences.json"]
         preferences_dict = set_preferences(p)
     except Exception:
         preferences_dict = set_preferences({})
 
     history_dict = {}
     try:
-        staff_data = startup.history[startup.history["staff_number"] == staff_number]
-        history_dict = staff_data.set_index("month")["history"].to_dict()
+        history_data = startup.history[startup.history["subject"] == subject].copy()
+        history_data["history.json"] = history_data["history.json"].apply(
+            ast.literal_eval
+        )
+        history_dict = history_data.set_index("period.start")["history.json"].to_dict()
     except Exception:
         pass
 

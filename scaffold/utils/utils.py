@@ -15,7 +15,7 @@ def analyse_responses():
     global response_df
 
     r2 = (
-        response_df.groupby("causal_pathway")["staff_number"]
+        response_df.groupby("causal_pathway")["subject"]
         .agg(count=("count"))
         .reset_index()
     )
@@ -112,7 +112,7 @@ def add_response(response_data):
     selected_candidate = response_data.get("selected_candidate", None)
 
     response_dict: dict = {
-        "staff_number": [response_data.get("staff_number", None)],
+        "subject": [response_data.get("subject", None)],
         "causal_pathway": selected_candidate["acceptable_by"]
         if selected_candidate
         else [None],
@@ -143,3 +143,30 @@ def set_logger():
     logger.at_least = (
         lambda lvl: logger.level(lvl).no >= logger.level(settings.log_level).no
     )
+
+
+def merge_and_pivot(performance_df):
+    # prepare performance data
+    performance_enriched = performance_df.merge(
+        context.practitioner_role,
+        how="left",
+        left_on="subject",
+        right_on="PractitionerRole.practitioner",
+    )
+
+    pivoted_comparator = context.comparator_df.pivot_table(
+        index=["period.start", "measure", "group.subject", "PractitionerRole.code"],
+        columns="group.code",
+        values="measureScore.rate",
+    ).reset_index()
+
+    final_df = performance_enriched.merge(
+        pivoted_comparator,
+        how="left",
+        left_on=["period.start", "measure"],
+        right_on=["period.start", "measure"],
+    )
+
+    performance_df = final_df.copy()
+
+    return performance_df

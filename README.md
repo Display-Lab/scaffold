@@ -168,6 +168,11 @@ Local file path or URL (see .env.remote for github URL formats). All are require
 
 - default: None
 
+#### meas_period: Defines the length of periods in month for the input data
+
+- default: 1
+- note: for example for a data that is collected quarterly this needs to be set to 3
+
 ### Scoring
 
 These control the elements of the scoring algorithm.

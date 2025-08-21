@@ -19,9 +19,14 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
         return g
 
     for measure in perf_df.attrs["valid_measures"]:
-        measure_df = perf_df[perf_df["measure"] == measure].tail(12)
+        measure_df = (
+            perf_df[perf_df["measure"] == measure].tail(12).sort_values("period.start")
+        )
+        comparator_df = context.comparator_df[
+            context.comparator_df["measure"] == measure
+        ].sort_values("period.start")
         for signal_type in SIGNALS:
-            signals = signal_type.detect(measure_df)
+            signals = signal_type.detect(measure_df, comparator_df)
             if not signals:
                 continue
 
@@ -35,27 +40,19 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
 def prepare():
     performance_df = context.performance_df
 
-    performance_df["goal_comparator_content"] = performance_df["MPOG_goal"]
-
     performance_df = performance_df[
-        performance_df["month"] <= context.performance_month
+        performance_df["period.start"] <= context.performance_month
     ]
 
-    performance_df["valid"] = performance_df["denominator"] >= 10
-
-    performance_df["passed_rate"] = (
-        performance_df["passed_count"] / performance_df["denominator"]
-    )
-
-    performance_df.attrs["measures"] = performance_df["measure"].unique()
+    performance_df["valid"] = performance_df["measureScore.denominator"] >= 10
 
     performance_df.attrs["valid_measures"] = performance_df[
         (
-            (performance_df["month"] == context.performance_month)
+            (performance_df["period.start"] == context.performance_month)
             & performance_df["valid"]
         )
     ]["measure"]
-    
+
     measures = set(startup.base_graph[: RDF.type : PSDO.performance_measure_content])
 
     performance_df.attrs["valid_measures"] = [

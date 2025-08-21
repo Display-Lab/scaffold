@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import pathlib
 from io import StringIO
 
@@ -21,12 +22,16 @@ mpm: dict = {}
 default_preferences: dict = {}
 base_graph: Graph = Graph()
 preferences: pd.DataFrame = pd.DataFrame(
-    columns=["staff_number", "preferences"], index=["staff_number"]
+    columns=["subject", "preference.json"], index=["subject"]
 )
 history: pd.DataFrame = pd.DataFrame(
-    columns=["staff_number", "month", "history"], index=["staff_number"]
+    columns=["subject", "period.start", "history.json"], index=["subject"]
 )
-performance_data = pd.DataFrame()
+# performance_data = pd.DataFrame()
+performance_measure_report = pd.DataFrame()
+practitioner_role = pd.DataFrame()
+comparator_measure_report = pd.DataFrame()
+
 performance_month = ""
 
 # Set up request session as se, config to handle file URIs with FileAdapter
@@ -49,7 +54,9 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             default_preferences, \
             preferences, \
             history, \
-            performance_data, \
+            performance_measure_report, \
+            comparator_measure_report, \
+            practitioner_role, \
             performance_month
 
         mpm = load_mpm()
@@ -66,17 +73,27 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             preferences = pd.read_csv(
                 settings.preferences, converters={"preferences": json.loads}
             )
-            preferences.set_index("staff_number", inplace=True, drop=False)
+            preferences.set_index("subject", inplace=True, drop=False)
         if settings.history != "None":
             history = pd.read_csv(
                 settings.history,
                 converters={"history": json.loads},
-                dtype={"month": str},
+                dtype={"period.start": str},
             )
-            history.set_index("staff_number", inplace=True, drop=False)
+            history.set_index("subject", inplace=True, drop=False)
 
         if performance_data_path:
-            performance_data = pd.read_csv(performance_data_path, parse_dates=["month"])
+            performance_measure_report = pd.read_csv(
+                os.path.join(performance_data_path, "PerformanceMeasureReport.csv"),
+                parse_dates=["period.start", "period.end"],
+            )
+            comparator_measure_report = pd.read_csv(
+                os.path.join(performance_data_path, "ComparatorMeasureReport.csv"),
+                parse_dates=["period.start", "period.end"],
+            )
+            practitioner_role = pd.read_csv(
+                os.path.join(performance_data_path, "PractitionerRole.csv")
+            )
 
         if settings.performance_month:
             performance_month = settings.settings.performance_month

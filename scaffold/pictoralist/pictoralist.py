@@ -26,7 +26,13 @@ class Pictoralist:
         ## Setup variables to process selected message
         # Needs cleanup to stop redundant var declaration (those passed directly to prepare_selected_message)
         self.performance_data = performance_dataframe  # Dataframe of recipient perf data (performance_data_df)
-
+        self.performance_data["passed_count"] = [
+            int(x)
+            for x in (
+                self.performance_data["measureScore.rate"]
+                * self.performance_data["measureScore.denominator"]
+            )
+        ]
         # Need refactor
         self.selected_measure = str(
             selected_candidate["measure_name"]
@@ -72,7 +78,7 @@ class Pictoralist:
     ### Clean dataframe of non-selected performance data for graph generation, reason on comparator message is about, and make changes to set up graphing
     def prep_data_for_graphing(self):
         ## Initial dataframe shape:
-        # staff_number, measure, month, passed_count, flagged_count, denominator, peer comparators (x3), MPOG_goal, Performance_Rate, comparator_level
+        # subject, measure, month, passed_count, flagged_count, denominator, peer comparators (x3), MPOG_goal, Performance_Rate, comparator_level
 
         # Only keep rows that contain the measure of interest for this message:
         self.performance_data = self.performance_data[
@@ -91,46 +97,46 @@ class Pictoralist:
         # Make changes based on peer 50th percentile benchmark being comparator message "is about"
         if self.comparator_type == "Peer Average":
             self.performance_data["comparator_level"] = self.performance_data[
-                "peer_average_comparator"
+                "http://purl.obolibrary.org/obo/PSDO_0000126"
             ]  # Select which column of data to keep as the 'comparator_level'
 
         # Same as above, but for peer 75th percentile benchmark
         elif self.comparator_type == "Peer Top 25%":
             self.performance_data["comparator_level"] = self.performance_data[
-                "peer_75th_percentile_benchmark"
+                "http://purl.obolibrary.org/obo/PSDO_0000128"
             ]
 
         # Same as above, but for peer 90th percentile benchmark
         elif self.comparator_type == "Peer Top 10%":
             self.performance_data["comparator_level"] = self.performance_data[
-                "peer_90th_percentile_benchmark"
+                "http://purl.obolibrary.org/obo/PSDO_0000129"
             ]
 
         # Same as above, but for goal comparator messages
         else:
             self.performance_data["comparator_level"] = self.performance_data[
-                "MPOG_goal"
+                "http://purl.obolibrary.org/obo/PSDO_0000094"
             ]
 
         ## Convert values in selected columns for further processing:
-        self.performance_data["month"] = pd.to_datetime(
-            self.performance_data["month"]
+        self.performance_data["period.start"] = pd.to_datetime(
+            self.performance_data["period.start"]
         )  # convert month column to datetime objects
         self.performance_data["performance_level"] = (
             self.performance_data["passed_count"]
-            / self.performance_data["denominator"]
+            / self.performance_data["measureScore.denominator"]
             * 100.0
         )  # convert preformance ratio to percentage
         self.performance_data["goal_percent"] = self.performance_data[
-            "MPOG_goal"
+            "http://purl.obolibrary.org/obo/PSDO_0000094"
         ]  # convert MPOG goal ratio to percentage
 
         ## Drop extraneous columns of current dataframe
         cols_to_keep = [
-            "month",
+            "period.start",
             "measure",
             "passed_count",
-            "denominator",
+            "measureScore.denominator",
             "performance_level",
             "comparator_level",
             "goal_percent",
@@ -140,24 +146,24 @@ class Pictoralist:
     ### Fill data voids in the dataset
     def fill_missing_months(self):
         ## Sort the DataFrame by the 'month' column
-        self.performance_data = self.performance_data.sort_values(by="month")
+        self.performance_data = self.performance_data.sort_values(by="period.start")
 
         ## Create a date range for all months between the earliest and latest month
-        start_date = self.performance_data["month"].min()
-        end_date = self.performance_data["month"].max()
+        start_date = self.performance_data["period.start"].min()
+        end_date = self.performance_data["period.start"].max()
         all_months = pd.date_range(start_date, end_date, freq="MS")
 
-        if len(all_months) != len(self.performance_data["month"]):
+        if len(all_months) != len(self.performance_data["period.start"]):
             logger.info("Data gap(s) detected, filling voids...")
 
             # Reindex the DataFrame with all months and fill missing values
             self.performance_data = (
-                self.performance_data.set_index("month")
+                self.performance_data.set_index("period.start")
                 .reindex(all_months, fill_value=None)
                 .reset_index()
             )
             self.performance_data = self.performance_data.rename(
-                columns={"index": "month"}
+                columns={"index": "period.start"}
             )  # reset col name from index to month
 
             # Forward fill 'measure' and percent-scale version of 'MPOG_goal' columns with the previous valid values
@@ -198,7 +204,9 @@ class Pictoralist:
         current_comparator_percent = self.performance_data["comparator_level"].iloc[-1]
         current_perf_percent = self.performance_data["performance_level"].iloc[-1]
         current_perf_passed = self.performance_data["passed_count"].iloc[-1]
-        current_perf_total_cases = self.performance_data["denominator"].iloc[-1]
+        current_perf_total_cases = self.performance_data[
+            "measureScore.denominator"
+        ].iloc[-1]
         self.init_time = datetime.datetime.now()  # Log time when text gen starts
 
         ## Replace placeholders in the template with actual values:
@@ -251,7 +259,7 @@ class Pictoralist:
         ## Define the axes, values, and their labels
         y_values = np.arange(0, 101, 20)
         y_labels = [str(val) + "%" for val in y_values]
-        x_values = self.performance_data["month"][
+        x_values = self.performance_data["period.start"][
             -self.display_timeframe :
         ].dt.strftime("%b '%y")
         plt.figure(figsize=(5, 2.5))  # Create the plot
@@ -300,7 +308,7 @@ class Pictoralist:
         last_three_months = x_values[-3:]
         last_three_performance = self.performance_data["performance_level"][-3:]
         last_three_passed = self.performance_data["passed_count"][-3:]
-        last_three_denom = self.performance_data["denominator"][-3:]
+        last_three_denom = self.performance_data["measureScore.denominator"][-3:]
 
         for month, performance, passed, denom in zip(
             last_three_months,
@@ -346,7 +354,7 @@ class Pictoralist:
         ## Define the axes, values, and labels
         y_values = np.arange(0, 101, 20)
         y_labels = [str(val) + "%" for val in y_values]
-        x_values = self.performance_data["month"][
+        x_values = self.performance_data["period.start"][
             -self.display_timeframe :
         ].dt.strftime("%b '%y")
 
@@ -358,7 +366,9 @@ class Pictoralist:
             -self.display_timeframe :
         ]
         graphed_pass = self.performance_data["passed_count"][-self.display_timeframe :]
-        graphed_denom = self.performance_data["denominator"][-self.display_timeframe :]
+        graphed_denom = self.performance_data["measureScore.denominator"][
+            -self.display_timeframe :
+        ]
 
         ## If include_goal_line is True, plot the goal line
         if self.plot_goal_line and self.comparator_type != "Goal Value":
@@ -494,10 +504,10 @@ class Pictoralist:
         full_message = {
             "pfkb_version": "0.0.0",  # Need to soft code this so it is accurate
             "pfp_version": "0.2.1",  # Ditto
-            "staff_number": context.staff_number,
+            "subject": context.subject,
             "selected_candidate": candidate,
             "selected_comparator": self.comparator_type,
-            "performance_month": self.performance_data["month"]
+            "performance_month": self.performance_data["period.start"]
             .iloc[-1]
             .strftime("%B %Y"),  # Becomes string in response, format here
             "message_generated_datetime": self.init_time,

@@ -210,3 +210,6 @@ INPUT=~/dev/inputs_2024-05-20/history.csv python src/bulk_up/stats.py
 ```
 cat ~/dev/inputs_2024-05-20/history.csv | python src/bulk_up/stats.py
 ```
+
+### json_to_new_json.py
+Script that rewrites MPOG json inputs into MPOG data new version based on new ingestion model.

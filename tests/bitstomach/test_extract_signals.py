@@ -1,3 +1,5 @@
+import json
+
 import pandas as pd
 from rdflib import RDF, BNode, Graph
 
@@ -6,17 +8,43 @@ from scaffold.bitstomach import bitstomach
 from scaffold.utils.namespace import PSDO
 
 COLUMNS = [
-    "staff_number",
+    "subject",
     "measure",
-    "month",
-    "passed_count",
-    "flagged_count",
-    "denominator",
-    "peer_average_comparator",
-    "peer_75th_percentile_benchmark",
-    "peer_90th_percentile_benchmark",
-    "MPOG_goal",
+    "period.start",
+    "measureScore.rate",
+    "measureScore.denominator",
 ]
+
+comparators = [
+    {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
+        "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"],
+    },
+    {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
+        "@type": [
+            "http://purl.obolibrary.org/obo/PSDO_0000093",
+            "http://purl.obolibrary.org/obo/PSDO_0000095",
+        ],
+    },
+    {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
+        "@type": [
+            "http://purl.obolibrary.org/obo/PSDO_0000093",
+            "http://purl.obolibrary.org/obo/PSDO_0000095",
+        ],
+    },
+    {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
+        "@type": [
+            "http://purl.obolibrary.org/obo/PSDO_0000093",
+            "http://purl.obolibrary.org/obo/PSDO_0000095",
+        ],
+    },
+]
+jsonld_str = json.dumps(comparators)
+
+context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
 
 
 def test_extract_signals_return_a_graph():
@@ -32,20 +60,43 @@ def test_extract_signals_return_a_graph():
 def test_returns_performance_content_with_multiple_elements():
     perf_data = [
         COLUMNS,
-        [157, "SUS04", "2022-10-01", 29, 0, 29, 81.7, 100.0, 100.0, 90.0],
-        [157, "SUS04", "2022-11-01", 29, 0, 29, 81.7, 100.0, 100.0, 90.0],
-        [157, "PONV05", "2022-11-01", 40, 0, 40, 82.4, 100.0, 100.0, 90.0],
+        [157, "SUS04", "2022-10-01", 1, 100],
+        [157, "SUS04", "2022-11-01", 1, 100],
+        [157, "PONV05", "2022-11-01", 1, 100],
     ]
     performance_df = pd.DataFrame(perf_data[1:], columns=COLUMNS)
+
+    comparator_data = [
+        [
+            "measure",
+            "period.start",
+            "measureScore.rate",
+            "group.code",
+        ],
+        ["SUS04", "2022-10-01", 81.7, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["SUS04", "2022-10-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["SUS04", "2022-10-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["SUS04", "2022-10-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["SUS04", "2022-11-01", 81.7, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["SUS04", "2022-11-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["SUS04", "2022-11-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["SUS04", "2022-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["PONV05", "2022-11-01", 82.4, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["PONV05", "2022-11-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["PONV05", "2022-11-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["PONV05", "2022-11-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+    ]
+    comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
+    context.comparator_df = comparator_df
     context.performance_month = "2022-11-01"
-    context.staff_number = 157
+    context.subject = 157
     context.performance_df = performance_df
-    
+
     g = Graph()
     g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
     g.add((BNode("SUS04"), RDF.type, PSDO.performance_measure_content))
     startup.base_graph = g
-    
+
     perf_df = bitstomach.prepare()
 
     g = bitstomach.extract_signals(perf_df)
@@ -60,23 +111,23 @@ def test_returns_performance_content_with_multiple_elements():
 def test_fix_up_marks_low_count_as_invalid():
     perf_data = [
         COLUMNS,
-        [157, "SUS04", "2022-11-01", 29, 0, 29, 81.7, 100.0, 100.0, 90.0],
-        [157, "PONV05", "2022-11-01", 40, 0, 4, 82.4, 100.0, 100.0, 90.0],
-        [157, "BP01", "2022-10-01", 40, 0, 40, 82.4, 100.0, 100.0, 90.0],
-        [157, "BP02", "2022-10-01", 29, 0, 2, 81.7, 100.0, 100.0, 90.0],
+        [157, "SUS04", "2022-11-01", 1, 29],
+        [157, "PONV05", "2022-11-01", 1, 4],
+        [157, "BP01", "2022-10-01", 1, 40],
+        [157, "BP02", "2022-10-01", 1, 2],
     ]
     performance_df = pd.DataFrame(perf_data[1:], columns=COLUMNS)
     context.performance_month = "2022-11-01"
-    context.staff_number = 157
+    context.subject = 157
     context.performance_df = performance_df
-    
+
     g = Graph()
     g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
     g.add((BNode("SUS04"), RDF.type, PSDO.performance_measure_content))
     g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
     g.add((BNode("BP02"), RDF.type, PSDO.performance_measure_content))
     startup.base_graph = g
-    
+
     perf_df = bitstomach.prepare()
 
     assert "SUS04" in perf_df.attrs["valid_measures"]

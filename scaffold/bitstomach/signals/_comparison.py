@@ -4,6 +4,7 @@ import pandas as pd
 from rdflib import RDF, BNode, Literal, URIRef
 from rdflib.resource import Resource
 
+from scaffold import context
 from scaffold.bitstomach.signals import Signal
 from scaffold.utils.namespace import PSDO, SLOWMO
 
@@ -13,7 +14,7 @@ class Comparison(Signal):
 
     @staticmethod
     def detect(
-        perf_data: pd.DataFrame, tiered_comparators: bool = True
+        perf_data: pd.DataFrame, comparator_data: pd.DataFrame
     ) -> Optional[List[Resource]]:
         """
         Detects comparison signals against a pre-defined list of comparators using performance levels in performance content.
@@ -34,17 +35,17 @@ class Comparison(Signal):
 
         resources = []
 
-        gaps = Comparison._detect(perf_data)
+        gaps = Comparison._detect(perf_data, comparator_data)
 
-        for key, value in gaps.items():
-            r = Comparison._resource(value[0], key, value[1])
+        for key, (gap, comparator_value) in gaps.items():
+            r = Comparison._resource(gap, key, comparator_value)
             resources.append(r)
 
         return resources
 
     @classmethod
     def _resource(
-        cls, gap: float, comparator_name: str, comparator_value: float
+        cls, gap: float, comparator_iri: str, comparator_value: float
     ) -> Resource:
         """
         adds the performance gap size, types it as positive or negative and adds the comparator to the subgraph
@@ -62,7 +63,7 @@ class Comparison(Signal):
 
         # Add the comparator
         c = base.graph.resource(BNode())
-        c.set(RDF.type, PSDO[comparator_name])
+        c.set(RDF.type, URIRef(comparator_iri))
         c.set(RDF.value, Literal(comparator_value))
 
         base.add(SLOWMO.RegardingComparator, c)
@@ -70,23 +71,27 @@ class Comparison(Signal):
         return base
 
     @staticmethod
-    def _detect(perf_data: pd.DataFrame) -> dict:
+    def _detect(perf_data: pd.DataFrame, comparator_data: pd.DataFrame) -> dict:
         """Calculate gap from levels and comparators"""
 
-        comp_cols = [
-            "peer_average_comparator",
-            "peer_75th_percentile_benchmark",
-            "peer_90th_percentile_benchmark",
-            "goal_comparator_content",
-        ]
-
         gaps: dict = {}
+        for comparator in context.subject_graph.subjects(
+            RDF.type, PSDO.comparator_content
+        ):
+            comparator_iri = str(comparator)
+            comparator_value = (
+                comparator_data[
+                    (comparator_data["group.code"] == comparator_iri)
+                    & (
+                        comparator_data["period.start"]
+                        == perf_data[-1:]["period.start"].iloc[0]
+                    )
+                ]["measureScore.rate"].iloc[0]
+                / 100
+            )
+            gap = perf_data[-1:]["measureScore.rate"] - comparator_value
 
-        for comparator in comp_cols:
-            comparator_value = perf_data[-1:][comparator] / 100
-
-            gap = perf_data[-1:]["passed_rate"] - comparator_value
-            gaps[comparator] = (gap.item(), comparator_value.item())
+            gaps[comparator_iri] = (gap.item(), comparator_value.item())
 
         return gaps
 

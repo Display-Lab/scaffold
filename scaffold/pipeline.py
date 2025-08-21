@@ -3,7 +3,7 @@ import os
 import psutil
 from fastapi import HTTPException
 from loguru import logger
-from rdflib import RDF, BNode, Graph, Literal
+from rdflib import BNode, Graph, Literal
 
 from scaffold import context, startup
 from scaffold.bitstomach import bitstomach
@@ -12,7 +12,7 @@ from scaffold.esteemer import esteemer, utils
 from scaffold.pictoralist.pictoralist import Pictoralist
 from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
-from scaffold.utils.utils import set_logger
+from scaffold.utils.utils import merge_and_pivot, set_logger
 
 set_logger()
 
@@ -30,7 +30,7 @@ def pipeline():
         context.subject_graph.close()
         detail = {
             "message": "Insufficient significant data found for providing feedback, process aborted.",
-            "staff_number": context.staff_number,
+            "subject": context.subject,
         }
         raise HTTPException(
             status_code=400,
@@ -74,7 +74,7 @@ def pipeline():
     if selected_message["message_text"] != "No message selected":
         ## Initialize and run message and display generation:
         pc = Pictoralist(
-            performance_df,
+            merge_and_pivot(performance_df),
             selected_message,
             settings,
         )

@@ -81,33 +81,31 @@ class History(Signal):
         return mods
 
     @staticmethod
-    def _detect(
-        history: dict, current_month_dict: dict
-    ) -> Tuple[float, float, float, float]:
+    def _detect(history: dict, current: dict) -> Tuple[float, float, float, float]:
         message_recurrence = 0
         message_recency = 0
         measure_recurrence = 0
         measure_recency = 0
 
-        current_month, history_element = list(current_month_dict.items())[0]
-        message_template = history_element["message_template"]
-        measure = history_element["measure"]
-        most_recent_message = None
-        most_recent_measure = None
-        for key, value in history.items():
-            month = datetime.fromisoformat(key)
-            if history[key]["message_template"] == message_template:
+        current_period, current_message = list(current.items())[0]
+        current_message_template = current_message["message_template"]
+        current_measure = current_message["measure"]
+        most_recent_message_dt = None
+        most_recent_measure_dt = None
+        for period, message in history.items():
+            period_dt = datetime.fromisoformat(period)
+            if message["message_template"] == current_message_template:
                 message_recurrence += 1
-                most_recent_message = month
+                most_recent_message_dt = period_dt
 
-            if history[key]["measure"] == measure:
+            if message["measure"] == current_measure:
                 measure_recurrence += 1
-                most_recent_measure = month
+                most_recent_measure_dt = period_dt
 
-        difference = relativedelta(current_month, most_recent_message)
+        difference = relativedelta(current_period, most_recent_message_dt)
         message_recency = difference.years * 12 + difference.months
 
-        difference = relativedelta(current_month, most_recent_measure)
+        difference = relativedelta(current_period, most_recent_measure_dt)
         measure_recency = difference.years * 12 + difference.months
 
         return message_recurrence, message_recency, measure_recurrence, measure_recency
