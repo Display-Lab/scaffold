@@ -56,25 +56,25 @@ Preferences captures providers' choices, priorities, and settings for messages t
 - **preferences.json**: A JSON dictionary with preferences detail. Here is an example of preferences JSON which SCAFFOLD can currently use 
     ```json
     {
-        'Utilities': {
-            'Message_Format': {  
-                'Social gain': '0.04', 
-                'Social stayed better':'-0.08',
-                'Worsening': '-0.1',  
-                'Improving': '-0.11', 
-                'Social loss': '0.69', 
-                'Social stayed worse': '-0.54', 
-                'Social better': '-1.23',
-                'Social worse': '0.54', 
-                'Social approach': '1.0',
-                'Goal gain': '0.07', 
-                'Goal approach': '1.1'
+        "Utilities": {
+            "Message_Format": {  
+                "Social gain": "0.04", 
+                "Social stayed better":"-0.08",
+                "Worsening": "-0.1",  
+                "Improving": "-0.11", 
+                "Social loss": "0.69", 
+                "Social stayed worse": "-0.54", 
+                "Social better": "-1.23",
+                "Social worse": "0.54", 
+                "Social approach": "1.0",
+                "Goal gain": "0.07", 
+                "Goal approach": "1.1"
             }, 
-            'Display_Format': {
-                'Bar chart': 1, 
-                'Line chart': 0, 
-                'Text-only': 0, 
-                'System-generated': 0
+            "Display_Format": {
+                "Bar chart": 1, 
+                "Line chart": 0, 
+                "Text-only": 0, 
+                "System-generated": 0
             }
         }
     }
