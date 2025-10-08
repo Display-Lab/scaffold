@@ -162,7 +162,7 @@ class Loss(Signal):
             columns={"measureScore.rate": "comparator"}
         )
         merged = pd.merge(perf_data, comparator_values, on="period.start", how="left")
-        gaps = merged["measureScore.rate"] - merged["comparator"] / 100
+        gaps = merged["measureScore.rate"] - merged["comparator"] 
 
         # find the number of consecutive positive gaps
         diff_reversed = gaps.values[:-1][::-1]

@@ -86,8 +86,7 @@ class Comparison(Signal):
                         comparator_data["period.start"]
                         == perf_data[-1:]["period.start"].iloc[0]
                     )
-                ]["measureScore.rate"].iloc[0]
-                / 100
+                ]["measureScore.rate"].iloc[0]                
             )
             gap = perf_data[-1:]["measureScore.rate"] - comparator_value
 

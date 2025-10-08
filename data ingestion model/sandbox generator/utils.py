@@ -63,10 +63,10 @@ def calculate_mean_and_stds(measures, num_months=12, COEF_VARIATION=0.15):
 def top_10_percent_mean(series):
     n = max(int(len(series) * 0.1), 1)  # at least 1 value
     top_n = series.nlargest(n)
-    return round(top_n.mean()*100, 2)
+    return round(top_n.mean(), 2)
 
 def peer_average(series):
-    return round(series.mean()*100,2)
+    return round(series.mean(),2)
 
 
 def generate_preferences(probability=1):

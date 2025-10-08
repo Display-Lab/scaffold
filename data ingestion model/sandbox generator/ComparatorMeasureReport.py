@@ -34,7 +34,7 @@ for measure_index, measure in enumerate(measures):
                 measure,
                 month[0],
                 month[1],
-                measures[measure]["target"],
+                measures[measure]["target"]/100,
                 "Network-Hospital-A",
                 "http://purl.obolibrary.org/obo/PSDO_0000094",
                 " ",
