@@ -86,13 +86,15 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             performance_measure_report = pd.read_csv(
                 os.path.join(performance_data_path, "PerformanceMeasureReport.csv"),
                 parse_dates=["period.start", "period.end"],
+                dtype={"subject": str}                
             )
             comparator_measure_report = pd.read_csv(
                 os.path.join(performance_data_path, "ComparatorMeasureReport.csv"),
                 parse_dates=["period.start", "period.end"],
             )
             practitioner_role = pd.read_csv(
-                os.path.join(performance_data_path, "PractitionerRole.csv")
+                os.path.join(performance_data_path, "PractitionerRole.csv"),
+                dtype={"PractitionerRole.practitioner": str}
             )
 
         if settings.performance_month:

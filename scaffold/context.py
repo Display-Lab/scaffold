@@ -7,7 +7,7 @@ from scaffold import startup
 
 preferences_dict = {}
 history_dict = {}
-subject = 0
+subject = "0"
 performance_month = ""
 performance_df: pd.DataFrame
 comparator_df: pd.DataFrame
@@ -48,7 +48,7 @@ def from_req(req_info):
     if not performance_month:
         performance_month = performance_df["period.start"].max()
 
-    subject = int(req_info["subject"])
+    subject = req_info["subject"] #int(req_info["subject"])
 
     preferences_dict = {}
     try:
@@ -77,7 +77,7 @@ def from_global(subject_num):
         comparator_df, \
         practitioner_role
 
-    subject = int(subject_num)
+    subject = subject_num #int(subject_num)
 
     try:
         performance_df = startup.performance_measure_report[
@@ -143,9 +143,9 @@ def set_preferences(req_info):
     if preferences:
         min_value = min(preferences.values())
         max_value = max(preferences.values())
-
-        for key in preferences:
-            preferences[key] = (preferences[key] - min_value) / (max_value - min_value)
+        if max_value != min_value:
+            for key in preferences:
+                preferences[key] = (preferences[key] - min_value) / (max_value - min_value)
 
     display_format = None
     for key, value in preferences_utilities.get("Display_Format", {}).items():
