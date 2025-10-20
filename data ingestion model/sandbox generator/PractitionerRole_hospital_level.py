@@ -1,6 +1,7 @@
 import argparse
 import time
 from pathlib import Path
+import uuid
 
 import pandas as pd
 
@@ -19,18 +20,18 @@ practitioner_rows = []
 for organization_index, organization in enumerate(organizations):
     practitioner_rows.append(
         [
+            f"{str(uuid.uuid4())}",
+            None,
             "hospital " + str(organization),
-            "Network-Hospital-A",
-            " ",
-            "Hospital",
+            " "
         ]
     )
 
 practitioner_data_columns = [
+    "PractitionerRole.identifier",
     "PractitionerRole.practitioner",
     "PractitionerRole.organization",
-    "PractitionerRole.code",
-    "type",
+    "PractitionerRole.code"
 ]
 practitioner_data_df = pd.DataFrame(
     practitioner_rows, columns=practitioner_data_columns

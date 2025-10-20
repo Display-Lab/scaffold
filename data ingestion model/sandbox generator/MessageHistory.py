@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-# os.environ["ENV_PATH"] = "/home/faridsei/dev/code/dev.env"
+# os.environ["ENV_PATH"] = "...." # set this if you are debugging this script 
 from scaffold import context, startup
 from scaffold import pipeline as p
 
@@ -39,7 +39,7 @@ for subject in performance_data_df["subject"].drop_duplicates():
         startup.history.loc[len(startup.history)] = [
             subject,
             month[0],
-            month[1][0],
+            month[1],
             str(
                 {
                     "message_template": full_message["selected_candidate"][

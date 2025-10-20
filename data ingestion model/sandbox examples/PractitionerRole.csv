@@ -1,101 +1,101 @@
-PractitionerRole.practitioner,PractitionerRole.organization,PractitionerRole.code,type
-hospital 1,Network-Hospital-A, ,Hospital
-hospital 2,Network-Hospital-A, ,Hospital
-hospital 3,Network-Hospital-A, ,Hospital
-hospital 4,Network-Hospital-A, ,Hospital
-hospital 5,Network-Hospital-A, ,Hospital
-hospital 6,Network-Hospital-A, ,Hospital
-hospital 7,Network-Hospital-A, ,Hospital
-hospital 8,Network-Hospital-A, ,Hospital
-hospital 9,Network-Hospital-A, ,Hospital
-hospital 10,Network-Hospital-A, ,Hospital
-hospital 11,Network-Hospital-A, ,Hospital
-hospital 12,Network-Hospital-A, ,Hospital
-hospital 13,Network-Hospital-A, ,Hospital
-hospital 14,Network-Hospital-A, ,Hospital
-hospital 15,Network-Hospital-A, ,Hospital
-hospital 16,Network-Hospital-A, ,Hospital
-hospital 17,Network-Hospital-A, ,Hospital
-hospital 18,Network-Hospital-A, ,Hospital
-hospital 19,Network-Hospital-A, ,Hospital
-hospital 20,Network-Hospital-A, ,Hospital
-hospital 21,Network-Hospital-A, ,Hospital
-hospital 22,Network-Hospital-A, ,Hospital
-hospital 23,Network-Hospital-A, ,Hospital
-hospital 24,Network-Hospital-A, ,Hospital
-hospital 25,Network-Hospital-A, ,Hospital
-hospital 26,Network-Hospital-A, ,Hospital
-hospital 27,Network-Hospital-A, ,Hospital
-hospital 28,Network-Hospital-A, ,Hospital
-hospital 29,Network-Hospital-A, ,Hospital
-hospital 30,Network-Hospital-A, ,Hospital
-hospital 31,Network-Hospital-A, ,Hospital
-hospital 32,Network-Hospital-A, ,Hospital
-hospital 33,Network-Hospital-A, ,Hospital
-hospital 34,Network-Hospital-A, ,Hospital
-hospital 35,Network-Hospital-A, ,Hospital
-hospital 36,Network-Hospital-A, ,Hospital
-hospital 37,Network-Hospital-A, ,Hospital
-hospital 38,Network-Hospital-A, ,Hospital
-hospital 39,Network-Hospital-A, ,Hospital
-hospital 40,Network-Hospital-A, ,Hospital
-hospital 41,Network-Hospital-A, ,Hospital
-hospital 42,Network-Hospital-A, ,Hospital
-hospital 43,Network-Hospital-A, ,Hospital
-hospital 44,Network-Hospital-A, ,Hospital
-hospital 45,Network-Hospital-A, ,Hospital
-hospital 46,Network-Hospital-A, ,Hospital
-hospital 47,Network-Hospital-A, ,Hospital
-hospital 48,Network-Hospital-A, ,Hospital
-hospital 49,Network-Hospital-A, ,Hospital
-hospital 50,Network-Hospital-A, ,Hospital
-hospital 51,Network-Hospital-A, ,Hospital
-hospital 52,Network-Hospital-A, ,Hospital
-hospital 53,Network-Hospital-A, ,Hospital
-hospital 54,Network-Hospital-A, ,Hospital
-hospital 55,Network-Hospital-A, ,Hospital
-hospital 56,Network-Hospital-A, ,Hospital
-hospital 57,Network-Hospital-A, ,Hospital
-hospital 58,Network-Hospital-A, ,Hospital
-hospital 59,Network-Hospital-A, ,Hospital
-hospital 60,Network-Hospital-A, ,Hospital
-hospital 61,Network-Hospital-A, ,Hospital
-hospital 62,Network-Hospital-A, ,Hospital
-hospital 63,Network-Hospital-A, ,Hospital
-hospital 64,Network-Hospital-A, ,Hospital
-hospital 65,Network-Hospital-A, ,Hospital
-hospital 66,Network-Hospital-A, ,Hospital
-hospital 67,Network-Hospital-A, ,Hospital
-hospital 68,Network-Hospital-A, ,Hospital
-hospital 69,Network-Hospital-A, ,Hospital
-hospital 70,Network-Hospital-A, ,Hospital
-hospital 71,Network-Hospital-A, ,Hospital
-hospital 72,Network-Hospital-A, ,Hospital
-hospital 73,Network-Hospital-A, ,Hospital
-hospital 74,Network-Hospital-A, ,Hospital
-hospital 75,Network-Hospital-A, ,Hospital
-hospital 76,Network-Hospital-A, ,Hospital
-hospital 77,Network-Hospital-A, ,Hospital
-hospital 78,Network-Hospital-A, ,Hospital
-hospital 79,Network-Hospital-A, ,Hospital
-hospital 80,Network-Hospital-A, ,Hospital
-hospital 81,Network-Hospital-A, ,Hospital
-hospital 82,Network-Hospital-A, ,Hospital
-hospital 83,Network-Hospital-A, ,Hospital
-hospital 84,Network-Hospital-A, ,Hospital
-hospital 85,Network-Hospital-A, ,Hospital
-hospital 86,Network-Hospital-A, ,Hospital
-hospital 87,Network-Hospital-A, ,Hospital
-hospital 88,Network-Hospital-A, ,Hospital
-hospital 89,Network-Hospital-A, ,Hospital
-hospital 90,Network-Hospital-A, ,Hospital
-hospital 91,Network-Hospital-A, ,Hospital
-hospital 92,Network-Hospital-A, ,Hospital
-hospital 93,Network-Hospital-A, ,Hospital
-hospital 94,Network-Hospital-A, ,Hospital
-hospital 95,Network-Hospital-A, ,Hospital
-hospital 96,Network-Hospital-A, ,Hospital
-hospital 97,Network-Hospital-A, ,Hospital
-hospital 98,Network-Hospital-A, ,Hospital
-hospital 99,Network-Hospital-A, ,Hospital
-hospital 100,Network-Hospital-A, ,Hospital
+PractitionerRole.identifier,PractitionerRole.practitioner,PractitionerRole.organization,PractitionerRole.code
+562389b4-10af-49ed-a5ad-757f83a92353,,hospital 1, 
+67d20523-608d-4994-9a97-49bec4477f63,,hospital 2, 
+79b5201e-7392-400f-a254-48e02754d09e,,hospital 3, 
+3b720193-c6ff-413f-a73b-f64aac25d1ba,,hospital 4, 
+c43677ee-7630-40c4-b153-eaf1e853535d,,hospital 5, 
+a01ab8a4-ff74-4052-bc0f-7209523e3e73,,hospital 6, 
+7a8f2ca6-8797-4e58-9e3d-c2ddba24289b,,hospital 7, 
+1f905308-d995-480a-b2b4-19e03dd1e536,,hospital 8, 
+235fed38-da60-4732-86a9-0c5a6f606446,,hospital 9, 
+506dbceb-dae1-462d-a578-617cb5700cb8,,hospital 10, 
+64e5bdfa-83a2-4f08-91f9-6337ae03ffab,,hospital 11, 
+c6d0c404-c342-4fec-b340-635937752fe4,,hospital 12, 
+5761463e-a2e9-41cd-b5eb-27e582258722,,hospital 13, 
+b3bb48fa-6144-439f-a558-a69067faf49c,,hospital 14, 
+0eb9e82b-a644-4163-9ae3-5df4a9461fbc,,hospital 15, 
+3bd19133-670f-46c5-b6a0-8dcd8bd5d17d,,hospital 16, 
+b6a74852-7701-404a-9af6-1610b4e8c7df,,hospital 17, 
+1d85f5b1-5c9a-4ec6-92bf-b00c59281e5e,,hospital 18, 
+da4dd3e3-6983-4bd6-b6c5-e8f16774ca6e,,hospital 19, 
+d880e18e-535d-40c2-b577-7a7c4c8b7bf3,,hospital 20, 
+94f5cf89-b92f-48a4-81f5-8199a145f207,,hospital 21, 
+c6a6722e-48b9-46f6-98ef-12816e6fcce1,,hospital 22, 
+0f126948-ac95-4701-b0fa-f02e21b01655,,hospital 23, 
+74be4911-3c73-4cf3-9511-7f91a8f68ea5,,hospital 24, 
+6bd60ec2-b0b6-4deb-aafe-6a22f2b8099f,,hospital 25, 
+a76dcc04-6847-44fa-a3b0-8515496ab268,,hospital 26, 
+a8167065-b459-450f-85c6-8790f8b48c70,,hospital 27, 
+9ca58b47-7955-4530-851d-300ae46e7806,,hospital 28, 
+b4d47ad3-d945-491c-a9a3-1c543a390c1e,,hospital 29, 
+a233ab9b-2a74-4997-a488-1f644efa51c9,,hospital 30, 
+6805fdca-bd79-4366-a243-ba2945acc53d,,hospital 31, 
+0119c7b7-140f-45a1-a14a-6765bdff7e11,,hospital 32, 
+32fba5e9-8583-48e2-a06c-f9199fdae88d,,hospital 33, 
+4a33f61d-7972-45f2-b1df-8c41914bde6d,,hospital 34, 
+ae40aca0-3f2c-46ce-a12b-f4cb35f84ef2,,hospital 35, 
+ef639d04-d791-42d2-820c-0ee1e8bd0aff,,hospital 36, 
+833d40c5-5d1c-44c9-896c-9dd5a7a8bac8,,hospital 37, 
+152bf592-a31c-4b8b-970e-0a19ff22b1e3,,hospital 38, 
+2e412826-a550-496c-bbeb-5209dd41739a,,hospital 39, 
+fce488e2-790f-489f-ab10-7af4e7339ca3,,hospital 40, 
+de19725b-4b07-45b3-8022-ef2895486ce0,,hospital 41, 
+8b610651-96bb-4e71-91d5-3ffd20371947,,hospital 42, 
+a11376f1-f393-4a27-9b0f-ba5ebb74a50f,,hospital 43, 
+64bf9955-667b-4feb-861f-33d40f93ac92,,hospital 44, 
+a588ff9d-c456-45fa-8297-3bf183fd8aa7,,hospital 45, 
+7e576ef1-43a2-4593-8c3d-cc45cdfb9605,,hospital 46, 
+2239a1d8-31d0-41c4-8e6b-fb0327836da0,,hospital 47, 
+e109be2e-c4c7-4f5a-bb06-7d14db211f8f,,hospital 48, 
+b5f887dc-c4f8-4386-ade4-1bfb0a4b7a43,,hospital 49, 
+41042a67-57ac-4b17-aebb-2c297ebf1e58,,hospital 50, 
+83bd1bb7-27c3-4ac9-a995-6a90ce672aaf,,hospital 51, 
+aa2ebb22-1d92-4240-955d-34a5686a46c9,,hospital 52, 
+a5587b93-dad5-4bac-b6b7-10a6c060ae77,,hospital 53, 
+9831b735-ab84-41cb-8728-0a6467a00495,,hospital 54, 
+68adc78a-3006-48ac-bce9-cb442266c1cf,,hospital 55, 
+b2d25315-b536-47c5-9f61-fcf88244b2bd,,hospital 56, 
+5c28a555-2269-4bf5-bfb0-1ddf97fab4f1,,hospital 57, 
+7e0383b3-1e70-48f3-8527-6c551dc4374c,,hospital 58, 
+f61d683f-ede2-42c6-a97a-fd806d7f61a9,,hospital 59, 
+359b9f0b-5d05-4b57-b944-fee654b80fd4,,hospital 60, 
+fa6f753e-95bb-4233-afb1-46df8f9e73e2,,hospital 61, 
+227e5afa-15ba-4e93-a85f-2edb80f5beba,,hospital 62, 
+4fb67fb1-f8ac-44c8-955e-063bf20664af,,hospital 63, 
+5935af30-e4fc-47bc-8d48-3e2853672d43,,hospital 64, 
+09be437e-aab8-4b79-baac-50705abf269e,,hospital 65, 
+8197e432-72b1-4d5b-ac71-fbb00d3af2de,,hospital 66, 
+b88b8633-5f42-4149-b109-d6e561ba8b0e,,hospital 67, 
+3e342868-2384-41a2-9743-513aec9acc48,,hospital 68, 
+f94071b6-0754-410a-94c8-cbedcc7de17c,,hospital 69, 
+c548fe97-5fba-4989-a3a2-c2d267a8640a,,hospital 70, 
+6dff1b9b-13f7-449f-8159-6eef1502d233,,hospital 71, 
+259f9ec6-281a-4a38-8ba9-2cb12655e1ef,,hospital 72, 
+b90a3e80-23e5-4292-9a20-9d2bf070f28c,,hospital 73, 
+b9a7f889-7068-46a7-97c6-772fcff54f71,,hospital 74, 
+3cbba8f4-da64-454b-9e41-e8419e83e4a8,,hospital 75, 
+90cde170-42d9-49a8-ae9b-ab62c54663c9,,hospital 76, 
+e1d2eba8-8208-402a-9e4f-3474472126fe,,hospital 77, 
+50efb5e9-7b49-4092-b921-406fd238d965,,hospital 78, 
+9290cb33-6fd6-4105-81de-3f695c9ec180,,hospital 79, 
+bc5ec9b6-23eb-4bc4-b2a9-b64626c0e2ed,,hospital 80, 
+952f9059-4572-4372-901f-099ac4f2a0fe,,hospital 81, 
+0b7e7e94-278d-47c1-9d8d-96c32db32b10,,hospital 82, 
+805ec46a-d7b0-4ee0-bdb8-3fc1fb3f19b2,,hospital 83, 
+261787c8-8df1-4502-ab5f-cfeae5721348,,hospital 84, 
+2826eb68-8753-4147-bf5b-dc0fa25a34c4,,hospital 85, 
+7acf3647-e386-48cc-8d02-a26fc21cd221,,hospital 86, 
+f01e81a7-243b-4306-baf1-180499058044,,hospital 87, 
+4fa84ac9-f48a-4bf8-a891-02242e0f5327,,hospital 88, 
+47c659f9-c5f6-4835-abd0-692f80f756c8,,hospital 89, 
+4a6632a1-a91c-40b7-9def-f3d5c8e99b67,,hospital 90, 
+046ac545-0bc8-41db-80ad-311076db8654,,hospital 91, 
+7e6bd311-a862-405f-9ece-4a5c73813c2d,,hospital 92, 
+69d869d7-e743-40f8-96ee-49d97a1fb919,,hospital 93, 
+99793a0f-7e4a-4ff2-8fcf-f083dbba1eeb,,hospital 94, 
+5a9b8d97-4f0e-40c8-a3dc-863db3771209,,hospital 95, 
+fc9c88d6-9e41-427a-ae0b-df9a78f89c74,,hospital 96, 
+0e95dd84-30e5-4be2-9058-2ccf4804b5fb,,hospital 97, 
+2eafbd0a-d891-44a9-ae3c-207c9e93ce34,,hospital 98, 
+1d46daf6-439c-4cce-8302-af05b29dc15a,,hospital 99, 
+e932771b-84a4-4146-bd40-ad1cf8ec0785,,hospital 100, 

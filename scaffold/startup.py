@@ -20,12 +20,13 @@ set_logger()
 matplotlib.use("Agg")
 mpm: dict = {}
 default_preferences: dict = {}
+config: dict = {}
 base_graph: Graph = Graph()
 preferences: pd.DataFrame = pd.DataFrame(
     columns=["subject", "preference.json"], index=["subject"]
 )
 history: pd.DataFrame = pd.DataFrame(
-    columns=["subject", "period.start", "history.json"], index=["subject"]
+    columns=["subject", "period.start","period.end", "history.json"], index=["subject"]
 )
 # performance_data = pd.DataFrame()
 performance_measure_report = pd.DataFrame()
@@ -57,7 +58,8 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             performance_measure_report, \
             comparator_measure_report, \
             practitioner_role, \
-            performance_month
+            performance_month, \
+            config
 
         mpm = load_mpm()
 
@@ -69,18 +71,18 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
 
         base_graph = manifest_to_graph(settings.manifest)
 
-        if settings.preferences != "None":
-            preferences = pd.read_csv(
-                settings.preferences, converters={"preferences": json.loads}
-            )
-            preferences.set_index("subject", inplace=True, drop=False)
-        if settings.history != "None":
-            history = pd.read_csv(
-                settings.history,
-                converters={"history": json.loads},
-                dtype={"period.start": str},
-            )
-            history.set_index("subject", inplace=True, drop=False)
+        # if settings.preferences != "None":
+        #     preferences = pd.read_csv(
+        #         settings.preferences, converters={"preferences": json.loads}
+        #     )
+        #     preferences.set_index("subject", inplace=True, drop=False)
+        # if settings.history != "None":
+        #     history = pd.read_csv(
+        #         settings.history,
+        #         converters={"history": json.loads},
+        #         dtype={"period.start": str},
+        #     )
+        #     history.set_index("subject", inplace=True, drop=False)
 
         if performance_data_path:
             performance_measure_report = pd.read_csv(
@@ -94,8 +96,26 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             )
             practitioner_role = pd.read_csv(
                 os.path.join(performance_data_path, "PractitionerRole.csv"),
-                dtype={"PractitionerRole.practitioner": str}
+                dtype={"PractitionerRole.identifier": str}
             )
+            config = json.load(open(os.path.join(performance_data_path, "config.json")))
+            
+            if settings.use_preferences:
+                preferences_file = os.path.join(performance_data_path, "Preference.csv")
+                if os.path.exists(preferences_file):
+                    preferences = pd.read_csv(
+                        preferences_file, converters={"preferences": json.loads}
+                    )
+                    preferences.set_index("subject", inplace=True, drop=False)
+            if settings.use_history:
+                history_file = os.path.join(performance_data_path, "MessageHistory.csv")
+                if os.path.exists(history_file):
+                    history = pd.read_csv(
+                        history_file,
+                        converters={"history": json.loads},
+                        dtype={"period.start": str},
+                    )
+                    history.set_index("subject", inplace=True, drop=False)
 
         if settings.performance_month:
             performance_month = settings.settings.performance_month

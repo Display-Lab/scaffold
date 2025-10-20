@@ -23,7 +23,7 @@ practitioner_data_df = pd.read_csv(output_dir / "PractitionerRole.csv")
 
 preferences_rows = []
 for organization_index, organization in practitioner_data_df[
-    "PractitionerRole.practitioner"
+    "PractitionerRole.identifier"
 ].items():
     preferences = generate_preferences(0.035)
     if preferences:

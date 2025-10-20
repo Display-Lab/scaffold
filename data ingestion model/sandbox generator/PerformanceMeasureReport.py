@@ -43,7 +43,7 @@ random_matrix = np.round(random_matrix / 100, 2)
 
 
 for organization_index, organization in practitioner_data_df[
-    "PractitionerRole.practitioner"
+    "PractitionerRole.identifier"
 ].items():
     for measure_index, measure in enumerate(measures):
         for month_index, month in enumerate(months):
