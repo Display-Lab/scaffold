@@ -75,10 +75,10 @@ Change back to the root of scaffold
 cd scaffold
 ```
 
-Update the `.env.local` file and change `path/to/knowledge-base` to point to the local knowledge base that you just checked out. (Don't remove the `file://` for default_preferences and manifest.)
+Create a copy of the `.env.local` file and call it `.env.dev` and update it by changing `path/to/knowledge-base` to point to the local knowledge base that you just checked out. (Don't remove the `file://` for default_preferences and manifest.)
 
 ```properties
-# .env.local
+# .env.dev
 default_preferences=file:///Users/bob/knowledge-base/preferences.json 
 mpm=/Users/bob/knowledge-base/prioritization_algorithms/motivational_potential_model.csv
 manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
@@ -89,7 +89,7 @@ manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
 There are two different ways to run SCAFFOLD API:
 1. Run SCAFFOLD API using uvicorn 
 ```zsh
-ENV_PATH=.env.local uvicorn scaffold.api:app
+ENV_PATH=.env.dev uvicorn scaffold.api:app
 # Expect to see a server start message like this "INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)"
 ```
 
@@ -118,10 +118,10 @@ ENV_PATH=/user/.../dev.env pipeline batch '/path/to/input/folder/' --max-files 5
 Use --max-files if you need to limit the number of files to process.
 
 ##### Run SCAFFOLD CLI with CSV inputs
-First install the python app. Then update the `.env.local` file and add links to history and preferences csv files along with other parameters mentioned earlier (manifest, default_preferences and mpm). 
+First install the python app. Then create the `.env.dev` file as mentioned above. 
 
 ```properties
-# .env.local
+# .env.dev
 default_preferences=file:///Users/bob/knowledge-base/preferences.json 
 mpm=/Users/bob/knowledge-base/prioritization_algorithms/motivational_potential_model.csv
 manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
