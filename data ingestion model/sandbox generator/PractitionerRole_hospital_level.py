@@ -17,10 +17,10 @@ organizations = list(range(1, args.num_orgs + 1))
 start = time.time()
 
 practitioner_rows = []
-for organization_index, organization in enumerate(organizations):
+for organization in organizations:
     practitioner_rows.append(
         [
-            f"{str(uuid.uuid4())}",
+            uuid.uuid4(),
             None,
             "hospital " + str(organization),
             " "

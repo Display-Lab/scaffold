@@ -53,7 +53,7 @@ for organization_index, organization in practitioner_data_df[
                 [
                     f"{str(uuid.uuid4())}",
                     measure,
-                    str(organization),
+                    organization,
                     month[0],
                     month[1][0],
                     rate,

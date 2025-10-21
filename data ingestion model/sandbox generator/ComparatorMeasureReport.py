@@ -157,7 +157,7 @@ peer_and_topten_df = peer_and_topten_df.rename(
 )
 
 peer_and_topten_df["identifier"] = [
-    str(uuid.uuid4()) for _ in range(len(peer_and_topten_df))
+    uuid.uuid4() for _ in range(len(peer_and_topten_df))
 ]
 
 peer_and_topten_df = peer_and_topten_df[

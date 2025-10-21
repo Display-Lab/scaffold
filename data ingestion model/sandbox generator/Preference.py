@@ -28,7 +28,7 @@ for organization_index, organization in practitioner_data_df[
     preferences = generate_preferences(0.035)
     if preferences:
         preferences_rows.append(
-            ["hospital " + str(organization), preferences]
+            [organization, preferences]
         )
 
 
