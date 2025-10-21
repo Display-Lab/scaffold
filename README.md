@@ -133,6 +133,17 @@ Then use the following command to run the pipeline passing performance data csv 
 ENV_PATH=/user/.../dev.env python -m scaffold.cli batch-csv '/path/to/performance/data/folder' --performance-month {performance month i.e. 2025-05-01} --max-files 500
 ```
 
+Alternatively, you can use pip to install the pipeline command and use it to run the pipeline. Use the following command in the root of repository to install SCAFFOLF
+
+```zsh
+pip install .
+```
+
+Then you can use the following command to run the pipeline
+```zsh
+ENV_PATH=/user/.../dev.env pipeline batch-csv '/path/to/performance/data/folder' --performance-month {performance month i.e. 2025-05-01} --max-files 500
+```
+
 Alternatively, if you have poetry installed, you can run 
 ```zsh
 poetry install
