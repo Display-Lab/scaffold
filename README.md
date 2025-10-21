@@ -27,7 +27,7 @@ cd scaffold
 **Using `venv` and `pip`**
 
 ```zsh
-python --version # make sure you have python 3.11
+python --version # make sure you have python 3.12
 python -m venv .venv
 ```
 
@@ -53,7 +53,7 @@ pip install uvicorn # not installed by default (needed for running locally)
 **Alternative: Using [Poetry](https://python-poetry.org/) (for developers)**
 
 ```zsh
-poetry env use 3.11 # optional, but makes sure you have python 3.11 available
+poetry env use 3.12 # optional, but makes sure you have python 3.12 available
 poetry install # creates a virtual environment and install dependencies
 poetry shell # activates the enviroment
 ```
@@ -64,7 +64,7 @@ Clone the knowledge base repository in a separate location
 
 ```zsh
 cd ..
-git clone https://github.com/Display-Lab/knowledge-base.git 
+git clone https://github.com/Display-Lab/knowledge-base-sandbox.git 
 ```
 
 #### Running SCAFFOLD
@@ -75,10 +75,10 @@ Change back to the root of scaffold
 cd scaffold
 ```
 
-Update the `.env.local` file and change `path/to/knowledge-base` to point to the local knowledge base that you just checked out. (Don't remove the `file://` for default_preferences and manifest.)
+Create a copy of the `.env.local` file and call it `.env.dev` and update it by changing `path/to/knowledge-base` to point to the local knowledge base that you just checked out. (Don't remove the `file://` for default_preferences and manifest.)
 
 ```properties
-# .env.local
+# .env.dev
 default_preferences=file:///Users/bob/knowledge-base/preferences.json 
 mpm=/Users/bob/knowledge-base/prioritization_algorithms/motivational_potential_model.csv
 manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
@@ -89,7 +89,7 @@ manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
 There are two different ways to run SCAFFOLD API:
 1. Run SCAFFOLD API using uvicorn 
 ```zsh
-ENV_PATH=.env.local uvicorn scaffold.api:app
+ENV_PATH=.env.dev uvicorn scaffold.api:app
 # Expect to see a server start message like this "INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)"
 ```
 
@@ -118,24 +118,43 @@ ENV_PATH=/user/.../dev.env pipeline batch '/path/to/input/folder/' --max-files 5
 Use --max-files if you need to limit the number of files to process.
 
 ##### Run SCAFFOLD CLI with CSV inputs
-First install the python app. Then update the `.env.local` file and add links to history and preferences csv files along with other parameters mentioned earlier (manifest, default_preferences and mpm). 
+First install the python app. Then create the `.env.dev` file as mentioned above. 
 
 ```properties
-# .env.local
+# .env.dev
 default_preferences=file:///Users/bob/knowledge-base/preferences.json 
 mpm=/Users/bob/knowledge-base/prioritization_algorithms/motivational_potential_model.csv
 manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
-preferences=/Users/bob/data/preferences.csv
-history=/Users/bob/data/history.csv
 ...
 ```
 Then use the following command to run the pipeline passing performance data csv file
 
 ```zsh
-ENV_PATH=/user/.../dev.env pipeline batch_csv '/path/to/performance/data/file.csv' --performance-month {performance month i.e. 2024-05-01} --max-files 500
+ENV_PATH=/user/.../dev.env python -m scaffold.cli batch-csv '/path/to/performance/data/folder' --performance-month {performance month i.e. 2025-05-01} --max-files 500
 ```
-Use --performance-month to set the performance month for batch_csv command and optional --max-files to limit the cases to process for development .
 
+Alternatively, you can use pip to install the pipeline command and use it to run the pipeline. Use the following command in the root of repository to install SCAFFOLF
+
+```zsh
+pip install .
+```
+
+Then you can use the following command to run the pipeline
+```zsh
+ENV_PATH=/user/.../dev.env pipeline batch-csv '/path/to/performance/data/folder' --performance-month {performance month i.e. 2025-05-01} --max-files 500
+```
+
+Alternatively, if you have poetry installed, you can run 
+```zsh
+poetry install
+```
+
+and then you shpuld be able to use the folloiwng command to run the pipeline:
+
+```zsh
+ENV_PATH=/user/.../dev.env pipeline batch_csv '/path/to/performance/data/folder' --performance-month {performance month i.e. 2025-05-01} --max-files 500
+```
+Use --performance-month to set the performance month for batch_csv command and optional --max-files to limit the cases to process for development.
 
 ## Environment variables
 
@@ -145,7 +164,7 @@ Local file path or URL (see .env.remote for github URL formats). All are require
 
 #### mpm: Path to the mpm csv file
 
-#### preferences: Path to the preferences json file
+#### default_preferences: Path to the default preferences json file
 
 #### manifest: Path to the manifest file that includes differend pieces of the base graph including (causal pathways, message templates, measures and comparators). See [manifest configuration](#manifest-configuration) for more detail
 

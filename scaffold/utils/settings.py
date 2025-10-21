@@ -37,9 +37,9 @@ class Settings:
         self.mpm = config("mpm", cast=str, default=None)
         self.default_preferences = config("default_preferences", cast=str, default=None)
 
-        self.preferences = config("preferences", cast=str, default=None)
-        self.history = config("history", cast=str, default=None)
-
+        # self.preferences = config("preferences", cast=str, default=None)
+        # self.history = config("history", cast=str, default=None)
+        self.config = config("config", cast=str, default=None)
         # Instance settings
         self.log_level = config(
             "log_level", cast=str, default="WARNING"

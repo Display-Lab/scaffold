@@ -151,7 +151,7 @@ def merge_and_pivot(performance_df):
         context.practitioner_role,
         how="left",
         left_on="subject",
-        right_on="PractitionerRole.practitioner",
+        right_on="PractitionerRole.identifier",
     )
 
     pivoted_comparator = context.comparator_df.pivot_table(

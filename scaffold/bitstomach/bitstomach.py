@@ -42,7 +42,7 @@ def prepare():
 
     performance_df = performance_df[
         performance_df["period.start"] <= context.performance_month
-    ]
+    ].copy()
 
     performance_df["valid"] = performance_df["measureScore.denominator"] >= 10
 
