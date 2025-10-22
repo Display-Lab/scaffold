@@ -127,11 +127,13 @@ mpm=/Users/bob/knowledge-base/prioritization_algorithms/motivational_potential_m
 manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
 ...
 ```
-Then use the following command to run the pipeline passing performance data csv file
+Then use the following command, from the root of SCAFFOLD repository, to run the pipeline passing the path to the folder that contains csv files
 
 ```zsh
 ENV_PATH=/user/.../dev.env python -m scaffold.cli batch-csv '/path/to/performance/data/folder' --performance-month {performance month i.e. 2025-05-01} --max-files 500
 ```
+
+You can use the path to the local [sandbox example data folder](./data%20ingestion%20model/sandbox%20examples) to run the pipeline on the sandbox example data.
 
 Alternatively, you can use pip to install the pipeline command and use it to run the pipeline. Use the following command in the root of repository to install SCAFFOLF
 
