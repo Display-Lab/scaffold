@@ -10,7 +10,7 @@ packages = [{include = "bulk_up", from = "src"}]
 bulk-up = "bulk_up.main:app"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11"
 google-auth = "^2.29.0"
 requests = "^2.31.0"
 pandas = "^2.2.2"
@@ -19,6 +19,7 @@ rdflib = "^7.0.0"
 pyyaml = "^6.0.2"
 loguru = "^0.7.2"
 orjson = "^3.11.0"
+scipy = "^1.16.2"
 
 
 [tool.poetry.group.dev.dependencies]
