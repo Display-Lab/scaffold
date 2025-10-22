@@ -42,18 +42,18 @@ def comparator_data() -> pd.DataFrame:
             "measureScore.rate",
             "group.code",
         ],
-        ["BP01", "2022-08-01", 85.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["BP01", "2022-08-01", 88.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["BP01", "2022-08-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["BP01", "2022-08-01", 99.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["BP01", "2022-09-01", 85.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["BP01", "2022-09-01", 89.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["BP01", "2022-09-01", 91.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["BP01", "2022-09-01", 100.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["BP01", "2022-10-01", 80.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["BP01", "2022-10-01", 85.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["BP01", "2022-10-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["BP01", "2022-10-01", 95.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP01", "2022-08-01", 0.85, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP01", "2022-08-01", 0.88, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["BP01", "2022-08-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["BP01", "2022-08-01", 0.99, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP01", "2022-09-01", 0.85, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP01", "2022-09-01", 0.89, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["BP01", "2022-09-01", 0.91, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["BP01", "2022-09-01", 1.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP01", "2022-10-01", 0.80, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP01", "2022-10-01", 0.85, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["BP01", "2022-10-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["BP01", "2022-10-01", 0.95, "http://purl.obolibrary.org/obo/PSDO_0000094"],
     ]
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
 
@@ -146,7 +146,7 @@ def test_signal_properties(perf_data, comparator_data):
 perf_level_test_set = [
     (
         [0.67, 0.79, 0.97],
-        [80.0, 85.0, 90.0, 95.0],
+        [0.80, 0.85, 0.90, 0.95],
         {
             PSDO.peer_90th_percentile_benchmark,
             PSDO.peer_75th_percentile_benchmark,
@@ -157,7 +157,7 @@ perf_level_test_set = [
     ),
     (
         [0.67, 0.95, 0.99],
-        [80.0, 96.0, 98.0, 97.0],
+        [0.80, 0.96, 0.98, 0.97],
         {
             PSDO.peer_90th_percentile_benchmark,
             PSDO.peer_75th_percentile_benchmark,
@@ -167,7 +167,7 @@ perf_level_test_set = [
     ),
     (
         [0.67, 0.96, 0.97],
-        [80.0, 95.0, 96.5, 95.0],
+        [0.80, 0.95, 0.965, 0.95],
         {
             PSDO.peer_90th_percentile_benchmark,
         },
@@ -175,7 +175,7 @@ perf_level_test_set = [
     ),
     (
         [0.67, 0.98, 0.97],
-        [80.0, 95.0, 96.5, 95.0],
+        [0.80, 0.95, 0.965, 0.95],
         set(),
         "no trend",
     ),
@@ -217,7 +217,7 @@ def test_detect(perf_data, comparator_data):
     new_row_comp = pd.DataFrame(
         {
             "period.start": "2022-07-01",
-            "measureScore.rate": [90.0],
+            "measureScore.rate": [0.9],
             "group.code": "http://purl.obolibrary.org/obo/PSDO_0000129",
         }
     )
@@ -236,7 +236,7 @@ def test_detect(perf_data, comparator_data):
     new_row_comp = pd.DataFrame(
         {
             "period.start": "2022-06-01",
-            "measureScore.rate": [90.0],
+            "measureScore.rate": [0.90],
             "group.code": "http://purl.obolibrary.org/obo/PSDO_0000129",
         }
     )

@@ -26,7 +26,7 @@ preferences: pd.DataFrame = pd.DataFrame(
     columns=["subject", "preference.json"], index=["subject"]
 )
 history: pd.DataFrame = pd.DataFrame(
-    columns=["subject", "period.start","period.end", "history.json"], index=["subject"]
+    columns=["subject", "period.start", "period.end", "history.json"], index=["subject"]
 )
 # performance_data = pd.DataFrame()
 performance_measure_report = pd.DataFrame()
@@ -88,7 +88,7 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             performance_measure_report = pd.read_csv(
                 os.path.join(performance_data_path, "PerformanceMeasureReport.csv"),
                 parse_dates=["period.start", "period.end"],
-                dtype={"subject": str}                
+                dtype={"subject": str},
             )
             comparator_measure_report = pd.read_csv(
                 os.path.join(performance_data_path, "ComparatorMeasureReport.csv"),
@@ -96,10 +96,10 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             )
             practitioner_role = pd.read_csv(
                 os.path.join(performance_data_path, "PractitionerRole.csv"),
-                dtype={"PractitionerRole.identifier": str}
+                dtype={"PractitionerRole.identifier": str},
             )
             config = json.load(open(os.path.join(performance_data_path, "config.json")))
-            
+
             if settings.use_preferences:
                 preferences_file = os.path.join(performance_data_path, "Preference.csv")
                 if os.path.exists(preferences_file):
@@ -124,8 +124,8 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             performance_month = performance_m
 
     except Exception as e:
-        print("Startup aborted, see traceback:")
-        raise e
+        print("Startup aborted:", e)
+        exit(0)
 
 
 ### read csv file to a dictionary

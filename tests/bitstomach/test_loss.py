@@ -41,18 +41,18 @@ def comparator_data() -> pd.DataFrame:
             "measureScore.rate",
             "group.code",
         ],
-        ["BP01", "2022-08-01", 85.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["BP01", "2022-08-01", 88.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["BP01", "2022-08-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["BP01", "2022-08-01", 95.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["BP01", "2022-09-01", 85.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["BP01", "2022-09-01", 89.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["BP01", "2022-09-01", 91.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["BP01", "2022-09-01", 95.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["BP01", "2022-10-01", 80.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["BP01", "2022-10-01", 85.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["BP01", "2022-10-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["BP01", "2022-10-01", 95.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP01", "2022-08-01", 0.85, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP01", "2022-08-01", 0.88, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["BP01", "2022-08-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["BP01", "2022-08-01", 0.95, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP01", "2022-09-01", 0.85, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP01", "2022-09-01", 0.89, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["BP01", "2022-09-01", 0.91, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["BP01", "2022-09-01", 0.95, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP01", "2022-10-01", 0.80, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP01", "2022-10-01", 0.85, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["BP01", "2022-10-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["BP01", "2022-10-01", 0.95, "http://purl.obolibrary.org/obo/PSDO_0000094"],
     ]
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
 
@@ -137,7 +137,7 @@ def test_signal_properties(perf_data, comparator_data):
 perf_level_test_set = [
     (
         [0.97, 0.96, 0.67],
-        [80.0, 85.0, 90.0, 95.0],
+        [0.80, 0.85, 0.90, 0.95],
         {
             PSDO.peer_average_comparator,
             PSDO.peer_75th_percentile_benchmark,
@@ -148,7 +148,7 @@ perf_level_test_set = [
     ),
     (
         [0.99, 0.98, 0.67],
-        [95.0, 96.0, 99.0, 97.0],
+        [0.95, 0.96, 0.99, 0.97],
         {
             PSDO.peer_average_comparator,
             PSDO.peer_75th_percentile_benchmark,
@@ -158,7 +158,7 @@ perf_level_test_set = [
     ),
     (
         [0.97, 0.90, 0.67],
-        [80.0, 94.0, 96.5, 95.0],
+        [0.80, 0.94, 0.96, 0.95],
         {
             PSDO.peer_average_comparator,
         },
@@ -166,7 +166,7 @@ perf_level_test_set = [
     ),
     (
         [0.97, 0.95, 0.81],
-        [80.0, 94.0, 96.5, 95.0],
+        [0.80, 0.94, 0.965, 0.95],
         {
             PSDO.peer_75th_percentile_benchmark,
             PSDO.goal_comparator_content,
@@ -175,7 +175,7 @@ perf_level_test_set = [
     ),
     (
         [0.67, 0.98, 0.97],
-        [80.0, 94.0, 96.5, 95.0],
+        [0.80, 0.94, 0.965, 0.95],
         set(),
         "no trend",
     ),
@@ -214,7 +214,7 @@ def test_detect(perf_data, comparator_data):
     new_row_comp = pd.DataFrame(
         {
             "period.start": "2022-07-01",
-            "measureScore.rate": [95.0],
+            "measureScore.rate": [0.95],
             "group.code": "http://purl.obolibrary.org/obo/PSDO_0000094",
         }
     )
@@ -230,7 +230,7 @@ def test_detect(perf_data, comparator_data):
     new_row_comp = pd.DataFrame(
         {
             "period.start": "2022-06-01",
-            "measureScore.rate": [95.0],
+            "measureScore.rate": [0.95],
             "group.code": "http://purl.obolibrary.org/obo/PSDO_0000094",
         }
     )
