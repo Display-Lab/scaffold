@@ -101,19 +101,19 @@ curl --data "@tests/test_cases/input_message.json" http://localhost:8000/createp
 2. Run SCAFFOLD API using CLI (`pipeline web` command )
 
 ```zsh
-ENV_PATH=/user/.../dev.env pipeline web
+ENV_PATH=/user/.../.env.dev pipeline web
 ```
 ##### Run SCAFFOLD CLI with JSON inputs
 First install the python app. Then use the following command to run the pipeline on one json input file
 
 ```zsh
-ENV_PATH=/user/.../dev.env pipeline batch '/path/to/input/file.json'
+ENV_PATH=/user/.../.env.dev pipeline batch '/path/to/input/file.json'
 ```
 
 Use the following command to run the pipeline on some or all json input files in a folder
 
 ```zsh
-ENV_PATH=/user/.../dev.env pipeline batch '/path/to/input/folder/' --max-files 500
+ENV_PATH=/user/.../.env.dev pipeline batch '/path/to/input/folder/' --max-files 500
 ```
 Use --max-files if you need to limit the number of files to process.
 
@@ -130,10 +130,10 @@ manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
 Then use the following command, from the root of SCAFFOLD repository, to run the pipeline passing the path to the folder that contains csv files
 
 ```zsh
-ENV_PATH=/user/.../dev.env python -m scaffold.cli batch-csv '/path/to/performance/data/folder' --performance-month {performance month i.e. 2025-05-01} --max-files 500
+ENV_PATH=/user/.../.env.dev python -m scaffold.cli batch-csv '/path/to/performance/data/folder' --performance-month 2025-01-01 --max-files 500
 ```
 
-You can use the path to the local [sandbox example data folder](./data%20ingestion%20model/sandbox%20examples) to run the pipeline on the sandbox example data.
+You can use the path to the local [sandbox example data folder](./data%20ingestion%20model/sandbox%20examples) to run the pipeline on the sandbox example data. You need to use 2025-01-01 for performance month if you are using the sandbox data.
 
 Alternatively, you can use pip to install the pipeline command and use it to run the pipeline. Use the following command in the root of repository to install SCAFFOLF
 
@@ -143,7 +143,7 @@ pip install .
 
 Then you can use the following command to run the pipeline
 ```zsh
-ENV_PATH=/user/.../dev.env pipeline batch-csv '/path/to/performance/data/folder' --performance-month {performance month i.e. 2025-05-01} --max-files 500
+ENV_PATH=/user/.../.env.dev pipeline batch-csv '/path/to/performance/data/folder' --performance-month 2025-01-01 --max-files 500
 ```
 
 Alternatively, if you have poetry installed, you can run 
@@ -151,10 +151,10 @@ Alternatively, if you have poetry installed, you can run
 poetry install
 ```
 
-and then you shpuld be able to use the folloiwng command to run the pipeline:
+and then you should be able to use the following command to run the pipeline:
 
 ```zsh
-ENV_PATH=/user/.../dev.env pipeline batch_csv '/path/to/performance/data/folder' --performance-month {performance month i.e. 2025-05-01} --max-files 500
+ENV_PATH=/user/.../.env.dev pipeline batch_csv '/path/to/performance/data/folder' --performance-month 2025-01-01 --max-files 500
 ```
 Use --performance-month to set the performance month for batch_csv command and optional --max-files to limit the cases to process for development.
 
@@ -182,7 +182,7 @@ Local file path or URL (see .env.remote for github URL formats). All are require
 
 #### log_level: Sets the log level
 
-- default: `WARNING` (this is the production defauslt)
+- default: `WARNING` (this is the production default)
 - note: SCAFFOLD must be run with **`log_level=INFO`** in order to generate the candidate records in the output.
 
 #### performance_month: If set, SCAFFOLD will override the performance month in the input requests
@@ -225,13 +225,13 @@ If the key is a relative path, it must end with a '/'. In that case the key is g
 ### examples
 
 ```zsh
- ENV_PATH=/user/.../dev.env log_level=INFO use_preferences=True use_coachiness=True use_mi=True generate_image=False uvicorn api:app --workers=5
+ ENV_PATH=/user/.../.env.dev log_level=INFO use_preferences=True use_coachiness=True use_mi=True generate_image=False uvicorn api:app --workers=5
 ```
 
 
 for windows:
 ```psh
-$env:ENV_PATH=/user/.../dev.env; $env:log_level="INFO"; $env:use_preferences="True"; $env:use_coachiness="True"; $env:use_mi="True"; $env:generate_image="False"; uvicorn api:app --workers=5
+$env:ENV_PATH=/user/.../.env.dev; $env:log_level="INFO"; $env:use_preferences="True"; $env:use_coachiness="True"; $env:use_mi="True"; $env:generate_image="False"; uvicorn api:app --workers=5
 ```
 
 > :point_right: `uvicorn` can be run with multiple workers. This is useful when testing with a client that can send multiple requests.
