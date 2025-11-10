@@ -28,12 +28,12 @@ def from_req(req_info):
 
     try:
         performance_df = pd.DataFrame(
-            req_info["performance_measurer_report"][1:],
-            columns=req_info["performance_measurer_report"][0],
+            req_info["performance_measure_report"][1:],
+            columns=req_info["performance_measure_report"][0],
         )
         comparator_df = pd.DataFrame(
-            req_info["comparator_measurer_report"][1:],
-            columns=req_info["comparator_measurer_report"][0],
+            req_info["comparator_measure_report"][1:],
+            columns=req_info["comparator_measure_report"][0],
         )
 
         practitioner_role = pd.DataFrame(

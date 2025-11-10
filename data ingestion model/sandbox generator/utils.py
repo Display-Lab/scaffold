@@ -6,11 +6,12 @@ import numpy as np
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
+
 def find_precap_mean(target_mean, cv=0.15, cap=100.0, tol=0.01, n=500_000, seed=42):
     np.random.seed(seed)
     lo, hi = target_mean, 150.0  # start search from target to high
     for _ in range(50):
-        mid = (lo + hi)/2
+        mid = (lo + hi) / 2
         sigma = mid * cv
         x = np.random.normal(mid, sigma, n)
         x = np.clip(x, None, cap)
@@ -22,6 +23,7 @@ def find_precap_mean(target_mean, cv=0.15, cap=100.0, tol=0.01, n=500_000, seed=
         else:
             hi = mid
     return mid
+
 
 measures = {
     "Transfer-01": {"mean": 53.8, "target": 73.0},
@@ -38,6 +40,7 @@ measures = {
     "Physician-informed-01": {"mean": 84.8, "target": 86.1},
 }
 
+
 def generate_months(performance_date, num_months):
     months = [
         [(performance_date - relativedelta(months=i)).strftime("%Y-%m-%d"), ""]
@@ -48,6 +51,7 @@ def generate_months(performance_date, num_months):
         end_date = end_date + pd.offsets.MonthEnd(0)
         months[index][1] = end_date.strftime("%Y-%m-%d")
     return months
+
 
 def calculate_mean_and_stds(measures, num_months=12, COEF_VARIATION=0.15):
     means = np.empty((0, num_months), dtype=float)
@@ -60,13 +64,15 @@ def calculate_mean_and_stds(measures, num_months=12, COEF_VARIATION=0.15):
     stds = means * COEF_VARIATION
     return means, stds
 
+
 def top_10_percent_mean(series):
     n = max(int(len(series) * 0.1), 1)  # at least 1 value
     top_n = series.nlargest(n)
     return round(top_n.mean(), 2)
 
+
 def peer_average(series):
-    return round(series.mean(),2)
+    return round(series.mean(), 2)
 
 
 def generate_preferences(probability=1):
@@ -104,6 +110,7 @@ def generate_preferences(probability=1):
 
     return preferences
 
+
 def input_parameters():
     performance_month = (
         input("Enter performance month [default=2025-01-01]:") or "2025-01-01"
@@ -115,5 +122,64 @@ def input_parameters():
     )
     num_months = int(input("Enter number of month [default=12]:") or 12)
 
-
     return performance_month, performance_date, organizations, num_months
+
+
+message_template = {
+    "@context": {
+        "dcterms": "http://purl.org/dc/terms/",
+        "schema": "http://schema.org/",
+        "scaffold": "http://displaylab.com/scaffold#",
+        "psdo": "http://purl.obolibrary.org/obo/",
+        "slowmo": "http://example.com/slowmo#",
+        "message_template": {"@id": "psdo:PSDO_0000002"},
+        "measure": {"@id": "psdo:PSDO_0000102"},
+        "performance_summary_document": {"@id": "psdo:PSDO_0000098"},
+        "performance_month": {"@id": "scaffold:performance_month"},
+        "History": {"@id": "scaffold:History"},
+        "Preferences": {"@id": "scaffold:Preferences"},
+        "performance_measure_report": {"@id": "psdo:PSDO_0000107"},
+        "comparator_measure_report": {"@id": "scaffold:comparator_measure_report"},
+        "PractitionerRole": {"@id": "scaffold:PractitionerRole"},
+        "subject": {"@id": "scaffold:subject"},
+    },
+    "message_instance_id": "",
+    "performance_month": "2025-01-01",
+    "@type": "psdo:performance_summary_document",
+    "subject": "",
+    "PractitionerRole": [
+        [
+            "PractitionerRole.identifier",
+            "PractitionerRole.practitioner",
+            "PractitionerRole.organization",
+            "PractitionerRole.code",
+        ],
+    ],
+    "performance_measure_report": [
+        [
+            "identifier",
+            "measure",
+            "subject",
+            "period.start",
+            "period.end",
+            "measureScore.rate",
+            "measureScore.denominator",
+            "measureScore.range",
+        ],
+    ],
+    "comparator_measure_report": [
+        [
+            "identifier",
+            "measure",
+            "period.start",
+            "period.end",
+            "measureScore.rate",
+            "measureScore.denominator",
+            "group.subject",
+            "group.code",
+            "PractitionerRole.code",
+        ],
+    ],
+    "History": [],
+    "Preferences": {},
+}
