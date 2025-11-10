@@ -37,11 +37,11 @@ async def createprecisionfeedback(info: Request):
 
         full_message = pipeline()
         full_message["message_instance_id"] = req_info["message_instance_id"]
-        full_message["performance_measurer_report"] = req_info[
-            "performance_measurer_report"
+        full_message["performance_measure_report"] = req_info[
+            "performance_measure_report"
         ]
-        full_message["comparator_measurer_report"] = req_info[
-            "comparator_measurer_report"
+        full_message["comparator_measure_report"] = req_info[
+            "comparator_measure_report"
         ]
     except HTTPException as e:
         e.detail["message_instance_id"] = req_info["message_instance_id"]
