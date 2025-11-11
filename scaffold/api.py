@@ -36,7 +36,7 @@ async def createprecisionfeedback(info: Request):
         context.from_req(req_info)
 
         full_message = pipeline()
-        full_message["message_instance_id"] = req_info["message_instance_id"]
+        full_message["message_instance_id"] = req_info["@id"]
         full_message["performance_measure_report"] = req_info[
             "performance_measure_report"
         ]
@@ -44,7 +44,7 @@ async def createprecisionfeedback(info: Request):
             "comparator_measure_report"
         ]
     except HTTPException as e:
-        e.detail["message_instance_id"] = req_info["message_instance_id"]
+        e.detail["message_instance_id"] = req_info["@id"]
         raise e
 
     return full_message

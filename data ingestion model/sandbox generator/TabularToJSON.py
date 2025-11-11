@@ -80,30 +80,30 @@ for subject in performance_data_df["subject"].drop_duplicates():
         ].reset_index(drop=True)
 
     try:
-        preferences_dict = preferences.loc[subject, "preferences.json"]
+        preferences_dict = ast.literal_eval(preferences[preferences["subject"] == subject]["preferences.json"].iloc[0])
     except Exception:
         preferences_dict = {}
 
-    try:
-        history_data = history[history["subject"] == subject].copy()
-        history_data["history.json"] = history_data["history.json"].apply(
-            ast.literal_eval
-        )
-        history_dict = history_data.set_index("period.start")["history.json"].to_dict()
-    except Exception:
-        history_dict = {}
+
+    history_data = history[history["subject"] == subject].copy()
+    history_data["history.json"] = history_data["history.json"].apply(
+        ast.literal_eval
+    )
+    history_data["history.json"] = history_data.apply(
+        lambda row: {**row["history.json"], "period.start": row["period.start"], "period.end": row["period.end"]},
+        axis=1
+    )
+
 
     message = copy.deepcopy(message_template)
-    message["message_instance_id"] = str(uuid.uuid4())
+    message["@id"] = str(uuid.uuid4())
     message["performance_month"] = args.performance_month
     message["subject"] = subject
-    message["PractitionerRole"].extend(practitioner_role.fillna("").values.tolist())
-    message["performance_measure_report"].extend(performance_df.values.tolist())
-    message["comparator_measure_report"].extend(
-        comparator_df.fillna("").values.tolist()
-    )
+    message["PractitionerRole"] = practitioner_role.fillna("").to_dict(orient="records")
+    message["performance_measure_report"] = performance_df.to_dict(orient="records")
+    message["comparator_measure_report"] = comparator_df.fillna("").to_dict(orient="records")
     message["Preferences"] = preferences_dict
-    message["History"] = history_dict
+    message["History"] = history_data["history.json"].tolist()
     json_file = new_folder / ("input_" + subject + ".json")
 
     # Write JSON to file
