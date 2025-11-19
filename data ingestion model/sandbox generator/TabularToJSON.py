@@ -89,10 +89,11 @@ for subject in performance_data_df["subject"].drop_duplicates():
     history_data["history.json"] = history_data["history.json"].apply(
         ast.literal_eval
     )
-    history_data["history.json"] = history_data.apply(
-        lambda row: {**row["history.json"], "period.start": row["period.start"], "period.end": row["period.end"]},
-        axis=1
-    )
+    if not history_data.empty:
+        history_data["history.json"] = history_data.apply(
+            lambda row: {**row["history.json"], "period.start": row["period.start"], "period.end": row["period.end"]},
+            axis=1
+        )
 
 
     message = copy.deepcopy(message_template)
@@ -100,11 +101,11 @@ for subject in performance_data_df["subject"].drop_duplicates():
     message["performance_month"] = args.performance_month
     message["subject"] = subject
     message["PractitionerRole"] = practitioner_role.fillna("").to_dict(orient="records")
-    message["performance_measure_report"] = performance_df.to_dict(orient="records")
+    message["performance_measure_report"] = performance_df.fillna("").to_dict(orient="records")
     message["comparator_measure_report"] = comparator_df.fillna("").to_dict(orient="records")
     message["Preferences"] = preferences_dict
     message["History"] = history_data["history.json"].tolist()
-    json_file = new_folder / ("input_" + subject + ".json")
+    json_file = new_folder / ("input_" + str(subject) + ".json")
 
     # Write JSON to file
     with json_file.open("w") as f:

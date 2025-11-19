@@ -47,7 +47,7 @@ def score(candidate: Resource, MPM: dict) -> Resource:
         "Social Gain": {"score": score_gain, "rules": rule_social_highest},
         "Social Loss": {"score": score_loss, "rules": rule_social_lowest},
         "Goal Worse": {"score": score_worse, "rules": null_rule},
-        "Goal Better": {"score": score_better, "rules": null_rule},
+        "Goal Better": {"score": score_better, "rules": rule_social_highest},
         "Goal Approach": {"score": score_approach, "rules": null_rule},
         "Social Approach": {"score": score_approach, "rules": rule_social_lowest},
     }
