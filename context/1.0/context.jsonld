@@ -32,25 +32,25 @@
       "@id": "scaffold:comparator_measure_report"
     },
     "PractitionerRole": {
-      "@id": "scaffold:PractitionerRole"
+      "@id": "fhir:PractitionerRole"
     },
     "subject": {
-      "@id": "scaffold:subject"
+      "@id": "fhir:subject"
     },
     "PractitionerRole.identifier": {
-      "@id": "scaffold:PractitionerRole.identifier"
+      "@id": "fhir:PractitionerRole.identifier"
     },
     "PractitionerRole.practitioner": {
-      "@id": "scaffold:PractitionerRole.practitioner"
+      "@id": "fhir:PractitionerRole.practitioner"
     },
     "PractitionerRole.organization": {
-      "@id": "scaffold:PractitionerRole.organization"
+      "@id": "fhir:PractitionerRole.organization"
     },
     "PractitionerRole.code": {
-      "@id": "scaffold:PractitionerRole.code"
+      "@id": "fhir:PractitionerRole.code"
     },
     "identifier": {
-      "@id": "scaffold:identifier"
+      "@id": "fhir:identifier"
     },
     "period.start": {
       "@id": "scaffold:period.start"
@@ -59,19 +59,19 @@
       "@id": "scaffold:period.end"
     },
     "measureScore.rate": {
-      "@id": "scaffold:measureScore.rate"
+      "@id": "fhir:measureScore.rate"
     },
     "measureScore.denominator": {
-      "@id": "scaffold:measureScore.denominator"
+      "@id": "fhir:measureScore.denominator"
     },
     "measureScore.range": {
-      "@id": "scaffold:measureScore.range"
+      "@id": "fhir:measureScore.range"
     },
     "group.subject": {
-      "@id": "scaffold:group.subject"
+      "@id": "fhir:group.subject"
     },
     "group.code": {
-      "@id": "scaffold:group.code"
+      "@id": "fhir:group.code"
     },
     "message_template_name": {
       "@id": "scaffold:message_template_name"
@@ -97,11 +97,47 @@
     "Worsening": {
       "@id": "scaffold:Worsening"
     },
+    "Social loss": {
+      "@id": "scaffold:Social_loss"
+    },
+    "Social better": {
+      "@id": "scaffold:Social_better"
+    },
+    "Social worse": {
+      "@id": "scaffold:Social_worse"
+    },
+    "Social approach": {
+      "@id": "scaffold:Social_approach"
+    },
+    "Goal gain": {
+      "@id": "scaffold:Goal_gain"
+    },
+    "Goal approach": {
+      "@id": "scaffold:Goal_approach"
+    },
+    "Goal loss": {
+      "@id": "scaffold:Goal_loss"
+    },
+    "Goal worse": {
+      "@id": "scaffold:Goal_worse"
+    },
+    "Improving": {
+      "@id": "scaffold:Improving"
+    },
+    "Goal better": {
+      "@id": "scaffold:Goal_better"
+    },
     "Bar chart": {
       "@id": "scaffold:Bar_chart"
     },
     "Line chart": {
       "@id": "scaffold:Line_chart"
+    },
+    "Text-only": {
+      "@id": "scaffold:Text_only"
+    },
+    "System-generated": {
+      "@id": "scaffold:System_generated"
     }
   }
 }
