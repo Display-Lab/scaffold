@@ -218,69 +218,67 @@ To run SCAFFOLD on sandbox data you need to prepare the environment and install 
 Here is an example of the output from SCAFFOLD after processing the sandbox example data:
 
 Successful: 100, Failed: 0
-
-| causal_pathway   | count | %    |
-|-----------------|-------|------|
-| Goal Approach    | 11    | 11.0 |
-| Goal Gain        | 3     | 3.0  |
-| Goal Loss        | 7     | 7.0  |
-| Goal Worse       | 1     | 1.0  |
-| Improving        | 14    | 14.0 |
-| Social Approach  | 18    | 18.0 |
-| Social Better    | 1     | 1.0  |
-| Social Gain      | 6     | 6.0  |
-| Social Loss      | 13    | 13.0 |
-| Social Worse     | 16    | 16.0 |
-| Worsening        | 10    | 10.0 |
-
-
-| causal_pathway   | acceptable | % acceptable | acceptable_score | selected | % selected | selected_score | % of acceptable selected |
-|-----------------|------------|--------------|-----------------|----------|------------|----------------|---------------------------|
-| Goal Approach    | 36         | 1.0          | 2.78            | 11       | 11.0       | 2.90           | 30.6                      |
-| Goal Gain        | 53         | 1.4          | 2.43            | 3        | 3.0        | 2.78           | 5.7                       |
-| Goal Loss        | 129        | 3.5          | 2.32            | 7        | 7.0        | 2.89           | 5.4                       |
-| Goal Worse       | 563        | 15.2         | 2.19            | 1        | 1.0        | 2.89           | 0.2                       |
-| Improving        | 159        | 4.3          | 2.69            | 14       | 14.0       | 2.88           | 8.8                       |
-| Social Approach  | 104        | 2.8          | 2.77            | 18       | 18.0       | 2.86           | 17.3                      |
-| Social Better    | 352        | 9.5          | 2.30            | 1        | 1.0        | 2.65           | 0.3                       |
-| Social Gain      | 137        | 3.7          | 2.41            | 6        | 6.0        | 2.94           | 4.4                       |
-| Social Loss      | 229        | 6.2          | 2.37            | 13       | 13.0       | 2.93           | 5.7                       |
-| Social Worse     | 1696       | 45.8         | 2.18            | 16       | 16.0       | 2.81           | 0.9                       |
-| Worsening        | 246        | 6.6          | 2.63            | 10       | 10.0       | 2.83           | 4.1                       |
+| #  | causal_pathway  | count | %    |
+| -- | --------------- | ----- | ---- |
+| 0  | Goal Approach   | 10    | 10.0 |
+| 1  | Goal Gain       | 3     | 3.0  |
+| 2  | Goal Loss       | 7     | 7.0  |
+| 3  | Goal Worse      | 1     | 1.0  |
+| 4  | Improving       | 14    | 14.0 |
+| 5  | Social Approach | 20    | 20.0 |
+| 6  | Social Better   | 1     | 1.0  |
+| 7  | Social Gain     | 6     | 6.0  |
+| 8  | Social Loss     | 13    | 13.0 |
+| 9  | Social Worse    | 15    | 15.0 |
+| 10 | Worsening       | 10    | 10.0 |
 
 
-| message                                | acceptable | % acceptable | acceptable_score | selected | % selected | selected_score | % of acceptable selected |
-|----------------------------------------|------------|--------------|-----------------|----------|------------|----------------|---------------------------|
-| Achieved Peer Average                   | 61         | 1.6          | 2.38            | 1        | 1.0        | 2.78           | 1.6                       |
-| Achieved Top 10 Peer Benchmark          | 76         | 2.1          | 2.42            | 5        | 5.0        | 2.98           | 6.6                       |
-| Approach Goal                           | 36         | 1.0          | 2.78            | 11       | 11.0       | 2.90           | 30.6                      |
-| Approach Peer Average                    | 21         | 0.6          | 2.76            | 0        | 0.0        | NaN            | 0.0                       |
-| Approach Top 10 Peer Benchmark          | 83         | 2.2          | 2.77            | 18       | 18.0       | 2.86           | 21.7                      |
-| Drop Below Goal                          | 129        | 3.5          | 2.32            | 7        | 7.0        | 2.89           | 5.4                       |
-| Drop Below Peer Average                  | 136        | 3.7          | 2.34            | 4        | 4.0        | 2.94           | 2.9                       |
-| Getting Worse                            | 246        | 6.6          | 2.63            | 10       | 10.0       | 2.83           | 4.1                       |
-| No Longer Top Performer                  | 93         | 2.5          | 2.51            | 9        | 9.0        | 2.93           | 9.7                       |
-| Not Top Performer                        | 848        | 22.9         | 2.18            | 7        | 7.0        | 2.76           | 0.8                       |
-| Opportunity to Improve Goal              | 563        | 15.2         | 2.19            | 1        | 1.0        | 2.89           | 0.2                       |
-| Opportunity to Improve Top 10 Peer Benchmark | 848   | 22.9         | 2.18            | 9        | 9.0        | 2.84           | 1.1                       |
-| Performance Improving                    | 159        | 4.3          | 2.69            | 14       | 14.0       | 2.88           | 8.8                       |
-| Reached Goal                             | 53         | 1.4          | 2.43            | 3        | 3.0        | 2.78           | 5.7                       |
-| Top Performer                            | 352        | 9.5          | 2.30            | 1        | 1.0        | 2.65           | 0.3                       |
+| #  | causal_pathway  | acceptable | % acceptable | acceptable_score | selected | % selected | selected_score | % of acceptable selected |
+| -- | --------------- | ---------- | ------------ | ---------------- | -------- | ---------- | -------------- | ------------------------ |
+| 0  | Goal Approach   | 36         | 1.0          | 2.82             | 10       | 10.0       | 2.98           | 27.8                     |
+| 1  | Goal Gain       | 53         | 1.4          | 2.44             | 3        | 3.0        | 2.78           | 5.7                      |
+| 2  | Goal Loss       | 129        | 3.5          | 2.34             | 7        | 7.0        | 2.89           | 5.4                      |
+| 3  | Goal Worse      | 563        | 15.2         | 2.21             | 1        | 1.0        | 2.89           | 0.2                      |
+| 4  | Improving       | 159        | 4.3          | 2.69             | 14       | 14.0       | 2.88           | 8.8                      |
+| 5  | Social Approach | 104        | 2.8          | 2.80             | 20       | 20.0       | 2.96           | 19.2                     |
+| 6  | Social Better   | 352        | 9.5          | 2.27             | 1        | 1.0        | 2.65           | 0.3                      |
+| 7  | Social Gain     | 137        | 3.7          | 2.41             | 6        | 6.0        | 2.94           | 4.4                      |
+| 8  | Social Loss     | 229        | 6.2          | 2.39             | 13       | 13.0       | 2.93           | 5.7                      |
+| 9  | Social Worse    | 1696       | 45.8         | 2.20             | 15       | 15.0       | 2.83           | 0.9                      |
+| 10 | Worsening       | 246        | 6.6          | 2.63             | 10       | 10.0       | 2.83           | 4.1                      |
 
+| #  | message                                      | acceptable | % acceptable | acceptable_score | selected | % selected | selected_score | % of acceptable selected |
+| -- | -------------------------------------------- | ---------- | ------------ | ---------------- | -------- | ---------- | -------------- | ------------------------ |
+| 0  | Achieved Peer Average                        | 61         | 1.6          | 2.39             | 1        | 1.0        | 2.76           | 1.6                      |
+| 1  | Achieved Top 10 Peer Benchmark               | 76         | 2.1          | 2.42             | 5        | 5.0        | 2.98           | 6.6                      |
+| 2  | Approach Goal                                | 36         | 1.0          | 2.82             | 10       | 10.0       | 2.98           | 27.8                     |
+| 3  | Approach Peer Average                        | 21         | 0.6          | 2.79             | 1        | 1.0        | 3.39           | 4.8                      |
+| 4  | Approach Top 10 Peer Benchmark               | 83         | 2.2          | 2.81             | 19       | 19.0       | 2.94           | 22.9                     |
+| 5  | Drop Below Goal                              | 129        | 3.5          | 2.34             | 7        | 7.0        | 2.89           | 5.4                      |
+| 6  | Drop Below Peer Average                      | 136        | 3.7          | 2.36             | 4        | 4.0        | 2.94           | 2.9                      |
+| 7  | Getting Worse                                | 246        | 6.6          | 2.63             | 10       | 10.0       | 2.83           | 4.1                      |
+| 8  | No Longer Top Performer                      | 93         | 2.5          | 2.55             | 9        | 9.0        | 2.93           | 9.7                      |
+| 9  | Not Top Performer                            | 848        | 22.9         | 2.20             | 7        | 7.0        | 2.82           | 0.8                      |
+| 10 | Opportunity to Improve Goal                  | 563        | 15.2         | 2.21             | 1        | 1.0        | 2.89           | 0.2                      |
+| 11 | Opportunity to Improve Top 10 Peer Benchmark | 848        | 22.9         | 2.20             | 8        | 8.0        | 2.85           | 0.9                      |
+| 12 | Performance Improving                        | 159        | 4.3          | 2.69             | 14       | 14.0       | 2.88           | 8.8                      |
+| 13 | Reached Goal                                 | 53         | 1.4          | 2.44             | 3        | 3.0        | 2.78           | 5.7                      |
+| 14 | Top Performer                                | 352        | 9.5          | 2.27             | 1        | 1.0        | 2.65           | 0.3                      |
 
-| measure               | acceptable | % acceptable | acceptable_score | selected | % selected | selected_score | % of acceptable selected |
-|------------------------|-------------|---------------|------------------|-----------|-------------|----------------|---------------------------|
-| Care-Rating-01         | 338         | 9.1           | 2.33             | 8         | 8.0         | 2.84           | 2.4                       |
-| Clean-Rating-01        | 330         | 8.9           | 2.26             | 12        | 12.0        | 2.88           | 3.6                       |
-| Discharge-01           | 299         | 8.1           | 2.25             | 10        | 10.0        | 2.85           | 3.3                       |
-| Hand-01                | 287         | 7.7           | 2.34             | 5         | 5.0         | 2.88           | 1.7                       |
-| Nurse-informed-01      | 270         | 7.3           | 2.33             | 6         | 6.0         | 2.86           | 2.2                       |
-| Nurse-language-01      | 286         | 7.7           | 2.37             | 11        | 11.0        | 2.82           | 3.8                       |
-| Patient-Concern-01     | 288         | 7.8           | 2.34             | 3         | 3.0         | 2.94           | 1.0                       |
-| Physician-informed-01  | 295         | 8.0           | 2.23             | 9         | 9.0         | 2.85           | 3.1                       |
-| Physician-language-01  | 299         | 8.1           | 2.28             | 5         | 5.0         | 2.92           | 1.7                       |
-| Provider-Rating-01     | 264         | 7.1           | 2.31             | 6         | 6.0         | 2.87           | 2.3                       |
-| Quiet-Rating-01        | 361         | 9.7           | 2.25             | 12        | 12.0        | 2.84           | 3.3                       |
-| Transfer-01            | 387         | 10.4          | 2.22             | 13        | 13.0        | 2.92           | 3.4                       |
+| #  | measure               | acceptable | % acceptable | acceptable_score | selected | % selected | selected_score | % of acceptable selected |
+| -- | --------------------- | ---------- | ------------ | ---------------- | -------- | ---------- | -------------- | ------------------------ |
+| 0  | Care-Rating-01        | 338        | 9.1          | 2.34             | 7        | 7.0        | 2.85           | 2.1                      |
+| 1  | Clean-Rating-01       | 330        | 8.9          | 2.28             | 12       | 12.0       | 2.93           | 3.6                      |
+| 2  | Discharge-01          | 299        | 8.1          | 2.27             | 10       | 10.0       | 2.91           | 3.3                      |
+| 3  | Hand-01               | 287        | 7.7          | 2.33             | 5        | 5.0        | 2.88           | 1.7                      |
+| 4  | Nurse-informed-01     | 270        | 7.3          | 2.34             | 7        | 7.0        | 2.90           | 2.6                      |
+| 5  | Nurse-language-01     | 286        | 7.7          | 2.38             | 11       | 11.0       | 2.86           | 3.8                      |
+| 6  | Patient-Concern-01    | 288        | 7.8          | 2.34             | 3        | 3.0        | 2.94           | 1.0                      |
+| 7  | Physician-informed-01 | 295        | 8.0          | 2.24             | 9        | 9.0        | 2.85           | 3.1                      |
+| 8  | Physician-language-01 | 299        | 8.1          | 2.30             | 5        | 5.0        | 2.92           | 1.7                      |
+| 9  | Provider-Rating-01    | 264        | 7.1          | 2.32             | 6        | 6.0        | 2.87           | 2.3                      |
+| 10 | Quiet-Rating-01       | 361        | 9.7          | 2.28             | 12       | 12.0       | 2.90           | 3.3                      |
+| 11 | Transfer-01           | 387        | 10.4         | 2.24             | 13       | 13.0       | 2.97           | 3.4                      |
+
 
 SCAFFOLD also creates a `messages` folder, which contains a summary of the generated candidates (`candidates.csv`) and a detailed JSON file for each generated message. Each JSON file includes information about the selected message, all created candidates with their scoring details, and any generated images.

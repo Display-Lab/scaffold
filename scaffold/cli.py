@@ -61,7 +61,7 @@ def batch(
                 context.from_req(input_data)
 
                 full_message = pipeline()
-                full_message["message_instance_id"] = input_data["message_instance_id"]
+                full_message["message_instance_id"] = input_data["@id"]
                 full_message["performance_measure_report"] = input_data[
                     "performance_measure_report"
                 ]
@@ -69,7 +69,7 @@ def batch(
                     "comparator_measure_report"
                 ]
             except HTTPException as e:
-                e.detail["message_instance_id"] = input_data["message_instance_id"]
+                e.detail["message_instance_id"] = input_data["@id"]
                 raise e
 
             if not stats_only:
@@ -140,10 +140,8 @@ def batch_csv(
             context.from_global(subject)
             try:
                 full_message = pipeline()
-                # full_message["message_instance_id"] = input_data["message_instance_id"]
                 full_message["performance_data"] = context.performance_month
             except Exception as e:
-                # e.detail["message_instance_id"] = input_data["message_instance_id"]
                 raise e
             if not stats_only:
                 directory = performance_data_path.parent / "messages"

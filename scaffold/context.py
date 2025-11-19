@@ -27,18 +27,11 @@ def from_req(req_info):
         practitioner_role
 
     try:
-        performance_df = pd.DataFrame(
-            req_info["performance_measure_report"][1:],
-            columns=req_info["performance_measure_report"][0],
-        )
-        comparator_df = pd.DataFrame(
-            req_info["comparator_measure_report"][1:],
-            columns=req_info["comparator_measure_report"][0],
-        )
+        performance_df = pd.DataFrame(req_info["performance_measure_report"])
+        
+        comparator_df = pd.DataFrame(req_info["comparator_measure_report"])
 
-        practitioner_role = pd.DataFrame(
-            req_info["PractitionerRole"][1:], columns=req_info["PractitionerRole"][0]
-        )
+        practitioner_role = pd.DataFrame(req_info["PractitionerRole"])
     except Exception:
         pass
 
@@ -58,7 +51,11 @@ def from_req(req_info):
 
     history_dict = {}
     try:
-        history_dict = req_info.get("History", {})
+        history_list = req_info.get("History", {})
+        history_dict = {
+            item["period.start"]: {k: v for k, v in item.items() if k != "period.end" and k != "period.start"}
+            for item in history_list
+        }
     except Exception:
         pass
 
@@ -106,7 +103,7 @@ def from_global(subject_num):
 
     preferences_dict = {}
     try:
-        p = startup.preferences.loc[subject, "preferences.json"]
+        p = ast.literal_eval(startup.preferences.loc[subject, "preferences.json"])
         preferences_dict = set_preferences(p)
     except Exception:
         preferences_dict = set_preferences({})

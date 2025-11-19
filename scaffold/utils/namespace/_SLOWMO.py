@@ -9,7 +9,7 @@ class SLOWMO(AliasingDefinedNamespace):
     RegardingMeasure: URIRef
     RegardingComparator: URIRef
     PerformanceGapSize: URIRef
-    PriorPerformanceGapSize: URIRef
+    PriorPerformanceGapSize: URIRef #not needed because it is not used later. We just look at prior month to see if there is a negative or positive gap depending on the causal pathway but we do not need to add it to the graph
     StreakLength: URIRef
     PerformanceTrendSlope: URIRef
     numberofmonths: URIRef
