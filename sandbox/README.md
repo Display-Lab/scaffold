@@ -1,4 +1,7 @@
-# SCAFFOLD [Data Ingestion Model](https://docs.google.com/spreadsheets/d/1qDjS2-a7F1El53jUx0fippL3m28pQilLcYNAv4pQkxI/edit?gid=1258033503#gid=1258033503)
+# SCAFFOLD Sandbox
+The SCAFFOLD sandbox currently provides example datasets produced using SCAFFOLD data ingestion model. At the moment, it includes a dataset created for a hospital quality dashboard use case. Additional examples can be incorporated in the future as new use cases are developed.
+
+## SCAFFOLD [Data Ingestion Model](https://docs.google.com/spreadsheets/d/1qDjS2-a7F1El53jUx0fippL3m28pQilLcYNAv4pQkxI/edit?gid=1258033503#gid=1258033503)
 We adopted several [FHIR standard](https://hl7.org/fhir/index.html)'s resources to model performance data ingestion for SCAFFOLD. The performance input data include:
 - Provider information 
 - Performance data
@@ -8,8 +11,8 @@ SCAFFOLD can also input the `Message history` and `Preferences` which are option
 
 The data was structured using FHIR resources to the extent possible. Since no suitable resources exist for history and preferences, those were represented using our own format.
 
-## Performance Data Structure
-### Provider information (`PractitionerRole`)
+### Performance Data Structure
+#### Provider information (`PractitionerRole`)
 The [`PractitionerRole`](https://build.fhir.org/practitionerrole.html) resource is used to represent message recipients(individuals or organizations), their relationships and their roles. The input data include a table (PractitionerRole.csv) with the following columns:
 - **[PractitionerRole.identifier](https://build.fhir.org/practitionerrole-definitions.html#PractitionerRole.identifier)**: Unique identifier for each row in the Practitiner table. This identifier links performance data, history and preferences to each recipient. In those datasets, PractitionerRole.identifier is referred to as subject.
 - **[PractitionerRole.practitioner](https://build.fhir.org/practitionerrole-definitions.html#PractitionerRole.practitioner)**: Contains the practitioner identifier. If this column has a value, the row represents an individual practitioner otherwise it is aggregate data for a group for example a hospital.
@@ -18,7 +21,7 @@ The [`PractitionerRole`](https://build.fhir.org/practitionerrole.html) resource 
 - **[PractitionerRole.code](https://build.fhir.org/practitionerrole-definitions.html#PractitionerRole.code)**: Contains the role of the recipient in the institution. Example values for this field could be `Resident`, `Attending` or `CRNA`.
 - **type**: Indicates whether the performance data belong to an individual provider or to a group of providers. Accordingly, a `PractitionerRole` may represent either a single provider or a group. This field is not part of the FHIR `PractitionerRole` resource; in our model, it is introduced to classify `PractitionerRole` as either individual or group, allowing us to distinguish between the two types of performance data. Example values include `Practitioner` and `Organization`.
   
-### Performance data (`MeasureReport`)
+#### Performance data (`MeasureReport`)
 Performance data are modeled using the [`MeasureReport`](https://build.fhir.org/measurereport.html) resource, which represents the results of a measure evaluation. In SCAFFOLD, each row of performance data is modeled as a measure report. Accordingly, the input data include a table (PerformanceMeasureReport.csv) with the following columns:
 - **[identifier](https://build.fhir.org/measurereport-definitions.html#MeasureReport.identifier)**: Uniquely identifies a specific performance data record.
 - **[measure](https://build.fhir.org/measurereport-definitions.html#MeasureReport.measure)**: 	
@@ -30,7 +33,7 @@ A reference to the measure with which the performance record is associated.
 - **[measureScore](https://hl7.org/fhir/measurereport-definitions.html#MeasureReport.group.measureScore_x_).denominator**: The total number of cases on which the performance record is based.
 - **[measureScore](https://hl7.org/fhir/measurereport-definitions.html#MeasureReport.group.measureScore_x_).range**: Used for categorical values.
 
-### Comparator data (`MeasureReport`):
+#### Comparator data (`MeasureReport`):
 Comparator data , which represent aggregated performance for a selected group of recipients, are modeled using the [`MeasureReport`](https://build.fhir.org/measurereport.html) resource. In SCAFFOLD, each row of comparator data is modeled as a measure report. Accordingly, the input data include a table (ComparatorMeasureReport.csv) with the following columns:
 - **[identifier](https://build.fhir.org/measurereport-definitions.html#MeasureReport.identifier)**: Uniquely identifies a specific comparator data record.
 - **[measure](https://build.fhir.org/measurereport-definitions.html#MeasureReport.measure)**: A reference to the measure with which the comparator record is associated.
@@ -42,9 +45,9 @@ Comparator data , which represent aggregated performance for a selected group of
 - **[group.code](https://hl7.org/fhir/measurereport-definitions.html#MeasureReport.group.code)**: Specifies the type of comparator represented in each comparator record. Example values for this field include `peer average`, `Peer Top 10%` or `Goal Value`. 
 - **[PractitionerRole.code](https://build.fhir.org/practitionerrole-definitions.html#PractitionerRole.code)**: Indicates the role of the providers for whom the comparator record is calculated. Example values for this field include `Resident`, `Attending` or `CRNA`.
 
-## Prioritization Data Structure
+### Prioritization Data Structure
 
-### Message history
+#### Message history
 Message history captures previously generated messages over defined time periods. SCAFFOLD's input data include a table (MessageHistory.csv) with the following columns:
 - **subject**: The provider (practitioner) identifier, to whom the message history record belongs.
 - **period.start**: The start date of the period for which the message was created.
@@ -56,7 +59,7 @@ Message history captures previously generated messages over defined time periods
     - **measure**: The measure associated with the generated message.
     - **acceptable_by**: The causal pathway associated with the generated message.
 
-### Preference
+#### Preference
 Preferences captures providers' choices, priorities, and settings for messages that are generated for them. SCAFFOLD's input data include a table (Preferences.csv) with the following columns:
 - **subject**: The provider (practitioner) identifier, to whom the preferences record belongs.
 - **preferences.json**: A JSON dictionary with preferences detail. Here is an example of preferences JSON which SCAFFOLD can currently use 
@@ -85,11 +88,24 @@ Preferences captures providers' choices, priorities, and settings for messages t
         }
     }
     ```
-## Data Generator 
+### Hospital Quality Dashboard Use Case 
+This use case includes sandbox-generated, hospital-level performance data for a set of measures related to hospital quality, including:
+- Transfers Completed
+- Hand Hygiene
+- Rating of Providers
+- Rating of Care
+- Rating of Cleanliness
+- Rating of Quietness
+- Provider clearly addressed patient concerns
+- Speed of Discharge
+- Nurses kept patient informed
+- Nurses informed using clear language
+- Physician informed using clear language
+- Physician kept patient informed
 
-### Generate Tabular data
-First, create a folder for new data (i.e. `new_data`).
-If the data is going to be generated for individual recipients, create a config.json inside the new data folder containing
+
+#### Generate Tabular data inputs
+The hospital quality dashboard use case includes a set of scripts that can be used to generate new data sets. To begin, create a folder to hold the new data (i.e. `new_data`). Create a config.json inside the new data folder. If the data is going to be generated for individual recipients, include the following in the config file
 ```json
 {
     "ComparatorMergeColumns":["group.subject", "PractitionerRole.code"]
@@ -105,7 +121,7 @@ for hospital level data use
 
 Now you can run the scripts sequentially to generate data.
 
-For example to generate hospital level data for 100 hospitals run the following commands:
+For example to generate data for this usecase for 100 hospitals run the following commands:
 
 ```zsh
 python data\ ingestion\ model/sandbox\ generator/PractitionerRole_hospital_level.py --num_orgs 100 --path new_data
@@ -119,35 +135,33 @@ python data\ ingestion\ model/sandbox\ generator/Preference.py --path new_data
 ENV_PATH=/Path/to/your/environment/file/dev.env python data\ ingestion\ model/sandbox\ generator/MessageHistory.py --path new_data
 ```
 
-This will start by creating the list of hospitals in PractitionerRole.csv file. Then will generate performance data in PerformanceMeasureReports.csv. Next step will create the comparator data in ComparatorMeasureReport.csv. Then the preferences will be added to preferences.csv. Final step will use SCAFFOLD to generate the history of messages generated by pipeline for the months before the performance month.
-
 This process will start by creating a list of hospitals in the `PractitionerRole.csv` file. Next, performance data will be generated in `PerformanceMeasureReports.csv`. The following step will create comparator data in `ComparatorMeasureReport.csv`. Preferences will then be added to `preferences.csv`. Finally, SCAFFOLD will be used to generate the history of messages produced by the pipeline for the months preceding the performance month and store it in `MessageHistory.csv`.
 
-### Convert Data To JSON-LD Inputs
+#### Generate JSON-LD Inputs
 You can use the script in TabularToJson.py to convert data in tabular format to json-ld input files. Use the following to run this script on a path where the tabular data with all the required files that follow the SCAFFOLD data ingestion model exists to generate json-ld inputs files
 
 ```
 python data\ ingestion\ model/sandbox\ generator/TabularToJSON.py --path new_data --performance_month 2025-01-01
 ```
 
-## Example Data
-Sandbox hospital-level example data is generated for 100 hospitals and included in the sandbox examples folder. This folder includes both tabular data and json-ld input files for same hospitals. 
+#### Example Data
+Sandbox quality dashboard usecase includes tabular and JSON-LD inputs that are generated for 100 hospitals and included in the use case data folder. 
 
 
-### Tabular data
+##### Tabular data
 Tabular input data includes:
 
-#### Performance Data
+###### Performance Data
 - PractitionerRole.csv, which contains hospital definitions
 - PerformanceMeaasureReport, which contains performance data for each hospital on 12 defined measures in sandbox knowledge base for 12 month.
 - config.json, which is required to find the right comparator for each recipient
 - ComparatorMeasureReport.csv, which contains the comparator data based on the entire network for each measure, for each month.
 
-#### Prioritization Data
+###### Prioritization Data
 - Preferences.csv, which includes preferences for a small subgroup of recipients.
 - MessageHistory.csv, which includes history of generated messages for 11 month before the performance month.
 
-### JSON-LD Input files
+##### JSON-LD Input files
 The `JSON Messages` folder contains json-ld input files for the same data. Each file is created using the following template. See examples for more detail.
 
 ```json
@@ -211,11 +225,11 @@ The `JSON Messages` folder contains json-ld input files for the same data. Each 
 }
 ```
 
-## Run SCAFFOLD
+##### Run SCAFFOLD
 To run SCAFFOLD on sandbox data you need to prepare the environment and install SCAFFOLD. For more detail, follow the `Quick start` section of the [main SCAFFOLD documentation page](../README.md). You can process JSON input files using `Run SCAFFOLD API` or `Run SCAFFOLD CLI with JSON inputs` sections. Use `Run SCAFFOLD CLI with CSV inputs` section to process tabular data.
 
-## Expected Output
-Here is an example of the output from SCAFFOLD after processing the sandbox example data:
+###### Expected Output
+Here is an example of the output from SCAFFOLD after processing the hospital quality dashboard use case data:
 
 Successful: 100, Failed: 0
 | #  | causal_pathway  | count | %    |
