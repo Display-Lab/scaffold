@@ -135,7 +135,7 @@ ENV_PATH=/user/.../.env.dev python -m scaffold.cli batch-csv '/path/to/performan
 
 You can use the path to the local [sandbox example data folder](./data%20ingestion%20model/sandbox%20examples) to run the pipeline on the sandbox example data. You need to use 2025-01-01 for performance month if you are using the sandbox data.
 
-Alternatively, you can use pip to install the pipeline command and use it to run the pipeline. Use the following command in the root of repository to install SCAFFOLF
+Alternatively, you can use pip to install the pipeline command and use it to run the pipeline. Use the following command in the root of repository to install SCAFFOLD
 
 ```zsh
 pip install .
