@@ -1,0 +1,88 @@
+{
+  "@context": {
+    "schema:isBasedOn": {
+      "@type": "@id"
+    },
+    "schema:name": {
+      "@type": "xsd:string"
+    },
+    "schema": "http://schema.org/",
+    "pav": "http://purl.org/pav/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "oslc:modifiedBy": {
+      "@type": "@id"
+    },
+    "rdfs:label": {
+      "@type": "xsd:string"
+    },
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "pav:derivedFrom": {
+      "@type": "@id"
+    },
+    "pav:lastUpdatedOn": {
+      "@type": "xsd:dateTime"
+    },
+    "oslc": "http://open-services.net/ns/core#",
+    "pav:createdOn": {
+      "@type": "xsd:dateTime"
+    },
+    "skos:notation": {
+      "@type": "xsd:string"
+    },
+    "schema:description": {
+      "@type": "xsd:string"
+    },
+    "pav:createdBy": {
+      "@type": "@id"
+    },
+    "is_about": "http://purl.obolibrary.org/obo/IAO_0000136",
+    "Name": "https://schema.metadatacenter.org/properties/26450fa6-bb2c-4126-8229-79efda7f863a",
+    "Message text": "https://schema.metadatacenter.org/properties/6b9dfdf9-9c8a-4d85-8684-a24bee4b85a8",
+    "Default display": "https://schema.metadatacenter.org/properties/5b4f16a9-feb7-4724-8741-2739d8808760"
+
+  },
+  "@type": "http://data.bioontology.org/ontologies/PSDO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPSDO_0000002",
+  "is_about": [
+    {
+      "@id": "http://purl.obolibrary.org/obo/PSDO_0000117",
+      "rdfs:label": "positive performance gap set"
+    },
+    {
+      "@id": "http://purl.obolibrary.org/obo/PSDO_0000045",
+      "rdfs:label": "social comparator element"
+    },
+    {
+      "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
+      "rdfs:label": "peer 75th percentile benchmark"
+    }
+  ],
+  "Name": {
+    "@value": "In Top 25%"
+  },
+  "Message text": [
+    {
+      "@value": "You are in the top 25% of providers for the measure [measure name]. Your performance was [recipient performance level], above the top 25% peer benchmark, which was [comparator performance level] this month."
+    }
+  ],
+  "schema:isBasedOn": "https://repo.metadatacenter.org/templates/707d3573-8ac9-4e2c-b53b-2026a795308c",
+  "schema:name": "In Top 25%",
+  "schema:description": "specification for a possible precision feedback message",
+  "pav:createdOn": "2023-06-28T12:28:07-07:00",
+  "pav:createdBy": "https://metadatacenter.org/users/da882240-ad9e-42ea-a48b-215e54161ad3",
+  "pav:lastUpdatedOn": "2023-10-31T15:28:11-07:00",
+  "oslc:modifiedBy": "https://metadatacenter.org/users/da882240-ad9e-42ea-a48b-215e54161ad3",
+  "pav:derivedFrom": "https://repo.metadatacenter.org/template-instances/b7685a3f-5b7b-4291-b194-92e410c99e8d",
+
+  "Short message ID": {
+    "@value": "24",
+    "@type": "xsd:decimal"
+  },
+  "@id": "https://repo.metadatacenter.org/template-instances/96a74b9d-8781-4b04-bf00-d999830237bc",
+  "Additional message text": {
+    "@value": null
+  },
+  "Default display": {
+    "@value": "bar chart"
+  }
+}

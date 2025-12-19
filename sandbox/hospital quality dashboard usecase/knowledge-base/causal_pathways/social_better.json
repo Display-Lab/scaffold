@@ -1,0 +1,105 @@
+{
+    "@context": {
+      "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "pav": "http://purl.org/pav/",
+      "schema": "http://schema.org/",
+      "oslc": "http://open-services.net/ns/core#",
+      "skos": "http://www.w3.org/2004/02/skos/core#",
+      "rdfs:label": {
+        "@type": "xsd:string"
+      },
+      "schema:isBasedOn": {
+        "@type": "@id"
+      },
+      "schema:name": {
+        "@type": "xsd:string"
+      },
+      "schema:description": {
+        "@type": "xsd:string"
+      },
+      "pav:derivedFrom": {
+        "@type": "@id"
+      },
+      "pav:createdOn": {
+        "@type": "xsd:dateTime"
+      },
+      "pav:createdBy": {
+        "@type": "@id"
+      },
+      "pav:lastUpdatedOn": {
+        "@type": "xsd:dateTime"
+      },
+      "oslc:modifiedBy": {
+        "@type": "@id"
+      },
+      "skos:notation": {
+        "@type": "xsd:string"
+      },
+      "type": "https://schema.metadatacenter.org/properties/827f2744-2cb7-439d-a8d3-cdd3a6fc7a4c",
+      "name": "https://schema.metadatacenter.org/properties/4a88e066-a289-4a09-a0fc-a24c28c65215",
+      "description": "https://schema.metadatacenter.org/properties/989a48cd-1da8-4332-ac53-a7a9a773e026",
+      "Moderators": "https://schema.metadatacenter.org/properties/c93ed038-0c67-4add-99c8-d1a0f1c0a864",
+      "Outcomes": "https://schema.metadatacenter.org/properties/5e5d9c40-bca5-4142-9c2e-96ab3f768a10",
+      "Mechanisms": "https://schema.metadatacenter.org/properties/facca32e-9ce9-4bde-a20c-0bb6fcea5114",
+      "Has precondition": "http://purl.bioontology.org/ontology/SNOMEDCT/has_precondition"
+    },
+    "type": {
+      "@value": "http://purl.obolibrary.org/obo/cpo_0000029"
+    },
+    "name": {
+      "@value": "Social Better"
+    },
+    "description": {
+      "@value": "The causal pathway \"social better\" describes the influence of feedback interventions that show the recipient that their performance is better than that of a social comparator, such as a top performer benchmark or peer average. Example messages that uses the social better pathway are \"You are a top performer\" and \"Your performance is better than average.\""
+    },
+    "Moderators": [
+      {
+        "@value": "Habituation"
+      },
+      {
+        "@value": "regulatory fit"
+      },
+      {
+        "@value": "gap size"
+      },
+      {
+        "@value": "message recency"
+      },
+      {
+        "@value": "message delivery count"
+      }
+    ],
+    "Outcomes": {
+      "@value": "Performance improvement or sustainment"
+    },
+    "Mechanisms": {
+      "@value": "Awareness, subjective norms, motivation"
+    },
+    "Has precondition": [
+      {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000095",
+        "rdfs:label": "social comparator content"
+      },
+      {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000104",
+        "rdfs:label": "positive performance gap content"
+      },
+      {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000045",
+        "rdfs:label": "social comparator element"
+      },
+      {
+        "@id": "http://purl.obolibrary.org/obo/PSDO_0000117",
+        "rdfs:label": "positive performance gap set"
+      }
+    ],
+    "schema:isBasedOn": "https://repo.metadatacenter.org/templates/2c8ca8b3-868b-4b65-aabf-1ed955b024c2",
+    "schema:name": "Social Better",
+    "schema:description": "",
+    "pav:createdOn": "2023-02-20T14:17:24-08:00",
+    "pav:createdBy": "https://metadatacenter.org/users/626c7d49-cdfc-43d6-b254-36a7be904ea9",
+    "pav:lastUpdatedOn": "2023-02-20T14:17:24-08:00",
+    "oslc:modifiedBy": "https://metadatacenter.org/users/626c7d49-cdfc-43d6-b254-36a7be904ea9",
+    "@id": "https://repo.metadatacenter.org/template-instances/8302e75d-ab21-4613-b94a-89c0eaf54c39"
+  }

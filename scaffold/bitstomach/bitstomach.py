@@ -18,14 +18,25 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
     if perf_df.empty:
         return g
 
+    process_measures = set(
+        startup.base_graph[: RDF.type : PSDO.process_measure]
+    )
+    
     for measure in perf_df.attrs["valid_measures"]:
         measure_df = (
             perf_df[perf_df["measure"] == measure].tail(12).sort_values("period.start")
         )
+        if BNode(measure) in process_measures:
+            measure_type = PSDO.process_measure
+        else:
+            measure_type = PSDO.outcome_measure
+        
         comparator_df = context.comparator_df[
             context.comparator_df["measure"] == measure
         ].sort_values("period.start")
         for signal_type in SIGNALS:
+            if signal_type.measure_type != measure_type:
+                continue
             signals = signal_type.detect(measure_df, comparator_df)
             if not signals:
                 continue
