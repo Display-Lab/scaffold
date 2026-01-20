@@ -61,8 +61,8 @@ def pipeline():
             esteemer.score(candidate, startup.mpm)
     selected_candidate = esteemer.select_candidate(context.subject_graph)
     preferences = esteemer.get_preferences()
-
-    if preferences["Display_Format"]:
+ 
+    if preferences["Display_Format"] and selected_candidate:
         context.subject_graph.resource(selected_candidate)[SLOWMO.Display] = Literal(
             preferences["Display_Format"]
         )

@@ -47,8 +47,8 @@
   "@type": "http://data.bioontology.org/ontologies/PSDO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPSDO_0000002",
   "is_about": [
     {
-      "@id": "http://purl.obolibrary.org/obo/PSDO_0000116",
-      "rdfs:label": "negative performance gap set"
+      "@id": "http://purl.obolibrary.org/obo/PSDO_0000117",
+      "rdfs:label": "positive performance gap set"
     },
     {
       "@id": "http://purl.obolibrary.org/obo/PSDO_0000045",
@@ -61,34 +61,34 @@
   ],
   "has_causal_pathway": 
   {
-    "@id": "https://repo.metadatacenter.org/template-instances/f4006042-5750-4f6c-a039-fe0a88466464",
-    "schema:name": "Social Worse"
+    "@id": "https://repo.metadatacenter.org/template-instances/8302e75d-ab21-4613-b94a-89c0eaf54c39",
+    "schema:name": "Social Better"
   },
   "Name": {
-    "@value": "Opportunity to Improve Peer Average"
+    "@value": "Below Peer Average"
   },
   "Message text": [
     {
-      "@value": "You may have an opportunity to improve for the measure [measure name]. Your performance was [recipient performance level], below the peer average."
+      "@value": "You are below peer average this month for the measure [measure name]. Your performance was [recipient performance level] and the peer average benchmark was [comparator performance level]."
     }
   ],
 
   "Short message ID": {
-    "@value": "14",
+    "@value": "30",
     "@type": "xsd:decimal"
   },
   "Additional message text": {
-    "@value": "A case-by-case breakdown of your results are available at your [clinical quality dashboard (link)]. More information about the rationale for the measure [measure name] and how it is calculated is available [here (link to measure spec)]."
+    "@value": null
   },
   "Default display": {
     "@value": "bar chart"
   },
   "schema:isBasedOn": "https://repo.metadatacenter.org/templates/707d3573-8ac9-4e2c-b53b-2026a795308c",
-  "schema:name": "Opportunity to Improve Peer Average",
+  "schema:name": "Below Peer Average",
   "schema:description": "specification for a possible precision feedback message",
-  "pav:createdOn": "2023-06-28T12:45:49-07:00",
+  "pav:createdOn": "2025-01-014T12:10:12-08:00",
   "pav:createdBy": "https://metadatacenter.org/users/da882240-ad9e-42ea-a48b-215e54161ad3",
-  "pav:lastUpdatedOn": "2024-01-27T13:59:27-08:00",
+  "pav:lastUpdatedOn": "2025-01-014T12:10:12-08:00",
   "oslc:modifiedBy": "https://metadatacenter.org/users/da882240-ad9e-42ea-a48b-215e54161ad3",
-  "@id": "https://repo.metadatacenter.org/template-instances/2bcbbc2c-37de-4b5c-ab0d-f3104e49cb50"
+  "@id": "https://repo.metadatacenter.org/template-instances/84528b84-7271-4e04-9cc1-5c6b47ccfc9b0"
 }

@@ -25,6 +25,9 @@ class Trend(Signal):
         """
         if perf_data.empty:
             raise ValueError
+        
+        if Trend.check(perf_data) is False:
+            return []
 
         if not Trend.last_three_periods_are_valid_and_consecutive(perf_data):
             return []

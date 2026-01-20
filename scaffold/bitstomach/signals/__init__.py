@@ -4,14 +4,26 @@ from rdflib import RDF, BNode, Graph, URIRef
 from rdflib.resource import Resource
 
 from scaffold.utils import PSDO
-
+from scaffold import startup
 
 class Signal:
     signal_type: URIRef
-
+    measure_type: URIRef
+    
     @classmethod
     def detect(self, performance_df, comparator_df=None):
         raise NotImplementedError("Subclasses must implement detect()")
+    
+    @classmethod
+    def check(self, performance_df):
+        """
+        checks if the signal can process the measure based on measure type
+        """
+        node = BNode(performance_df["measure"].iloc[0])
+        measure_types = list(startup.base_graph.objects(node, RDF.type))
+        if self.measure_type not in measure_types:
+            return False
+        return True
 
     @classmethod
     def select(cls, signals: List[Resource]) -> List[Resource]:
@@ -75,15 +87,17 @@ class Signal:
 
 # TODO: revisit. at this time must be loaded after Signal and in order Comparison, Trend and then Achievement
 from scaffold.bitstomach.signals._comparison import Comparison  # noqa: E402, I001
+from scaffold.bitstomach.signals._comparison_r import Comparison_R  # noqa: E402, I001
 from scaffold.bitstomach.signals._trend import Trend  # noqa: E402, I001
 from scaffold.bitstomach.signals._achievement import Achievement  # noqa: E402, I001
 from scaffold.bitstomach.signals._loss import Loss  # noqa: E402, I001
 from scaffold.bitstomach.signals._approach import Approach  # noqa: E402, I001
 
-__all__ = ["Comparison", "Trend", "Achievement", "Loss", "Approach"]
+__all__ = ["Comparison_R","Comparison", "Trend", "Achievement", "Loss", "Approach"]
 
 SIGNALS = {
     Comparison: Signal,
+    Comparison_R: Signal,
     Trend: Signal,
     Achievement: Signal,
     Loss: Signal,

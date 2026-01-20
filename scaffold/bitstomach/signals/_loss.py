@@ -19,6 +19,9 @@ class Loss(Signal):
     ) -> Optional[List[Resource]]:
         if perf_data.empty:
             raise ValueError
+        
+        if Loss.check(perf_data) is False:
+            return []
 
         trend_signals = Trend.detect(perf_data)
         if (

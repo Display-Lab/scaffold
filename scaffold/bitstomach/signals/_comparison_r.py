@@ -9,9 +9,9 @@ from scaffold.bitstomach.signals import Signal
 from scaffold.utils.namespace import PSDO, SLOWMO
 
 
-class Comparison(Signal):
+class Comparison_R(Signal):
     signal_type = PSDO.performance_gap_content
-    measure_type = PSDO.process_measure
+    measure_type = PSDO.outcome_measure
 
     @staticmethod
     def detect(
@@ -27,22 +27,22 @@ class Comparison(Signal):
         Returns:
         - List[Resource]: The list of signal resources.
         """
-
+                
         if perf_data.empty:
             raise ValueError
-
-        if Comparison.check(perf_data) is False:
+        
+        if Comparison_R.check(perf_data) is False:
             return []
-
+        
         if not perf_data[-1:]["valid"].item():
             return []
 
         resources = []
 
-        gaps = Comparison._detect(perf_data, comparator_data)
+        gaps = Comparison_R._detect(perf_data, comparator_data)
 
         for key, (gap, comparator_value) in gaps.items():
-            r = Comparison._resource(gap, key, comparator_value)
+            r = Comparison_R._resource(gap, key, comparator_value)
             resources.append(r)
 
         return resources
@@ -93,7 +93,7 @@ class Comparison(Signal):
                         )
                     ]["measureScore.rate"].iloc[0]                
                 )
-                gap = perf_data[-1:]["measureScore.rate"] - comparator_value
+                gap = comparator_value - perf_data[-1:]["measureScore.rate"]
 
                 gaps[comparator_iri] = (gap.item(), comparator_value.item())
 

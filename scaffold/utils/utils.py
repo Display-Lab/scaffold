@@ -49,8 +49,14 @@ def analyse_candidates(OUTPUT):
 
 
 def build_table(grouping_column):
+    candidate_df["selected1"] = (
+        pd.to_numeric(candidate_df["selected"], errors="coerce")
+        .fillna(0)
+        .astype(int)
+    )
+    
     report_table = (
-        candidate_df.groupby(grouping_column)["selected"]
+        candidate_df.groupby(grouping_column)["selected1"]
         .agg(acceptable=("count"), selected=("sum"))
         .reset_index()
     )
