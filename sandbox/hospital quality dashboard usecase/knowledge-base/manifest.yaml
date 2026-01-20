@@ -17,6 +17,8 @@ message_templates/:
   - top_performer.json
   - opportunity_to_improve_peer_average.json
   - below_peer_average.json
+  - below_bottom_10.json
+  - opportunity_to_improve_bottom_10.json
 
 causal_pathways/: 
   - goal_approach.json
