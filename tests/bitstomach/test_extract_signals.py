@@ -94,9 +94,9 @@ def test_returns_performance_content_with_multiple_elements():
 
     g = Graph()
     g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("PONV05"), RDF.type, PSDO.process_measure))
+    g.add((BNode("PONV05"), RDF.type, PSDO.desired_increasing_measure))
     g.add((BNode("SUS04"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("SUS04"), RDF.type, PSDO.process_measure))
+    g.add((BNode("SUS04"), RDF.type, PSDO.desired_increasing_measure))
     startup.base_graph = g
 
     perf_df = bitstomach.prepare()

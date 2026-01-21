@@ -16,10 +16,12 @@ message_templates/:
   - reached_goal.json
   - top_performer.json
   - opportunity_to_improve_peer_average.json
-  - below_peer_average.json
+  - opportunity_to_improve_peer_average_decreasing.json
   - below_bottom_10.json
   - opportunity_to_improve_bottom_10.json
-
+  - opportunity_to_improve_goal_decreasing.json
+  - above_peer_average.json
+  - below_peer_average_decreasing.json
 causal_pathways/: 
   - goal_approach.json
   - goal_gain.json

@@ -42,7 +42,8 @@
     "Short message ID": "https://schema.metadatacenter.org/properties/cd6dcfc0-9083-4a73-bf7e-fd310b238bd6",
     "Additional message text": "https://schema.metadatacenter.org/properties/df7c7ba0-07dd-4930-aad6-62e1ca9dd6fa",
     "Default display": "https://schema.metadatacenter.org/properties/5b4f16a9-feb7-4724-8741-2739d8808760",
-    "has_causal_pathway": "http://purl.obolibrary.org/obo/cpo_0000056"
+    "has_causal_pathway": "http://purl.obolibrary.org/obo/cpo_0000056",
+    "measure_type": "http://purl.obolibrary.org/obo/PSDO_measure_type"
   },
   "@type": "http://data.bioontology.org/ontologies/PSDO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPSDO_0000002",
   "is_about": [
@@ -59,6 +60,7 @@
       "rdfs:label": "peer average comparator"
     }
   ],
+  "measure_type":"http://purl.obolibrary.org/obo/PSDO_desired_decreasing_measure",
   "has_causal_pathway": 
   {
     "@id": "https://repo.metadatacenter.org/template-instances/8302e75d-ab21-4613-b94a-89c0eaf54c39",
@@ -90,5 +92,5 @@
   "pav:createdBy": "https://metadatacenter.org/users/da882240-ad9e-42ea-a48b-215e54161ad3",
   "pav:lastUpdatedOn": "2025-01-014T12:10:12-08:00",
   "oslc:modifiedBy": "https://metadatacenter.org/users/da882240-ad9e-42ea-a48b-215e54161ad3",
-  "@id": "https://repo.metadatacenter.org/template-instances/84528b84-7271-4e04-9cc1-5c6b47ccfc9b0"
+  "@id": "https://repo.metadatacenter.org/template-instances/c5a1e2d7-8b4f-4c6a-9e21-6f0a3d9b7c42"
 }

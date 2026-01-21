@@ -3,7 +3,7 @@ from typing import Optional
 from rdflib import RDF, BNode, Graph, Literal, URIRef
 from rdflib.resource import Resource
 
-from scaffold import context
+from scaffold import context, startup
 from scaffold.bitstomach.signals import Signal
 from scaffold.utils.namespace import CPO, IAO, PSDO, RO, SCHEMA, SLOWMO
 
@@ -124,7 +124,14 @@ def create_candidates():
         for template in context.subject_graph[
             : RDF.type : PERFORMANCE_SUMMARY_DISPLAY_TEMPLATE
         ]:
+            # check if the measure type matches the template type
+            node = BNode(measure)
+            measure_types = set(startup.base_graph.objects(node, RDF.type))
             template_resource = context.subject_graph.resource(template)
+            template_measure_type = URIRef(str(next(template_resource[PSDO.measure_type])))
+            if template_measure_type not in measure_types:
+                continue
+            
             candidate = create_candidate(measure_resource, template_resource)
             if not candidate:
                 continue

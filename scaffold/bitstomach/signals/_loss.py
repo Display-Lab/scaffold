@@ -11,7 +11,7 @@ from scaffold.utils.namespace import PSDO, SLOWMO
 
 class Loss(Signal):
     signal_type = PSDO.loss_content
-    measure_type = PSDO.process_measure
+    measure_type = PSDO.desired_increasing_measure
 
     @staticmethod
     def detect(

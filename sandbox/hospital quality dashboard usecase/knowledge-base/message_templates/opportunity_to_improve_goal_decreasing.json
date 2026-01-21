@@ -46,41 +46,53 @@
   "@type": "http://data.bioontology.org/ontologies/PSDO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPSDO_0000002",
   "is_about": [
     {
-      "@id": "http://purl.obolibrary.org/obo/PSDO_0000119",
-      "rdfs:label": "negative performance trend set"
+      "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
+      "rdfs:label": "goal comparator content"
+    },
+    {
+      "@id": "http://purl.obolibrary.org/obo/PSDO_0000116",
+      "rdfs:label": "negative performance gap set"
+    },
+    {
+      "@id": "http://purl.obolibrary.org/obo/PSDO_0000046",
+      "rdfs:label": "goal comparator element"
     }
   ],
-  "measure_type":"http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure",
+  "measure_type":"http://purl.obolibrary.org/obo/PSDO_desired_decreasing_measure",
   "has_causal_pathway": 
   {
-    "@id": "https://repo.metadatacenter.org/template-instances/f20f522c-3c0d-4eea-b459-95b8404051d5",
-    "schema:name": "Worsening"
+    "@id": "http://example.com/goal_worse_temporary",
+    "schema:name": "Goal Worse"
   },
   "Name": {
-    "@value": "Getting Worse"
+    "@value": "Opportunity to Improve Goal (d)"
   },
   "Message text": [
     {
-      "@value": "Your performance fell this month for the measure [measure name]. Your performance was [recipient performance level]."
+      "@value": "You may have an opportunity to improve for the measure [measure name]. Your performance was [recipient performance level], above the [comparator performance level] goal."
     }
   ],
   "schema:isBasedOn": "https://repo.metadatacenter.org/templates/707d3573-8ac9-4e2c-b53b-2026a795308c",
-  "schema:name": "Getting Worse",
+  "schema:name": "Opportunity to Improve Goal (d)",
   "schema:description": "specification for a possible precision feedback message",
-  "pav:createdOn": "2023-04-26T15:35:30-07:00",
+  "pav:createdOn": "2023-06-28T12:45:57-07:00",
   "pav:createdBy": "https://metadatacenter.org/users/da882240-ad9e-42ea-a48b-215e54161ad3",
-  "pav:lastUpdatedOn": "2023-10-31T16:53:43-07:00",
+  "pav:lastUpdatedOn": "2024-01-27T14:00:32-08:00",
   "oslc:modifiedBy": "https://metadatacenter.org/users/da882240-ad9e-42ea-a48b-215e54161ad3",
-  "@id": "https://repo.metadatacenter.org/template-instances/1f257d98-f6b0-44f6-92c8-1a194954f33f",
 
   "Short message ID": {
-    "@value": "20",
+    "@value": "27",
     "@type": "xsd:decimal"
   },
+  "pav:derivedFrom": "https://repo.metadatacenter.org/template-instances/ffb029f4-104f-437d-9ea3-d85a46b4b87b",
+  "@id": "https://repo.metadatacenter.org/template-instances/7c2f9e6b-9f3a-4b9f-8c7d-3a6f2e1c4b90",
   "Additional message text": {
     "@value": "A case-by-case breakdown of your results are available at your [clinical quality dashboard (link)]. More information about the rationale for the measure [measure name] and how it is calculated is available [here (link to measure spec)]."
   },
+  "default_display": {
+    "@value": "bar chart"
+  },
   "Default display": {
-    "@value": "line chart"
+    "@value": "bar chart"
   }
 }

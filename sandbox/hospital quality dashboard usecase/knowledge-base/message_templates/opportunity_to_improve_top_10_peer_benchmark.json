@@ -41,7 +41,8 @@
     "Message text": "https://schema.metadatacenter.org/properties/6b9dfdf9-9c8a-4d85-8684-a24bee4b85a8",
     "Short message ID": "https://schema.metadatacenter.org/properties/cd6dcfc0-9083-4a73-bf7e-fd310b238bd6",
     "Additional message text": "https://schema.metadatacenter.org/properties/df7c7ba0-07dd-4930-aad6-62e1ca9dd6fa",
-    "Default display": "https://schema.metadatacenter.org/properties/5b4f16a9-feb7-4724-8741-2739d8808760"
+    "Default display": "https://schema.metadatacenter.org/properties/5b4f16a9-feb7-4724-8741-2739d8808760",
+    "measure_type": "http://purl.obolibrary.org/obo/PSDO_measure_type"
   },
   "@type": "http://data.bioontology.org/ontologies/PSDO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPSDO_0000002",
   "is_about": [
@@ -58,6 +59,7 @@
       "rdfs:label": "negative performance gap set"
     }
   ],
+  "measure_type":"http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure",
   "Name": {
     "@value": "Opportunity to Improve Top 10 Peer Benchmark"
   },

@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 from rdflib import RDF, BNode, Graph, Literal, URIRef
 
-from scaffold import context
+from scaffold import context, startup
 from scaffold.bitstomach.bitstomach import prepare
 from scaffold.bitstomach.signals import Achievement, Comparison, Loss, Trend
 from scaffold.esteemer import esteemer
@@ -139,6 +139,12 @@ def performance_data_frame():
     context.subject = 157
     context.performance_df = performance_df
     perf_df = prepare()
+    
+    g = Graph()
+    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("PONV05"), RDF.type, PSDO.desired_increasing_measure))
+    startup.base_graph = g
+
     return perf_df
 
 
@@ -272,11 +278,13 @@ def test_social_better_score(performance_data_frame, comparator_data_frame):
 def test_social_worse_score():
     data_frame = pd.DataFrame(
         {
+            "measure":["PONV05","PONV05","PONV05"],
             "measureScore.rate": [0.92, 0.91, 0.88],
             "valid": [True, True, True],
             "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
         },
         columns=[
+            "measure",
             "period.start",
             "valid",
             "measureScore.rate",
@@ -327,6 +335,7 @@ def test_improving_score():
     motivating_informations = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"PONV05",
                 "measureScore.rate": [0.89, 0.90, 0.91],
                 "valid": True,
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
@@ -347,6 +356,7 @@ def test_worsening_score():
     motivating_informations = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"PONV05",
                 "measureScore.rate": [0.91, 0.90, 0.89],
                 "valid": True,
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
@@ -362,11 +372,12 @@ def test_worsening_score():
 def test_goal_gain_score():
     data_frame = pd.DataFrame(
         {
+            "measure":["PONV05","PONV05","PONV05"],
             "measureScore.rate": [0.88, 0.89, 0.91],
             "valid": [True, True, True],
             "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
         },
-        columns=["period.start", "valid", "measureScore.rate"],
+        columns=["measure","period.start", "valid", "measureScore.rate"],
     )
 
     comparator_data = [
@@ -404,11 +415,12 @@ def test_goal_gain_score():
 def test_goal_loss_score():
     data_frame = pd.DataFrame(
         {
+            "measure":["PONV05","PONV05","PONV05"],
             "measureScore.rate": [0.92, 0.91, 0.88],
             "valid": [True, True, True],
             "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
         },
-        columns=["period.start", "valid", "measureScore.rate"],
+        columns=["measure","period.start", "valid", "measureScore.rate"],
     )
     comparator_data = [
         [

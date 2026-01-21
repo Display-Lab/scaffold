@@ -40,7 +40,8 @@
     "Name": "https://schema.metadatacenter.org/properties/26450fa6-bb2c-4126-8229-79efda7f863a",
     "Message text": "https://schema.metadatacenter.org/properties/6b9dfdf9-9c8a-4d85-8684-a24bee4b85a8",
     "Default display": "https://schema.metadatacenter.org/properties/5b4f16a9-feb7-4724-8741-2739d8808760",
-    "has_causal_pathway": "http://purl.obolibrary.org/obo/cpo_0000056"
+    "has_causal_pathway": "http://purl.obolibrary.org/obo/cpo_0000056",
+    "measure_type": "http://purl.obolibrary.org/obo/PSDO_measure_type"
   },
   "@type": "http://data.bioontology.org/ontologies/PSDO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPSDO_0000002",
   "is_about": [
@@ -61,6 +62,7 @@
       "rdfs:label": "positive performance trend set"
     }
   ],
+  "measure_type":"http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure",
   "has_causal_pathway": 
   {
     "@id": "https://repo.metadatacenter.org/template-instances/0884af75-ed8c-4b61-aa15-67b41b93d834",

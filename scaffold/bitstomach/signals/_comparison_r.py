@@ -11,7 +11,7 @@ from scaffold.utils.namespace import PSDO, SLOWMO
 
 class Comparison_R(Signal):
     signal_type = PSDO.performance_gap_content
-    measure_type = PSDO.outcome_measure
+    measure_type = PSDO.desired_decreasing_measure
 
     @staticmethod
     def detect(

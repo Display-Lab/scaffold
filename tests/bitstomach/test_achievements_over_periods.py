@@ -2,14 +2,15 @@ import json
 
 import pandas as pd
 import pytest
-from rdflib import Graph
+from rdflib import RDF, BNode, Graph
 from rdflib.resource import Resource
 
-from scaffold import context
+from scaffold import context, startup
 from scaffold.bitstomach.signals import Achievement
 from scaffold.bitstomach.signals._comparison import Comparison
 from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
+
 
 comparators = [
     {
@@ -42,7 +43,6 @@ jsonld_str = json.dumps(comparators)
 
 context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
 
-
 @pytest.fixture(autouse=True)
 def reset_global():
     yield
@@ -66,6 +66,11 @@ def perf_data() -> pd.DataFrame:
     ]
     df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
     df.attrs["performance_month"] = "2022-10-01"
+
+    g = Graph()
+    g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("BP01"), RDF.type, PSDO.desired_increasing_measure))
+    startup.base_graph = g
 
     return df
 
