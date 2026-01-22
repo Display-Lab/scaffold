@@ -1,0 +1,12 @@
+causal_pathway,coachiness,comparison_size,trend_size,achievement_recency,loss_recency,message_recency,message_recurrence,measure_recency,history
+Social Better,1,1,,,,0.14,0.14,0.72,0.7
+Social Worse,1,1,,,,0.1,0.45,0.45,1.1
+Goal Worse,1,1,,,,0.1,0.45,0.45,1.1
+Improving,1,,1,,,0.5,0.5,0,0.2
+Worsening,1,,1,,,0.17,0.83,0,0.6
+Social Gain,1,0.28,0.44,0.28,,0.14,0.14,0.72,0.7
+Goal Gain,1,0.28,0.44,0.28,,0.14,0.14,0.72,0.7
+Social Loss,1,0.28,0.44,,0.28,0.1,0.45,0.45,1.1
+Goal Loss,1,0.28,0.44,,0.28,0.1,0.45,0.45,1.1
+Social Approach,1,0.28,0.44,0.28,,0.5,0.5,0,0.2
+Goal Approach,1,0.28,0.44,0.28,,0.5,0.5,0,0.2

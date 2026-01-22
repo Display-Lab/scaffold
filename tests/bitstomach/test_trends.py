@@ -6,9 +6,14 @@ import pytest
 from rdflib import RDF, BNode, Graph, Literal
 from rdflib.resource import Resource
 
+from scaffold import startup
 from scaffold.bitstomach.signals import Comparison, Trend
 from scaffold.utils import PSDO, SLOWMO
 
+g = Graph()
+g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
+g.add((BNode("BP01"), RDF.type, PSDO.desired_increasing_measure))
+startup.base_graph = g
 
 ## Trend resource
 def test_empty_perf_data_raises_value_error():
@@ -20,6 +25,7 @@ def test_no_trend_returns_none():
     mi = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"BP01",
                 "measureScore.rate": [90, 90, 90],
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
                 "valid": True,
@@ -51,6 +57,7 @@ def test_trend_as_resource():
     signal = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"BP01",
                 "measureScore.rate": [90, 91, 92],
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
                 "valid": True,
@@ -118,8 +125,8 @@ def test_select_ignores_signals_of_a_different_type():
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
     r1 = Comparison().detect(
         pd.DataFrame(
-            columns=["period.start", "valid", "measure", "measureScore.rate"],
-            data=[["2023-11-01", True, "PONV05", 0.80]],
+            columns=["measure","period.start", "valid", "measure", "measureScore.rate"],
+            data=[["BP01","2023-11-01", True, "PONV05", 0.80]],
         ),
         comparator_df,
     )
@@ -127,6 +134,7 @@ def test_select_ignores_signals_of_a_different_type():
     r2 = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"BP01",
                 "measureScore.rate": [89, 90, 91],
                 "valid": True,
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
@@ -159,6 +167,7 @@ def test_trend_identity():
     r1 = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"BP01",
                 "measureScore.rate": [89, 90, 91],
                 "valid": True,
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
@@ -168,6 +177,7 @@ def test_trend_identity():
     r2 = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"BP01",
                 "measureScore.rate": [89, 90, 91],
                 "valid": True,
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
@@ -190,6 +200,7 @@ def test_partial_mock(mock_detect: Mock):
     signal = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"BP01",
                 "measureScore.rate": [89, 90, 91],
                 "valid": True,
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
@@ -214,6 +225,7 @@ def test_partial_mock_with_patch_decorator(mock_detect: Mock):
     signal = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"BP01",
                 "measureScore.rate": [89, 90, 91],
                 "valid": True,
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
@@ -231,6 +243,7 @@ def test_partial_mock_using_with():
         signal = Trend.detect(
             pd.DataFrame(
                 {
+                    "measure":"BP01",
                     "measureScore.rate": [89, 90, 91],
                     "valid": True,
                     "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],

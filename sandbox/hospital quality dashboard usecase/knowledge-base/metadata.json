@@ -1,0 +1,156 @@
+{
+    "@context": [
+        "https://kgrid.org/koio/2.1/context",
+        "https://display-lab.github.io/knowledge-base-mpog/context/context.json"
+    ],
+    "@id": "Precision-Feedback-Knowledge-Base",
+    "koio:kgrid": "2",
+    "@type": "koio:KnowledgeObject",
+    "dc:title": "Precision Feedback Knowledge Base",
+    "dc:identifier": "ark:PrecisionFeedbackKnowledgeBase (PFKB)",
+    "dc:version": "v1.6",
+    "dc:date": "2025-11-10",
+    "dc:description": "PFKB is a collection of computable biomedical knowledge for the purpose of processing clinical performance data to identify coaching and appreciation feedback messages that may represent the highest-value performance information an organization has for healthcare professionals to learn to improve and sustain their clinical performance.",
+    "schema:creator": {
+        "@id": "https://display.lab.medicine.umich.edu/",
+        "@type": "schema:Organization",
+        "schema:name": "DISPLAY Lab",
+        "schema:affiliation": "DISPLAY Lab, University of Michigan Medical School",
+        "schema:email": "zachll@umich.edu"
+    },
+    "dc:publisher": "DISPLAY Lab",
+    "dc:license": {
+        "@id": "LICENSE.txt"
+    },
+    "koio:hasKnowledge": [
+        {
+            "@id": "causal_pathways",
+            "@type": [
+                "koio:Knowledge",
+                "cpo_causal_pathway"
+            ],
+            "dc:description": "These are the causal pathways. Please refer to the manifest.yamal for detail.",
+            "implementedBy": {
+                "@id": "causal_pathways",
+                "@type": "schema:Dataset",
+                "dc:title": "Causal pathways"
+            },
+            "schema:creator": {
+                "@type": "schema:Organization",
+                "schema:name": "DISPLAY Lab"
+            }
+        },
+        {
+            "@id": "message_templates",
+            "@type": [
+                "koio:Knowledge",
+                "psdo_performance_summary_display_template"
+            ],
+            "dc:description": "These are the message templates. Please refer to the manifest.yamal for detail.",
+            "implementedBy": {
+                "@id": "message_templates",
+                "@type": "schema:Dataset",
+                "dc:title": "Message templates"
+            },
+            "schema:creator": {
+                "@type": "schema:Organization",
+                "schema:name": "DISPLAY Lab"
+            }
+        },
+        {
+            "@id": "manifest",
+            "@type": "koio:Knowledge",
+            "dc:description": "Knowledge base manifest.",
+            "implementedBy": {
+                "@id": "manifest.yaml",
+                "@type": "schema:MediaObject"
+            },
+            "schema:creator": {
+                "@type": "schema:Organization",
+                "schema:name": "DISPLAY Lab"
+            }
+        },
+        {
+            "@id": "performance_measures",
+            "@type": [
+                "koio:Knowledge",
+                "psdo_performance_measure_content"
+            ],
+            "implementedBy": {
+                "@id": "performance_measures/measures.json",
+                "@type": "schema:MediaObject"
+            },
+            "schema:creator": {
+                "@type": "schema:Organization",
+                "schema:name": "DISPLAY Lab"
+            }
+        },
+        {
+            "@id": "prioritization_algorithms",
+            "@type": "koio:Knowledge",
+            "implementedBy": {
+                "@id": "prioritization_algorithms/motivational_potential_model.csv",
+                "@type": "schema:MediaObject"
+            },
+            "schema:creator": {
+                "@type": "schema:Organization",
+                "schema:name": "DISPLAY Lab"
+            },
+            "koio:hasDocumentation": [
+                {
+                    "@id": "prioritization_algorithms/readme.md",
+                    "@type": "InformationArtifact",
+                    "dc:title": "prioritization algorithms",
+                    "dc:description": "prioritization algorithms documentation."
+                }
+            ]
+        },
+        {
+            "@id": "comparators",
+            "@type": [
+                "koio:Knowledge",
+                "psdo_comparator_content"
+            ],
+            "implementedBy": {
+                "@id": "comparators.json",
+                "@type": "schema:MediaObject"
+            },
+            "schema:creator": {
+                "@type": "schema:Organization",
+                "schema:name": "DISPLAY Lab"
+            }
+        },
+        {
+            "@id": "preferences",
+            "@type": "koio:Knowledge",
+            "implementedBy": {
+                "@id": "preferences.json",
+                "@type": "schema:MediaObject"
+            },
+            "schema:creator": {
+                "@type": "schema:Organization",
+                "schema:name": "DISPLAY Lab"
+            }
+        }
+    ],
+    "koio:hasDocumentation": [
+        {
+            "@id": "vignettes",
+            "@type": "InformationArtifact",
+            "dc:title": "Vignettes for the Precision Feedback Knowledge Base",
+            "dc:description": "The Precision Feedback Knowledge Base has a collection of vignettes that illustrate how the knowledge base can be used by a precision feedback system to prioritize motivating performance information and tailor feedback messages. Each vignette uses a fictional context and providers, called personas, who are representative of some population of providers. The vignette includes narrative description of the function of a precision feedback system, as well as computer-interpretable code and files that can be used to test out the function of the precision feedback system. The narrative part of each vignette is written for clinical feedback system stakeholders, focusing primarily on a researchers and feedback system developers for feedback systems in health care organizations. The purpose of the vignettes is also to increase the findability and transparency of the precision feedback system software to all stakeholders, including healthcare professionals, patients, and communities."
+        },
+        {
+            "@id": "readme.md",
+            "@type": "InformationArtifact",
+            "dc:title": "readme.md",
+            "dc:description": "Knowledge base read me file."
+        },
+        {
+            "@id": "index.html",
+            "@type": "InformationArtifact",
+            "dc:title": "Knowledge Object Information Page.",
+            "dc:description": "Knowledge Object Information Page."
+        }
+    ]
+}

@@ -11,6 +11,7 @@ from scaffold.utils.namespace import PSDO, SLOWMO
 
 class Comparison(Signal):
     signal_type = PSDO.performance_gap_content
+    measure_type = PSDO.desired_increasing_measure
 
     @staticmethod
     def detect(
@@ -29,6 +30,9 @@ class Comparison(Signal):
 
         if perf_data.empty:
             raise ValueError
+
+        if Comparison.check(perf_data) is False:
+            return []
 
         if not perf_data[-1:]["valid"].item():
             return []
@@ -79,18 +83,19 @@ class Comparison(Signal):
             RDF.type, PSDO.comparator_content
         ):
             comparator_iri = str(comparator)
-            comparator_value = (
-                comparator_data[
-                    (comparator_data["group.code"] == comparator_iri)
-                    & (
-                        comparator_data["period.start"]
-                        == perf_data[-1:]["period.start"].iloc[0]
-                    )
-                ]["measureScore.rate"].iloc[0]                
-            )
-            gap = perf_data[-1:]["measureScore.rate"] - comparator_value
+            if comparator_iri in comparator_data["group.code"].tolist():
+                comparator_value = (
+                    comparator_data[
+                        (comparator_data["group.code"] == comparator_iri)
+                        & (
+                            comparator_data["period.start"]
+                            == perf_data[-1:]["period.start"].iloc[0]
+                        )
+                    ]["measureScore.rate"].iloc[0]                
+                )
+                gap = perf_data[-1:]["measureScore.rate"] - comparator_value
 
-            gaps[comparator_iri] = (gap.item(), comparator_value.item())
+                gaps[comparator_iri] = (gap.item(), comparator_value.item())
 
         return gaps
 

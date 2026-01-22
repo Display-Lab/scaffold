@@ -222,7 +222,7 @@ class Pictoralist:
         )
         # Format "[comparator performance level]":
         self.message_text = self.message_text.replace(
-            "[comparator performance level]", f"{current_comparator_percent:.1f}%"
+            "[comparator performance level]", f"{current_comparator_percent*100:.1f}%"
         )
         ## Insert framework for linking to MPOG measure spec and dashboard link here if task ownership changes
 

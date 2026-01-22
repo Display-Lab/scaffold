@@ -6,7 +6,7 @@ import pytest
 from rdflib import RDF, BNode, Graph, Literal
 from rdflib.resource import Resource
 
-from scaffold import context
+from scaffold import context, startup
 from scaffold.bitstomach.signals import Achievement
 from scaffold.bitstomach.signals._comparison import Comparison
 from scaffold.utils.namespace import PSDO, SLOWMO
@@ -29,6 +29,11 @@ def perf_data() -> pd.DataFrame:
     ]
     df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
     df.attrs["performance_month"] = "2022-10-01"
+
+    g = Graph()
+    g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("BP01"), RDF.type, PSDO.desired_increasing_measure))
+    startup.base_graph = g
 
     return df
 

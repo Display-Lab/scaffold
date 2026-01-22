@@ -11,6 +11,7 @@ from scaffold.utils.namespace import PSDO, SLOWMO
 
 class Loss(Signal):
     signal_type = PSDO.loss_content
+    measure_type = PSDO.desired_increasing_measure
 
     @staticmethod
     def detect(
@@ -18,6 +19,9 @@ class Loss(Signal):
     ) -> Optional[List[Resource]]:
         if perf_data.empty:
             raise ValueError
+        
+        if Loss.check(perf_data) is False:
+            return []
 
         trend_signals = Trend.detect(perf_data)
         if (

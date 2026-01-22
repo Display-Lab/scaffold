@@ -26,18 +26,19 @@ def find_precap_mean(target_mean, cv=0.15, cap=100.0, tol=0.01, n=500_000, seed=
 
 
 measures = {
-    "Transfer-01": {"mean": 53.8, "target": 73.0},
-    "Hand-01": {"mean": find_precap_mean(94), "target": 95.0},
-    "Provider-Rating-01": {"mean": find_precap_mean(90.6), "target": 90.9},
-    "Care-Rating-01": {"mean": find_precap_mean(92.3), "target": 92.3},
-    "Clean-Rating-01": {"mean": 83.9, "target": 86.7},
-    "Quiet-Rating-01": {"mean": 73.2, "target": 75.6},
-    "Patient-Concern-01": {"mean": find_precap_mean(95.3), "target": 95.5},
-    "Discharge-01": {"mean": 82.7, "target": 83.3},
-    "Nurse-informed-01": {"mean": find_precap_mean(89.4), "target": 90.0},
-    "Nurse-language-01": {"mean": find_precap_mean(93.2), "target": 93.8},
-    "Physician-language-01": {"mean": find_precap_mean(89.7), "target": 90.0},
-    "Physician-informed-01": {"mean": 84.8, "target": 86.1},
+    "Transfer-01": {"mean": 53.8, "target": 73.0, "type": "regular"},
+    "Hand-01": {"mean": find_precap_mean(94), "target": 95.0, "type": "regular"},
+    "Provider-Rating-01": {"mean": find_precap_mean(90.6), "target": 90.9, "type": "regular"},
+    "Care-Rating-01": {"mean": find_precap_mean(92.3), "target": 92.3, "type": "regular"},
+    "Clean-Rating-01": {"mean": 83.9, "target": 86.7, "type": "regular"},
+    "Quiet-Rating-01": {"mean": 73.2, "target": 75.6, "type": "regular"},
+    "Patient-Concern-01": {"mean": find_precap_mean(95.3), "target": 95.5, "type": "regular"},
+    "Discharge-01": {"mean": 82.7, "target": 83.3, "type": "regular"},
+    "Nurse-informed-01": {"mean": find_precap_mean(89.4), "target": 90.0, "type": "regular"},
+    "Nurse-language-01": {"mean": find_precap_mean(93.2), "target": 93.8, "type": "regular"},
+    "Physician-language-01": {"mean": find_precap_mean(89.7), "target": 90.0, "type": "regular"},
+    "Physician-informed-01": {"mean": 84.8, "target": 86.1, "type": "regular"},
+    "Readmission-Ratting-01": {"mean": 13.3, "target": 13.3, "type": "inverse"},
 }
 
 

@@ -18,6 +18,7 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
     if perf_df.empty:
         return g
 
+    
     for measure in perf_df.attrs["valid_measures"]:
         measure_df = (
             perf_df[perf_df["measure"] == measure].tail(12).sort_values("period.start")

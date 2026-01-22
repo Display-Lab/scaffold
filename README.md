@@ -60,12 +60,8 @@ poetry shell # activates the enviroment
 
 #### Setup a knowledge base for SCAFFOLD
 
-Clone the knowledge base repository in a separate location
+If you are using a knowledge base from a separate repository, clone it in a separate location. For sandbox usecases the corresponding knowledge bases are located in each usecase folder in the sandbox.
 
-```zsh
-cd ..
-git clone https://github.com/Display-Lab/knowledge-base-sandbox.git 
-```
 
 #### Running SCAFFOLD
 
@@ -133,7 +129,7 @@ Then use the following command, from the root of SCAFFOLD repository, to run the
 ENV_PATH=/user/.../.env.dev python -m scaffold.cli batch-csv '/path/to/performance/data/folder' --performance-month 2025-01-01 --max-files 500
 ```
 
-You can use the path to the local [sandbox example data folder](./data%20ingestion%20model/sandbox%20examples) to run the pipeline on the sandbox example data. You need to use 2025-01-01 for performance month if you are using the sandbox data.
+You can use the path to the local [sandbox example data folder](for hospital quality dashboard usecase use ./sandbox/hospital%20quality%20dashboard%20usecase/data/tabular%20inputs) to run the pipeline on the sandbox example data. You need to use 2025-01-01 for performance month if you are using the hospital quality dashboard usecase from the sandbox.
 
 Alternatively, you can use pip to install the pipeline command and use it to run the pipeline. Use the following command in the root of repository to install SCAFFOLD
 

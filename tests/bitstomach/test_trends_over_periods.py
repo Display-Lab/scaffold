@@ -1,12 +1,18 @@
 import pandas as pd
 import pytest
-from rdflib import Literal
+from rdflib import RDF, BNode, Graph, Literal
 from rdflib.resource import Resource
 
+from scaffold import startup
 from scaffold.bitstomach.signals import Trend
 from scaffold.utils import SLOWMO
+from scaffold.utils.namespace._PSDO import PSDO
 from scaffold.utils.settings import settings
 
+g = Graph()
+g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
+g.add((BNode("BP01"), RDF.type, PSDO.desired_increasing_measure))
+startup.base_graph = g
 
 @pytest.fixture(autouse=True)
 def reset_global():
@@ -18,6 +24,7 @@ def test_no_trend_returns_none():
     mi = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"BP01",
                 "measureScore.rate": [90, 90, 90],
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
                 "valid": True,
@@ -29,6 +36,7 @@ def test_no_trend_returns_none():
     mi = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"BP01",
                 "measureScore.rate": [90, 90, 90],
                 "period.start": ["2024-01-01", "2024-04-01", "2024-05-01"],
                 "valid": True,
@@ -60,6 +68,7 @@ def test_trend_as_resource():
     signal = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"BP01",
                 "measureScore.rate": [90, 91, 92],
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
                 "valid": True,
@@ -76,6 +85,7 @@ def test_trend_as_resource():
     signal = Trend.detect(
         pd.DataFrame(
             {
+                "measure":"BP01",
                 "measureScore.rate": [90, 91, 92],
                 "period.start": ["2024-01-01", "2024-04-01", "2024-07-01"],
                 "valid": True,

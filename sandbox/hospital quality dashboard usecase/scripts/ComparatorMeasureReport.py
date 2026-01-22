@@ -5,6 +5,7 @@ import time
 import uuid
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 from utils import measures, peer_average, top_10_percent_mean
 
@@ -17,7 +18,7 @@ def top10_stats(group):
     top10 = group[group["measureScore.rate"] >= cutoff]
 
     # compute desired values
-    top10_rate_mean = top10["measureScore.rate"].mean()
+    top10_rate_mean = top10["measureScore.rate"].mean().round(3)
     top10_denom_sum = top10["measureScore.denominator"].sum()
 
     # return one-row DataFrame (so it can be concatenated easily)
@@ -25,11 +26,29 @@ def top10_stats(group):
         "measureScore.rate": top10_rate_mean,
         "measureScore.denominator": top10_denom_sum,
     })
+    
+def bottom10_stats(group):
+    """Compute bottom 10% stats within each group."""
+
+    # 10th percentile cutoff for rate
+    cutoff = group["measureScore.rate"].quantile(0.1)
+
+    # filter bottom 10% rows
+    bottom10 = group[group["measureScore.rate"] <= cutoff]
+
+    # compute desired values
+    bottom10_rate_mean = bottom10["measureScore.rate"].mean().round(3)
+    bottom10_denom_sum = bottom10["measureScore.denominator"].sum()
+
+    return pd.Series({
+        "measureScore.rate": bottom10_rate_mean,
+        "measureScore.denominator": bottom10_denom_sum,
+    })
 
 def peer_everage_stats(group):
     """Compute  peer (overall) averages per group."""
    
-    peer_rate_mean = group["measureScore.rate"].mean()
+    peer_rate_mean = group["measureScore.rate"].mean().round(3)
     peer_denom_sum = group["measureScore.denominator"].sum()
 
     # Return as one row
@@ -43,7 +62,7 @@ start = time.time()
 parser = argparse.ArgumentParser(
     description="PerformanceMeasureReport generator for PractitionerRole."
 )
-parser.add_argument("--path", type=str, default="/home/faridsei/dev/code/scaffold/new_data", help="Output path")
+parser.add_argument("--path", type=str, default="sandbox_data", help="Output path")
 
 args = parser.parse_args()
 output_dir = Path(args.path)
@@ -72,7 +91,7 @@ for measure_index, measure in enumerate(measures):
                     measure,
                     month[0],
                     month[1],
-                    measures[measure]["target"]/100,
+                    np.round(measures[measure]["target"]/100,3),
                     "",
                     organization,
                     "http://purl.obolibrary.org/obo/PSDO_0000094",
@@ -118,23 +137,37 @@ group_cols = [
     "PractitionerRole.code",
 ]
 
-# top_10_df = (
-#     merged_df.groupby(group_cols)["measureScore.rate"]
-#     .apply(top_10_percent_mean)
-#     .reset_index()
-# )
+regular_measures = [
+    m for m, info in measures.items()
+    if info.get("type") == "regular"
+]
+
+filtered_df = merged_df[ merged_df["measure"].isin(regular_measures) ]
+
 top_10_df = (
-    merged_df.groupby(group_cols, group_keys=False)
+    filtered_df.groupby(group_cols, group_keys=False)
       .apply(top10_stats)
       .reset_index()
 )
 
 top_10_df["group.code"] = "http://purl.obolibrary.org/obo/PSDO_0000129"
 
-# peer_avg_df = (
-#     merged_df.groupby(group_cols)["measureScore.rate"].apply(peer_average).reset_index()
-# )
-# peer_avg_df["group.code"] = "http://purl.obolibrary.org/obo/PSDO_0000126"
+
+inverse_measures = [
+    m for m, info in measures.items()
+    if info.get("type") == "inverse"
+]
+
+filtered_df = merged_df[ merged_df["measure"].isin(inverse_measures) ]
+
+bottom_10_df = (
+    filtered_df.groupby(group_cols, group_keys=False)
+      .apply(bottom10_stats)
+      .reset_index()
+)
+
+bottom_10_df["group.code"] = "http://purl.obolibrary.org/obo/PSDO_0000129bottom10percent"
+
 peer_avg_df = (
     merged_df.groupby(group_cols, group_keys=False)
       .apply(peer_everage_stats)
@@ -143,24 +176,24 @@ peer_avg_df = (
 
 peer_avg_df["group.code"] = "http://purl.obolibrary.org/obo/PSDO_0000126"
 
-peer_and_topten_df = pd.concat([top_10_df, peer_avg_df], ignore_index=True)
+peer_and_topbottomten_df = pd.concat([top_10_df, bottom_10_df, peer_avg_df], ignore_index=True)
 
 
 
 
 
-peer_and_topten_df = peer_and_topten_df.rename(
+peer_and_topbottomten_df = peer_and_topbottomten_df.rename(
     columns={
         "PractitionerRole.organization": "group.subject",
         "PractitionerRole.code": "PractitionerRole.code",
     }
 )
 
-peer_and_topten_df["identifier"] = [
-    uuid.uuid4() for _ in range(len(peer_and_topten_df))
+peer_and_topbottomten_df["identifier"] = [
+    uuid.uuid4() for _ in range(len(peer_and_topbottomten_df))
 ]
 
-peer_and_topten_df = peer_and_topten_df[
+peer_and_topbottomten_df = peer_and_topbottomten_df[
     [
         "identifier",
         "measure",
@@ -175,7 +208,7 @@ peer_and_topten_df = peer_and_topten_df[
 ]
 
 comparator_data_df = pd.concat(
-    [comparator_data_df, peer_and_topten_df], ignore_index=True
+    [comparator_data_df, peer_and_topbottomten_df], ignore_index=True
 )
 
 comparator_data_df.to_csv(output_dir / "ComparatorMeasureReport.csv", index=False)

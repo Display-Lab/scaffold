@@ -71,19 +71,6 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
 
         base_graph = manifest_to_graph(settings.manifest)
 
-        # if settings.preferences != "None":
-        #     preferences = pd.read_csv(
-        #         settings.preferences, converters={"preferences": json.loads}
-        #     )
-        #     preferences.set_index("subject", inplace=True, drop=False)
-        # if settings.history != "None":
-        #     history = pd.read_csv(
-        #         settings.history,
-        #         converters={"history": json.loads},
-        #         dtype={"period.start": str},
-        #     )
-        #     history.set_index("subject", inplace=True, drop=False)
-
         if performance_data_path:
             performance_measure_report = pd.read_csv(
                 os.path.join(performance_data_path, "PerformanceMeasureReport.csv"),

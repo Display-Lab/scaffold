@@ -13,6 +13,7 @@ from scaffold.utils.settings import settings
 class Trend(Signal):
     # TODO: Allow an array of types
     signal_type = PSDO.performance_trend_content
+    measure_type = PSDO.desired_increasing_measure
 
     @staticmethod
     def detect(
@@ -24,6 +25,9 @@ class Trend(Signal):
         """
         if perf_data.empty:
             raise ValueError
+        
+        if Trend.check(perf_data) is False:
+            return []
 
         if not Trend.last_three_periods_are_valid_and_consecutive(perf_data):
             return []

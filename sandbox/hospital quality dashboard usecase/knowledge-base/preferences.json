@@ -1,0 +1,13 @@
+{
+    "Social Gain": 0.5,
+    "Worsening": 0.5,
+    "Improving": 0.5,
+    "Social Loss": 0.5,
+    "Social Better": 0.5,
+    "Social Worse": 0.5,
+    "Social Approach": 0.5,
+    "Goal Gain": 0.5,
+    "Goal Approach": 0.5,
+    "Goal Loss": 0.5,
+    "Goal Worse": 0.5
+}
