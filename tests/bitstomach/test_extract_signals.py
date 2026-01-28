@@ -6,6 +6,7 @@ from rdflib import RDF, BNode, Graph
 from scaffold import context, startup
 from scaffold.bitstomach import bitstomach
 from scaffold.utils.namespace import PSDO
+import pytest
 
 COLUMNS = [
     "subject",
@@ -15,37 +16,49 @@ COLUMNS = [
     "measureScore.denominator",
 ]
 
-comparators = [
-    {
-        "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
-        "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"],
-    },
-    {
-        "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
-        "@type": [
-            "http://purl.obolibrary.org/obo/PSDO_0000093",
-            "http://purl.obolibrary.org/obo/PSDO_0000095",
-        ],
-    },
-    {
-        "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
-        "@type": [
-            "http://purl.obolibrary.org/obo/PSDO_0000093",
-            "http://purl.obolibrary.org/obo/PSDO_0000095",
-        ],
-    },
-    {
-        "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
-        "@type": [
-            "http://purl.obolibrary.org/obo/PSDO_0000093",
-            "http://purl.obolibrary.org/obo/PSDO_0000095",
-        ],
-    },
-]
-jsonld_str = json.dumps(comparators)
 
-context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
 
+
+
+@pytest.fixture
+def prep_base_graph() :
+    g = Graph()
+    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("PONV05"), RDF.type, PSDO.desired_increasing_measure))
+    g.add((BNode("SUS04"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("SUS04"), RDF.type, PSDO.desired_increasing_measure))
+    startup.base_graph = g
+    
+    comparators = [
+        {
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
+            "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"],
+        },
+        {
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
+            "@type": [
+                "http://purl.obolibrary.org/obo/PSDO_0000093",
+                "http://purl.obolibrary.org/obo/PSDO_0000095",
+            ],
+        },
+        {
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
+            "@type": [
+                "http://purl.obolibrary.org/obo/PSDO_0000093",
+                "http://purl.obolibrary.org/obo/PSDO_0000095",
+            ],
+        },
+        {
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
+            "@type": [
+                "http://purl.obolibrary.org/obo/PSDO_0000093",
+                "http://purl.obolibrary.org/obo/PSDO_0000095",
+            ],
+        },
+    ]
+    jsonld_str = json.dumps(comparators)
+
+    context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
 
 def test_extract_signals_return_a_graph():
     df = pd.DataFrame()
@@ -57,7 +70,7 @@ def test_extract_signals_return_a_graph():
     assert g.value(None, RDF.type, PSDO.performance_content)
 
 
-def test_returns_performance_content_with_multiple_elements():
+def test_returns_performance_content_with_multiple_elements(prep_base_graph):
     perf_data = [
         COLUMNS,
         [157, "SUS04", "2022-10-01", 1, 100],
@@ -91,13 +104,6 @@ def test_returns_performance_content_with_multiple_elements():
     context.performance_month = "2022-11-01"
     context.subject = 157
     context.performance_df = performance_df
-
-    g = Graph()
-    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("PONV05"), RDF.type, PSDO.desired_increasing_measure))
-    g.add((BNode("SUS04"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("SUS04"), RDF.type, PSDO.desired_increasing_measure))
-    startup.base_graph = g
 
     perf_df = bitstomach.prepare()
 

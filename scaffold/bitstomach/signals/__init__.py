@@ -89,16 +89,18 @@ class Signal:
 from scaffold.bitstomach.signals._comparison import Comparison  # noqa: E402, I001
 from scaffold.bitstomach.signals._comparison_r import Comparison_R  # noqa: E402, I001
 from scaffold.bitstomach.signals._trend import Trend  # noqa: E402, I001
+from scaffold.bitstomach.signals._trend_r import Trend_R  # noqa: E402, I001
 from scaffold.bitstomach.signals._achievement import Achievement  # noqa: E402, I001
 from scaffold.bitstomach.signals._loss import Loss  # noqa: E402, I001
 from scaffold.bitstomach.signals._approach import Approach  # noqa: E402, I001
 
-__all__ = ["Comparison_R","Comparison", "Trend", "Achievement", "Loss", "Approach"]
+__all__ = ["Comparison_R","Comparison", "Trend", "Trend_R", "Achievement", "Loss", "Approach"]
 
 SIGNALS = {
     Comparison: Signal,
     Comparison_R: Signal,
     Trend: Signal,
+    Trend_R: Signal,
     Achievement: Signal,
     Loss: Signal,
     Approach: Signal,

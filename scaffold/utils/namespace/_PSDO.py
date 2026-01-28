@@ -109,6 +109,9 @@ class PSDO(AliasingDefinedNamespace):
     
     PSDO_measure_type: URIRef
     measure_type: URIRef
+    
+    PSDO_0000129bottom10percent: URIRef
+    peer_10th_percentile_benchmark: URIRef
 
     _alias = {
         "performance_summary_display_template": "PSDO_0000002",
@@ -145,4 +148,5 @@ class PSDO(AliasingDefinedNamespace):
         "desired_decreasing_measure": "PSDO_desired_decreasing_measure",
         "desired_increasing_measure": "PSDO_desired_increasing_measure",
         "measure_type": "PSDO_measure_type",
+        "peer_10th_percentile_benchmark": "PSDO_0000129bottom10percent",
     }

@@ -8,13 +8,10 @@ from rdflib.resource import Resource
 
 from scaffold import startup
 from scaffold import context
-from scaffold.bitstomach.signals import Comparison
+from scaffold.bitstomach.signals import Comparison_R
 from scaffold.utils.namespace import PSDO, SLOWMO
 
-g = Graph()
-g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
-g.add((BNode("BP01"), RDF.type, PSDO.desired_increasing_measure))
-startup.base_graph = g
+
 
 @pytest.fixture
 def perf_info() -> Tuple[Graph, Resource]:
@@ -35,9 +32,14 @@ def perf_data() -> pd.DataFrame:
             "measureScore.rate",
             "measureScore.denominator",
         ],
-        [True, 157, "BP01", "2022-08-01", 0.85, 100.0],
-        [True, 157, "BP01", "2022-09-01", 0.90, 100.0],
+        [True, 157, "BP01", "2022-08-01", 0.15, 100.0],
+        [True, 157, "BP01", "2022-09-01", 0.14, 100.0],
     ]
+
+    g = Graph()
+    g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("BP01"), RDF.type, PSDO.desired_decreasing_measure))
+    startup.base_graph = g
 
     return pd.DataFrame(performance_data[1:], columns=performance_data[0])
 
@@ -51,14 +53,12 @@ def comparator_data() -> pd.DataFrame:
             "measureScore.rate",
             "group.code",
         ],
-        ["BP01", "2022-08-01", 0.84, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["BP01", "2022-08-01", 0.88, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["BP01", "2022-08-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["BP01", "2022-08-01", 0.99, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["BP01", "2022-09-01", 0.85, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["BP01", "2022-09-01", 0.89, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["BP01", "2022-09-01", 0.91, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["BP01", "2022-09-01", 1.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP01", "2022-08-01", 0.16, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP01", "2022-08-01", 0.105, "http://purl.obolibrary.org/obo/PSDO_0000129bottom10percent"],
+        ["BP01", "2022-08-01", 0.10, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP01", "2022-09-01", 0.16, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP01", "2022-09-01", 0.105, "http://purl.obolibrary.org/obo/PSDO_0000129bottom10percent"],
+        ["BP01", "2022-09-01", 0.10, "http://purl.obolibrary.org/obo/PSDO_0000094"],
     ]
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
 
@@ -75,14 +75,7 @@ def comparator_data() -> pd.DataFrame:
             ],
         },
         {
-            "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
-            "@type": [
-                "http://purl.obolibrary.org/obo/PSDO_0000093",
-                "http://purl.obolibrary.org/obo/PSDO_0000095",
-            ],
-        },
-        {
-            "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
+            "@id": "http://purl.obolibrary.org/obo/PSDO_0000129bottom10percent",
             "@type": [
                 "http://purl.obolibrary.org/obo/PSDO_0000093",
                 "http://purl.obolibrary.org/obo/PSDO_0000095",
@@ -96,12 +89,10 @@ def comparator_data() -> pd.DataFrame:
 
 
 def test_comp_annotation_creates_minimal_subgraph(perf_data, comparator_data):
-    comparison = Comparison.detect(perf_data, comparator_data)
-    # logger.info(annotation_graph.serialize(format="json-ld"))
-
+    comparison = Comparison_R.detect(perf_data, comparator_data)
     assert isinstance(comparison, List)
     assert isinstance(comparison[0], Resource)
-    assert 4 == len(comparison)
+    assert 3 == len(comparison)
     assert 1 == len(
         set(comparison[0].graph.subjects(RDF.type, PSDO.performance_gap_content))
     )
@@ -110,25 +101,25 @@ def test_comp_annotation_creates_minimal_subgraph(perf_data, comparator_data):
 def test_multiple_signals_from_single_detector(perf_info, perf_data, comparator_data):
     perf_graph, perf_content = perf_info
 
-    signals = Comparison.detect(perf_data, comparator_data)
+    signals = Comparison_R.detect(perf_data, comparator_data)
 
-    assert 4 == len(signals)
+    assert 3 == len(signals)
 
     for s in signals:
         perf_content.add(PSDO.motivating_information, s.identifier)
         perf_graph += s.graph
 
-    assert 33 == len(perf_graph)
+    assert 25 == len(perf_graph)
 
 
 def test_multiple_gap_values(perf_data, comparator_data):
-    signal = Comparison()
+    signal = Comparison_R()
 
     signals = signal.detect(perf_data, comparator_data)
 
-    assert 4 == len(signals)
+    assert 3 == len(signals)
 
-    expected_gap_sizes = [-0.1, 0.05, 0.01, -0.01]
+    expected_gap_sizes = [0.04, -0.02,0.035]
 
     for index, signal in enumerate(signals):
         v = signal.value(SLOWMO.PerformanceGapSize).value
@@ -136,11 +127,11 @@ def test_multiple_gap_values(perf_data, comparator_data):
 
 
 def test_comparator_node(perf_data, comparator_data):
-    signal = Comparison()
+    signal = Comparison_R()
 
     signals = signal.detect(perf_data, comparator_data)
 
-    expected_comparator_values = [1.0, 0.85, 0.89, 0.91]
+    expected_comparator_values = [0.10, 0.16, 0.105]
 
     for index, signal in enumerate(signals):
         assert Literal(expected_comparator_values[index]) == signal.value(
@@ -149,17 +140,17 @@ def test_comparator_node(perf_data, comparator_data):
 
 
 def test_empty_performance_content_returns_value_error():
-    mi = Comparison()
+    mi = Comparison_R()
     with pytest.raises(ValueError):
         mi.detect(pd.DataFrame([[]]), pd.DataFrame([[]]))
 
 
 def test_moderators_return_dictionary():
-    assert isinstance(Comparison.moderators([]), List)
+    assert isinstance(Comparison_R.moderators([]), List)
 
 
 def test_moderators_return_dictionary1():
-    gap = 23
+    gap = 0.03
     graph = Graph()
     r = graph.resource(BNode())
     r.add(RDF.type, PSDO.performance_gap_content)
@@ -174,24 +165,24 @@ def test_moderators_return_dictionary1():
 
     # Add the comparator
     c = graph.resource(BNode())
-    c.set(RDF.type, PSDO.peer_90th_percentile_benchmark)
-    c.set(RDF.value, Literal(95.0))
+    c.set(RDF.type, PSDO.peer_10th_percentile_benchmark)
+    c.set(RDF.value, Literal(0.11))
 
     r.add(SLOWMO.RegardingComparator, c)
 
-    moderators = Comparison.moderators([r])
+    moderators = Comparison_R.moderators([r])
 
     moderator = [
         moderator
         for moderator in moderators
-        if moderator["comparator_type"] == PSDO.peer_90th_percentile_benchmark
+        if moderator["comparator_type"] == PSDO.peer_10th_percentile_benchmark
     ][0]
 
-    assert moderator["comparison_size"] == 23
+    assert moderator["comparison_size"] == 0.03
 
 
 def test_comparison_has_super_type(perf_data, comparator_data):
-    signal = Comparison()
+    signal = Comparison_R()
 
     signals = signal.detect(perf_data, comparator_data)
 
@@ -210,7 +201,7 @@ def test_can_get_dispositions(perf_data, perf_info, comparator_data):
     comparator = g.resource(PSDO.peer_average_comparator)
     comparator.add(RDF.type, PSDO.social_comparator_content)
 
-    signal = Comparison()
+    signal = Comparison_R()
     signals = signal.detect(perf_data, comparator_data)
 
     s = signals[1]  # positive performance gap to peer average
@@ -218,7 +209,7 @@ def test_can_get_dispositions(perf_data, perf_info, comparator_data):
     perf_content.add(PSDO.motivating_information, s)
     g += s.graph
     #
-    matching_types = Comparison.disposition(g.resource(s.identifier))
+    matching_types = Comparison_R.disposition(g.resource(s.identifier))
 
     assert g.resource(PSDO.motivating_information) in matching_types
     assert g.resource(PSDO.performance_gap_content) in matching_types
@@ -230,8 +221,8 @@ def test_can_get_dispositions(perf_data, perf_info, comparator_data):
 
 
 def test_detect1(perf_data, comparator_data):
-    gaps: dict = Comparison._detect(perf_data[-1:], comparator_data)
+    gaps: dict = Comparison_R._detect(perf_data[-1:], comparator_data)
 
-    assert gaps["http://purl.obolibrary.org/obo/PSDO_0000129"][0] == pytest.approx(
-        -0.01
+    assert gaps["http://purl.obolibrary.org/obo/PSDO_0000129bottom10percent"][0] == pytest.approx(
+        0.035
     )

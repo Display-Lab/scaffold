@@ -61,7 +61,7 @@ class Comparison_R(Signal):
         base.add(
             RDF.type,
             PSDO.positive_performance_gap_content
-            if gap >= 0
+            if gap < 0
             else PSDO.negative_performance_gap_content,
         )
 
@@ -93,7 +93,7 @@ class Comparison_R(Signal):
                         )
                     ]["measureScore.rate"].iloc[0]                
                 )
-                gap = comparator_value - perf_data[-1:]["measureScore.rate"]
+                gap = perf_data[-1:]["measureScore.rate"] - comparator_value
 
                 gaps[comparator_iri] = (gap.item(), comparator_value.item())
 
