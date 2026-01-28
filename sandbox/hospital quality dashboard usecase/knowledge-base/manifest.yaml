@@ -22,6 +22,8 @@ message_templates/:
   - opportunity_to_improve_goal_decreasing.json
   - above_peer_average.json
   - below_peer_average_decreasing.json
+  - performance_improving_decreasing.json
+  - getting_worse_decreasing.json
 causal_pathways/: 
   - goal_approach.json
   - goal_gain.json
