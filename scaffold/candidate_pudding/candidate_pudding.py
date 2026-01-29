@@ -126,10 +126,10 @@ def create_candidates():
         ]:
             # check if the measure type matches the template type
             node = BNode(measure)
-            measure_types = set(startup.base_graph.objects(node, RDF.type))
+            measure_type = next(startup.base_graph.objects(node, PSDO.has_desired_direction))
             template_resource = context.subject_graph.resource(template)
-            template_measure_type = URIRef(str(next(template_resource[PSDO.measure_type])))
-            if template_measure_type not in measure_types:
+            template_measure_type = next(template_resource[PSDO.measure_type])
+            if template_measure_type != measure_type:
                 continue
             
             candidate = create_candidate(measure_resource, template_resource)

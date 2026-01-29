@@ -13,7 +13,7 @@ from scaffold.utils.settings import settings
 class Trend_R(Signal):
     # TODO: Allow an array of types
     signal_type = PSDO.performance_trend_content
-    measure_type = PSDO.desired_decreasing_measure
+    measure_types = [PSDO.desired_decreasing_measure]
 
     @staticmethod
     def detect(

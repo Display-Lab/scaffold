@@ -7,14 +7,14 @@ from rdflib import RDF, BNode, Graph, Literal
 from rdflib.resource import Resource
 
 from scaffold import startup
-from scaffold.bitstomach.signals import Comparison_R, Trend_R
+from scaffold.bitstomach.signals import Comparison, Trend_R
 from scaffold.utils import PSDO, SLOWMO
 
 @pytest.fixture
 def prep_base_graph() :
     g = Graph()
     g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("BP01"), RDF.type, PSDO.desired_decreasing_measure))
+    g.add((BNode("BP01"), PSDO.has_desired_direction, Literal(str(PSDO.desired_decreasing_measure))))
     startup.base_graph = g
 
 ## Trend resource
@@ -124,10 +124,10 @@ def test_select_ignores_signals_of_a_different_type(prep_base_graph):
         ["2023-11-01", 0.12, "http://purl.obolibrary.org/obo/PSDO_0000094"],
     ]
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
-    r1 = Comparison_R().detect(
+    r1 = Comparison().detect(
         pd.DataFrame(
-            columns=["measure","period.start", "valid", "measure", "measureScore.rate"],
-            data=[["BP01","2023-11-01", True, "PONV05", 0.11]],
+            columns=["measure","period.start", "valid", "measureScore.rate"],
+            data=[["BP01","2023-11-01", True, 0.11]],
         ),
         comparator_df,
     )

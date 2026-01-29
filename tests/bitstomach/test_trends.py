@@ -12,7 +12,7 @@ from scaffold.utils import PSDO, SLOWMO
 
 g = Graph()
 g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
-g.add((BNode("BP01"), RDF.type, PSDO.desired_increasing_measure))
+g.add((BNode("BP01"),PSDO.has_desired_direction, Literal(str(PSDO.desired_increasing_measure))))
 startup.base_graph = g
 
 ## Trend resource
@@ -125,8 +125,8 @@ def test_select_ignores_signals_of_a_different_type():
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
     r1 = Comparison().detect(
         pd.DataFrame(
-            columns=["measure","period.start", "valid", "measure", "measureScore.rate"],
-            data=[["BP01","2023-11-01", True, "PONV05", 0.80]],
+            columns=["measure","period.start", "valid", "measureScore.rate"],
+            data=[["BP01","2023-11-01", True, 0.80]],
         ),
         comparator_df,
     )
