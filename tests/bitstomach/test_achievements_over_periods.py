@@ -2,7 +2,7 @@ import json
 
 import pandas as pd
 import pytest
-from rdflib import RDF, BNode, Graph
+from rdflib import RDF, BNode, Graph, Literal
 from rdflib.resource import Resource
 
 from scaffold import context, startup
@@ -69,7 +69,7 @@ def perf_data() -> pd.DataFrame:
 
     g = Graph()
     g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("BP01"), RDF.type, PSDO.desired_increasing_measure))
+    g.add((BNode("BP01"),PSDO.has_desired_direction, Literal(str(PSDO.desired_increasing_measure))))
     startup.base_graph = g
 
     return df

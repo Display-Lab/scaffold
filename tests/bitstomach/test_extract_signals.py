@@ -1,7 +1,8 @@
 import json
 
+
 import pandas as pd
-from rdflib import RDF, BNode, Graph
+from rdflib import RDF, BNode, Graph, Literal
 
 from scaffold import context, startup
 from scaffold.bitstomach import bitstomach
@@ -24,9 +25,9 @@ COLUMNS = [
 def prep_base_graph() :
     g = Graph()
     g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("PONV05"), RDF.type, PSDO.desired_increasing_measure))
+    g.add((BNode("PONV05"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increasing_measure))))
     g.add((BNode("SUS04"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("SUS04"), RDF.type, PSDO.desired_increasing_measure))
+    g.add((BNode("SUS04"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increasing_measure))))
     startup.base_graph = g
     
     comparators = [

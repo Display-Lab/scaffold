@@ -4,14 +4,13 @@ import pandas as pd
 from rdflib import RDF, BNode, Literal, URIRef
 from rdflib.resource import Resource
 
-from scaffold import context
+from scaffold import context, startup
 from scaffold.bitstomach.signals import Signal
 from scaffold.utils.namespace import PSDO, SLOWMO
 
-
 class Comparison(Signal):
     signal_type = PSDO.performance_gap_content
-    measure_type = PSDO.desired_increasing_measure
+    measure_types = [PSDO.desired_increasing_measure, PSDO.desired_decreasing_measure]
 
     @staticmethod
     def detect(
@@ -41,15 +40,18 @@ class Comparison(Signal):
 
         gaps = Comparison._detect(perf_data, comparator_data)
 
+        node = BNode(perf_data["measure"].iloc[0])
+        current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
+        
         for key, (gap, comparator_value) in gaps.items():
-            r = Comparison._resource(gap, key, comparator_value)
+            r = Comparison._resource(gap, key, comparator_value, current_measure_type)
             resources.append(r)
 
         return resources
 
     @classmethod
     def _resource(
-        cls, gap: float, comparator_iri: str, comparator_value: float
+        cls, gap: float, comparator_iri: str, comparator_value: float, current_measure_type: URIRef
     ) -> Resource:
         """
         adds the performance gap size, types it as positive or negative and adds the comparator to the subgraph
@@ -58,12 +60,21 @@ class Comparison(Signal):
 
         # Add the signal node and value
         base.add(SLOWMO.PerformanceGapSize, Literal(gap))
-        base.add(
-            RDF.type,
-            PSDO.positive_performance_gap_content
-            if gap >= 0
-            else PSDO.negative_performance_gap_content,
-        )
+        
+        if current_measure_type == PSDO.desired_increasing_measure:
+            base.add(
+                RDF.type,
+                PSDO.positive_performance_gap_content
+                if gap >= 0
+                else PSDO.negative_performance_gap_content,
+            )
+        elif current_measure_type == PSDO.desired_decreasing_measure:
+            base.add(
+                RDF.type,
+                PSDO.positive_performance_gap_content
+                if gap <= 0
+                else PSDO.negative_performance_gap_content,
+            )
 
         # Add the comparator
         c = base.graph.resource(BNode())
