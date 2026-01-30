@@ -2,9 +2,10 @@ from typing import List, Optional
 
 import pandas as pd
 from dateutil.relativedelta import relativedelta
-from rdflib import RDF, Literal
+from rdflib import RDF, BNode, Literal, URIRef
 from rdflib.resource import Resource
 
+from scaffold import startup
 from scaffold.bitstomach.signals import Signal
 from scaffold.utils import PSDO, SLOWMO
 from scaffold.utils.settings import settings
@@ -13,7 +14,7 @@ from scaffold.utils.settings import settings
 class Trend(Signal):
     # TODO: Allow an array of types
     signal_type = PSDO.performance_trend_content
-    measure_types = [PSDO.desired_increasing_measure]
+    measure_types = [PSDO.desired_increasing_measure, PSDO.desired_decreasing_measure]
 
     @staticmethod
     def detect(
@@ -37,7 +38,10 @@ class Trend(Signal):
         if not slope:
             return []
 
-        return [Trend._resource(slope)]
+        node = BNode(perf_data["measure"].iloc[0])
+        current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
+   
+        return [Trend._resource(slope, current_measure_type)]
 
     @staticmethod
     def last_three_periods_are_valid_and_consecutive(perf_data: pd.DataFrame):
@@ -69,17 +73,22 @@ class Trend(Signal):
         return True
 
     @classmethod
-    def _resource(cls, slope: float) -> Resource:
+    def _resource(cls, slope: float, current_measure_type: URIRef) -> Resource:
         """
         adds the performance trend slope, types it as positive or negative to the subgraph
 
         """
         base = super()._resource()
-
-        if slope > 0:
-            base.add(RDF.type, PSDO.positive_performance_trend_content)
-        elif slope < 0:
-            base.add(RDF.type, PSDO.negative_performance_trend_content)
+        if current_measure_type == PSDO.desired_increasing_measure:
+            if slope > 0:
+                base.add(RDF.type, PSDO.positive_performance_trend_content)
+            elif slope < 0:
+                base.add(RDF.type, PSDO.negative_performance_trend_content)
+        elif current_measure_type == PSDO.desired_decreasing_measure:
+            if slope > 0:
+                base.add(RDF.type, PSDO.negative_performance_trend_content)
+            elif slope < 0:            
+                base.add(RDF.type, PSDO.positive_performance_trend_content)
 
         base[SLOWMO.PerformanceTrendSlope] = Literal(slope)
 

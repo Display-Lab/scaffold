@@ -239,7 +239,7 @@ def test_select_candidate():
 
 
 def test_get_trend_info():
-    candidate_resource = Trend._resource(0.0034)
+    candidate_resource = Trend._resource(0.0034, PSDO.desired_increasing_measure)
     mods = Trend.moderators([candidate_resource])[0]
     assert mods["trend_size"] == pytest.approx(0.0068)
     assert Trend.signal_type in mods["type"]
