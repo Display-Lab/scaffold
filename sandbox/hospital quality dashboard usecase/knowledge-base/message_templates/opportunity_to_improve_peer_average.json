@@ -42,8 +42,7 @@
     "Short message ID": "https://schema.metadatacenter.org/properties/cd6dcfc0-9083-4a73-bf7e-fd310b238bd6",
     "Additional message text": "https://schema.metadatacenter.org/properties/df7c7ba0-07dd-4930-aad6-62e1ca9dd6fa",
     "Default display": "https://schema.metadatacenter.org/properties/5b4f16a9-feb7-4724-8741-2739d8808760",
-    "has_causal_pathway": "http://purl.obolibrary.org/obo/cpo_0000056",
-    "measure_type": "http://purl.obolibrary.org/obo/PSDO_measure_type"
+    "has_causal_pathway": "http://purl.obolibrary.org/obo/cpo_0000056"
   },
   "@type": "http://data.bioontology.org/ontologies/PSDO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPSDO_0000002",
   "is_about": [
@@ -58,9 +57,12 @@
     {
       "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
       "rdfs:label": "peer average comparator"
+    },
+    {
+      "@id": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure",
+      "rdfs:label": "desired increase measure"
     }
   ],
-  "measure_type":"http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure",
   "has_causal_pathway": 
   {
     "@id": "https://repo.metadatacenter.org/template-instances/f4006042-5750-4f6c-a039-fe0a88466464",

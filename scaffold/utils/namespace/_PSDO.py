@@ -106,10 +106,7 @@ class PSDO(AliasingDefinedNamespace):
     
     PSDO_desired_decreasing_measure: URIRef
     desired_decreasing_measure: URIRef
-    
-    PSDO_measure_type: URIRef
-    measure_type: URIRef    
-  
+      
     PSDO_has_desired_direction: URIRef
     has_desired_direction: URIRef
 
@@ -147,6 +144,5 @@ class PSDO(AliasingDefinedNamespace):
         "process_measure": "PSDO_process_measure",
         "desired_decreasing_measure": "PSDO_desired_decreasing_measure",
         "desired_increasing_measure": "PSDO_desired_increasing_measure",
-        "measure_type": "PSDO_measure_type",
         "has_desired_direction": "PSDO_has_desired_direction",
     }
