@@ -137,7 +137,7 @@ def test_add_motivating_information(graph):
     candidate = candidate_pudding.add_motivating_information(candidate)
     assert disposition_count == len(list(candidate[RO.has_disposition]))
 
-    signal = Trend._resource(-0.05)
+    signal = Trend._resource(-0.05,PSDO.desired_increasing_measure)
     signal.add(SLOWMO.RegardingMeasure, measure)
     graph.resource(BNode("performance_content")).add(
         PSDO.motivating_information, signal

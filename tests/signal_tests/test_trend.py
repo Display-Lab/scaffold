@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from scaffold.bitstomach.signals import Trend
+from scaffold.utils.namespace._PSDO import PSDO
 
 
 def message() -> dict:
@@ -84,7 +85,7 @@ mods_test_set = [
 
 @pytest.mark.parametrize("slope, moderator, condition", mods_test_set)
 def test_trend_moderators(slope: float, moderator: float, condition):
-    signal = Trend._resource(slope)
+    signal = Trend._resource(slope,PSDO.desired_increasing_measure)
     mods = Trend.moderators([signal])[0]
 
     assert str(mods["trend_size"]) == str(moderator), condition + " failed"
