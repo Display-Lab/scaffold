@@ -38,17 +38,19 @@
     },
     "is_about": "http://purl.obolibrary.org/obo/IAO_0000136",
     "Name": "https://schema.metadatacenter.org/properties/26450fa6-bb2c-4126-8229-79efda7f863a",
-    "Message text": "https://schema.metadatacenter.org/properties/6b9dfdf9-9c8a-4d85-8684-a24bee4b85a8",
-    "measure_type": "http://purl.obolibrary.org/obo/PSDO_measure_type"
+    "Message text": "https://schema.metadatacenter.org/properties/6b9dfdf9-9c8a-4d85-8684-a24bee4b85a8"
   },
   "@type": "http://data.bioontology.org/ontologies/PSDO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPSDO_0000002",
   "is_about": [
     {
       "@id": "http://purl.obolibrary.org/obo/PSDO_0000119",
       "rdfs:label": "negative performance trend set"
+    },
+    {
+      "@id": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure",
+      "rdfs:label": "desired increase measure"
     }
   ],
-  "measure_type":"http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure",
   "Name": {
     "@value": "Performance Dropped"
   },

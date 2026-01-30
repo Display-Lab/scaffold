@@ -128,8 +128,11 @@ def create_candidates():
             node = BNode(measure)
             measure_type = next(startup.base_graph.objects(node, PSDO.has_desired_direction))
             template_resource = context.subject_graph.resource(template)
-            template_measure_type = next(template_resource[PSDO.measure_type])
-            if template_measure_type != measure_type:
+            template_is_about = list(template_resource[IAO.is_about])
+            if not any(
+                str(res.identifier) == str(measure_type.value)
+                for res in template_is_about
+            ):
                 continue
             
             candidate = create_candidate(measure_resource, template_resource)
