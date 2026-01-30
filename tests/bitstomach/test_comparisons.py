@@ -66,10 +66,10 @@ def comparator_data() -> pd.DataFrame:
         ["BP01", "2022-09-01", 0.91, "http://purl.obolibrary.org/obo/PSDO_0000129"],
         ["BP01", "2022-09-01", 1.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
         ["BP02", "2022-08-01", 0.16, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["BP02", "2022-08-01", 0.105, "http://purl.obolibrary.org/obo/PSDO_0000129bottom10percent"],
+        ["BP02", "2022-08-01", 0.105, "http://purl.obolibrary.org/obo/PSDO_0000129"],
         ["BP02", "2022-08-01", 0.10, "http://purl.obolibrary.org/obo/PSDO_0000094"],
         ["BP02", "2022-09-01", 0.16, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["BP02", "2022-09-01", 0.105, "http://purl.obolibrary.org/obo/PSDO_0000129bottom10percent"],
+        ["BP02", "2022-09-01", 0.105, "http://purl.obolibrary.org/obo/PSDO_0000129"],
         ["BP02", "2022-09-01", 0.10, "http://purl.obolibrary.org/obo/PSDO_0000094"],
     ]
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
@@ -95,13 +95,6 @@ def comparator_data() -> pd.DataFrame:
         },
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
-            "@type": [
-                "http://purl.obolibrary.org/obo/PSDO_0000093",
-                "http://purl.obolibrary.org/obo/PSDO_0000095",
-            ],
-        },
-        {
-            "@id": "http://purl.obolibrary.org/obo/PSDO_0000129bottom10percent",
             "@type": [
                 "http://purl.obolibrary.org/obo/PSDO_0000093",
                 "http://purl.obolibrary.org/obo/PSDO_0000095",

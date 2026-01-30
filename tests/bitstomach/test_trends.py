@@ -221,7 +221,7 @@ def test_select_ignores_signals_of_a_different_type():
             "group.code",
         ],
         ["2023-11-01", 0.12, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2023-11-01", 0.12, "http://purl.obolibrary.org/obo/PSDO_0000129bottom10percent"],
+        ["2023-11-01", 0.12, "http://purl.obolibrary.org/obo/PSDO_0000129"],
         ["2023-11-01", 0.12, "http://purl.obolibrary.org/obo/PSDO_0000094"],
     ]
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])

@@ -48,22 +48,5 @@
         "@value": "Peer Top 10%"
       }
     ]
-  },
-  {
-    "@id": "http://purl.obolibrary.org/obo/PSDO_0000129bottom10percent",
-    "@type": [
-      "http://purl.obolibrary.org/obo/PSDO_0000093",
-      "http://purl.obolibrary.org/obo/PSDO_0000095"
-    ],
-    "http://www.w3.org/2000/01/rdf-schema#label": [
-      {
-        "@value": "peer 10th percentile benchmark"
-      }
-    ],
-    "http://example.com/slowmo#DisplayName": [
-      {
-        "@value": "Peer Bottom 10%"
-      }
-    ]
   }
 ]
