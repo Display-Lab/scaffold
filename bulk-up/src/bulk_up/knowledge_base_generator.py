@@ -164,6 +164,18 @@ def main():
 							continue
 			if not is_about_objs:
 				continue
+
+			direction = str(row.get('Desired Direction', '')).strip()
+			if direction == "Increasing":
+				is_about_objs.append({
+					"@id": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure",
+					"rdfs:label": "desired increase measure"
+				})
+			elif direction == "Decreasing":
+				is_about_objs.append({
+					"@id": "http://purl.obolibrary.org/obo/PSDO_desired_decreasing_measure",
+					"rdfs:label": "desired decrease measure"
+				})
 			msg_obj = json.loads(json.dumps(message_template))  # deep copy
 			msg_obj['is_about'] = is_about_objs
 

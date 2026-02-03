@@ -4,7 +4,7 @@ from rdflib import RDF, BNode, Graph
 from scaffold import context, startup
 from scaffold.bitstomach.signals import SIGNALS
 from scaffold.utils.namespace import PSDO, SLOWMO
-
+from scaffold.utils.settings import settings
 
 def extract_signals(perf_df: pd.DataFrame) -> Graph:
     """
@@ -45,7 +45,7 @@ def prepare():
         performance_df["period.start"] <= context.performance_month
     ].copy()
 
-    performance_df["valid"] = performance_df["measureScore.denominator"] >= 10
+    performance_df["valid"] = performance_df["measureScore.denominator"] >= settings.min_count
 
     performance_df.attrs["valid_measures"] = performance_df[
         (
