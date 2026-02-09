@@ -20,7 +20,7 @@ def graph():
         )
     )
     template[RDF.type] = candidate_pudding.PERFORMANCE_SUMMARY_DISPLAY_TEMPLATE
-    template[PSDO.has_desired_direction] = Literal(PSDO.desired_increasing_measure)
+    template[PSDO.has_desired_direction] = Literal(PSDO.desired_increase)
     template[
         URIRef(
             "https://schema.metadatacenter.org/properties/6b9dfdf9-9c8a-4d85-8684-a24bee4b85a8"
@@ -49,7 +49,7 @@ def graph():
     performance_content = graph.resource(BNode("performance_content"))
     performance_content.set(RDF.type, PSDO.performance_content)
     signal = Comparison._resource(
-        -0.04, "http://purl.obolibrary.org/obo/PSDO_0000129", 0.94,PSDO.desired_increasing_measure
+        -0.04, "http://purl.obolibrary.org/obo/PSDO_0000129", 0.94,PSDO.desired_increase
     )
     signal.add(SLOWMO.RegardingMeasure, measure)
     performance_content.add(PSDO.motivating_information, signal)
@@ -137,7 +137,7 @@ def test_add_motivating_information(graph):
     candidate = candidate_pudding.add_motivating_information(candidate)
     assert disposition_count == len(list(candidate[RO.has_disposition]))
 
-    signal = Trend._resource(-0.05,PSDO.desired_increasing_measure)
+    signal = Trend._resource(-0.05,PSDO.desired_increase)
     signal.add(SLOWMO.RegardingMeasure, measure)
     graph.resource(BNode("performance_content")).add(
         PSDO.motivating_information, signal

@@ -57,8 +57,8 @@
       "rdfs:label": "goal comparator element"
     },
     {
-      "@id": "http://purl.obolibrary.org/obo/PSDO_desired_decreasing_measure",
-      "rdfs:label": "desired decrease measure"
+      "@id": "http://purl.obolibrary.org/obo/PSDO_0000042",
+      "rdfs:label": "desired decrease"
     }
   ],
   "has_causal_pathway": 

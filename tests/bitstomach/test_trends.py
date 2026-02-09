@@ -13,9 +13,9 @@ from scaffold.utils import PSDO, SLOWMO
 def setup_base_graph():
     g = Graph()
     g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("BP01"),PSDO.has_desired_direction, Literal(str(PSDO.desired_increasing_measure))))
+    g.add((BNode("BP01"),PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
     g.add((BNode("BP02"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("BP02"),PSDO.has_desired_direction, Literal(str(PSDO.desired_decreasing_measure))))
+    g.add((BNode("BP02"),PSDO.has_desired_direction, Literal(str(PSDO.desired_decrease))))
     startup.base_graph = g
 
 ## Trend resource
@@ -131,32 +131,32 @@ def test_to_moderators_return_dictionary1():
 
 
 def test_resource_selects_pos_or_neg():
-    r = Trend._resource(3.0, PSDO.desired_increasing_measure)
+    r = Trend._resource(3.0, PSDO.desired_increase)
     types = [t.identifier for t in list(r[RDF.type])]
     assert PSDO.positive_performance_trend_content in types
     assert PSDO.negative_performance_trend_content not in types
 
-    r = Trend._resource(-1.0, PSDO.desired_increasing_measure)
+    r = Trend._resource(-1.0, PSDO.desired_increase)
     types = [t.identifier for t in list(r[RDF.type])]
     assert PSDO.positive_performance_trend_content not in types
     assert PSDO.negative_performance_trend_content in types
 
-    r = Trend._resource(0.0, PSDO.desired_increasing_measure)
+    r = Trend._resource(0.0, PSDO.desired_increase)
     types = [t.identifier for t in list(r[RDF.type])]
     assert PSDO.positive_performance_trend_content not in types
     assert PSDO.negative_performance_trend_content not in types
     
-    r = Trend._resource(3.0, PSDO.desired_decreasing_measure)
+    r = Trend._resource(3.0, PSDO.desired_decrease)
     types = [t.identifier for t in list(r[RDF.type])]
     assert PSDO.negative_performance_trend_content in types
     assert PSDO.positive_performance_trend_content not in types
 
-    r = Trend._resource(-1.0, PSDO.desired_decreasing_measure)
+    r = Trend._resource(-1.0, PSDO.desired_decrease)
     types = [t.identifier for t in list(r[RDF.type])]
     assert PSDO.negative_performance_trend_content not in types
     assert PSDO.positive_performance_trend_content in types
 
-    r = Trend._resource(0.0, PSDO.desired_decreasing_measure)
+    r = Trend._resource(0.0, PSDO.desired_decrease)
     types = [t.identifier for t in list(r[RDF.type])]
     assert PSDO.negative_performance_trend_content not in types
     assert PSDO.positive_performance_trend_content not in types

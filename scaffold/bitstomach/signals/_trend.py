@@ -14,7 +14,7 @@ from scaffold.utils.settings import settings
 class Trend(Signal):
     # TODO: Allow an array of types
     signal_type = PSDO.performance_trend_content
-    measure_types = [PSDO.desired_increasing_measure, PSDO.desired_decreasing_measure]
+    measure_types = [PSDO.desired_increase, PSDO.desired_decrease]
 
     @staticmethod
     def detect(
@@ -79,12 +79,12 @@ class Trend(Signal):
 
         """
         base = super()._resource()
-        if current_measure_type == PSDO.desired_increasing_measure:
+        if current_measure_type == PSDO.desired_increase:
             if slope > 0:
                 base.add(RDF.type, PSDO.positive_performance_trend_content)
             elif slope < 0:
                 base.add(RDF.type, PSDO.negative_performance_trend_content)
-        elif current_measure_type == PSDO.desired_decreasing_measure:
+        elif current_measure_type == PSDO.desired_decrease:
             if slope > 0:
                 base.add(RDF.type, PSDO.negative_performance_trend_content)
             elif slope < 0:            

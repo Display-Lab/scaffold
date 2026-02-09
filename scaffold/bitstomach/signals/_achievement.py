@@ -11,7 +11,7 @@ from scaffold.utils.namespace import PSDO, SLOWMO
 
 class Achievement(Signal):
     signal_type = PSDO.achievement_content
-    measure_types = [PSDO.desired_increasing_measure]
+    measure_types = [PSDO.desired_increase]
     
     @staticmethod
     def detect(

@@ -25,9 +25,9 @@ COLUMNS = [
 def prep_base_graph() :
     g = Graph()
     g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("PONV05"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increasing_measure))))
+    g.add((BNode("PONV05"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
     g.add((BNode("SUS04"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("SUS04"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increasing_measure))))
+    g.add((BNode("SUS04"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
     startup.base_graph = g
     
     comparators = [

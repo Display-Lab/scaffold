@@ -51,8 +51,8 @@
       "rdfs:label": "social comparator element"
     },
     {
-      "@id": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure",
-      "rdfs:label": "desired increase measure"
+      "@id": "http://purl.obolibrary.org/obo/PSDO_0000039",
+      "rdfs:label": "desired increase"
     }
   ],
   "Name": {

@@ -101,13 +101,13 @@ class PSDO(AliasingDefinedNamespace):
     PSDO_process_measure: URIRef
     process_measure: URIRef
     
-    PSDO_desired_increasing_measure: URIRef
-    desired_increasing_measure: URIRef
+    PSDO_0000039: URIRef
+    desired_increase: URIRef
     
-    PSDO_desired_decreasing_measure: URIRef
-    desired_decreasing_measure: URIRef
+    PSDO_0000042: URIRef
+    desired_decrease: URIRef
       
-    PSDO_has_desired_direction: URIRef
+    PSDO_0000034: URIRef
     has_desired_direction: URIRef
 
     _alias = {
@@ -142,7 +142,7 @@ class PSDO(AliasingDefinedNamespace):
         "approach_set": "PSDO_0000202",
         "outcome_measure": "PSDO_outcome_measure",
         "process_measure": "PSDO_process_measure",
-        "desired_decreasing_measure": "PSDO_desired_decreasing_measure",
-        "desired_increasing_measure": "PSDO_desired_increasing_measure",
-        "has_desired_direction": "PSDO_has_desired_direction",
+        "desired_decrease": "PSDO_0000042",
+        "desired_increase": "PSDO_0000039",
+        "has_desired_direction": "PSDO_0000034",
     }

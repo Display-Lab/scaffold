@@ -17,7 +17,7 @@
     "slowmo:WithComparator": "http://example.com/slowmo#WithComparator",
     "has_part": "http://purl.obolibrary.org/obo/bfo#BFO_0000051",
     "has_disposition": "http://purl.obolibrary.org/obo/RO_0000091",
-    "has_desired_direction":"http://purl.obolibrary.org/obo/PSDO_has_desired_direction"
+    "has_desired_direction":"http://purl.obolibrary.org/obo/PSDO_0000034"
   },
   "@id": "http://example.com/app#display-lab",
   "@type": "http://example.com/slowmo#spek",
@@ -38,91 +38,91 @@
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "Transfers Completed",
       "identifier": "Transfer-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
     },
     {
       "@id": "_:Hand-01",
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "Hand Hygiene",
       "identifier": "Hand-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
     },
     {
       "@id": "_:Provider-Rating-01",
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "Rating of Providers",
       "identifier": "Provider-Rating-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
     },
     {
       "@id": "_:Care-Rating-01",
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "Rating of Care",
       "identifier": "Care-Rating-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
     },
     {
       "@id": "_:Clean-Rating-01",
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "Rating of Cleanliness",
       "identifier": "Clean-Rating-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
     },
     {
       "@id": "_:Quiet-Rating-01",
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "Rating of Quietness",
       "identifier": "Quiet-Rating-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
     },
     {
       "@id": "_:Patient-Concern-01",
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "Provider clearly addressed patient concerns",
       "identifier": "Patient-Concern-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
     },
     {
       "@id": "_:Discharge-01",
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "Speed of Discharge",
       "identifier": "Discharge-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
     },
     {
       "@id": "_:Nurse-informed-01",
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "Nurses kept patient informed",
       "identifier": "Nurse-informed-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
     },
     {
       "@id": "_:Nurse-language-01",
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "Nurses informed using clear language",
       "identifier": "Nurse-language-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
     },
     {
       "@id": "_:Physician-language-01",
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "Physician informed using clear language",
       "identifier": "Physician-language-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
     },
     {
       "@id": "_:Physician-informed-01",
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "Physician kept patient informed",
       "identifier": "Physician-informed-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
     },
     {
       "@id": "_:Readmission-Ratting-01",
       "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
       "dc:title": "30 Day Readmission Rate",
       "identifier": "Readmission-Ratting-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_desired_decreasing_measure"
+      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000042"
     }
   ]
 }
