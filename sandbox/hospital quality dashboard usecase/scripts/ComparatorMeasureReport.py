@@ -62,11 +62,21 @@ start = time.time()
 parser = argparse.ArgumentParser(
     description="PerformanceMeasureReport generator for PractitionerRole."
 )
-parser.add_argument("--path", type=str, default="sandbox_data", help="Output path")
+parser.add_argument("--path", type=str, default="/home/faridsei/dev/test/Yidan", help="Output path")
 
 args = parser.parse_args()
 output_dir = Path(args.path)
 performance_data_df = pd.read_csv(output_dir / "PerformanceMeasureReport.csv")
+
+performance_data_df["measureScore.rate"] = pd.to_numeric(
+    performance_data_df["measureScore.rate"],
+    errors="coerce"
+)
+
+performance_data_df = performance_data_df.dropna(
+    subset=["measureScore.rate"]
+)
+
 practitioner_data_df = pd.read_csv(output_dir / "PractitionerRole.csv")
 config = json.load(open(os.path.join(args.path, "config.json")))
 if "group.subject" not in config["ComparatorMergeColumns"]: 
@@ -166,7 +176,7 @@ bottom_10_df = (
       .reset_index()
 )
 
-bottom_10_df["group.code"] = "http://purl.obolibrary.org/obo/PSDO_0000129bottom10percent"
+bottom_10_df["group.code"] = "http://purl.obolibrary.org/obo/PSDO_0000129"
 
 peer_avg_df = (
     merged_df.groupby(group_cols, group_keys=False)

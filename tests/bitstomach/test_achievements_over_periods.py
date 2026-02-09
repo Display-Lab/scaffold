@@ -69,7 +69,7 @@ def perf_data() -> pd.DataFrame:
 
     g = Graph()
     g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("BP01"),PSDO.has_desired_direction, Literal(str(PSDO.desired_increasing_measure))))
+    g.add((BNode("BP01"),PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
     startup.base_graph = g
 
     return df

@@ -17,7 +17,7 @@
     "slowmo:WithComparator": "http://example.com/slowmo#WithComparator",
     "has_part": "http://purl.obolibrary.org/obo/bfo#BFO_0000051",
     "has_disposition": "http://purl.obolibrary.org/obo/RO_0000091",
-    "has_desired_direction":"http://purl.obolibrary.org/obo/PSDO_has_desired_direction"
+    "has_desired_direction":"http://purl.obolibrary.org/obo/PSDO_0000034"
   },
   "@id": "PlaceHolderForID",
   "@type": "http://example.com/slowmo#spek",

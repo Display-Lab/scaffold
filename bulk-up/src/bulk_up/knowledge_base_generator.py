@@ -107,9 +107,9 @@ def main():
 			if not measure_id or not measure_name or not desired_direction:
 				continue
 			if desired_direction.startswith('increas'):
-				direction_uri = "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure"
+				direction_uri = "http://purl.obolibrary.org/obo/PSDO_0000039"
 			elif desired_direction.startswith('decreas'):
-				direction_uri = "http://purl.obolibrary.org/obo/PSDO_desired_decreasing_measure"
+				direction_uri = "http://purl.obolibrary.org/obo/PSDO_0000042"
 			else:
 				direction_uri = ""
 			measure_obj = {
@@ -168,13 +168,13 @@ def main():
 			direction = str(row.get('Desired Direction', '')).strip()
 			if direction == "Increasing":
 				is_about_objs.append({
-					"@id": "http://purl.obolibrary.org/obo/PSDO_desired_increasing_measure",
-					"rdfs:label": "desired increase measure"
+					"@id": "http://purl.obolibrary.org/obo/PSDO_0000039",
+					"rdfs:label": "desired increase"
 				})
 			elif direction == "Decreasing":
 				is_about_objs.append({
-					"@id": "http://purl.obolibrary.org/obo/PSDO_desired_decreasing_measure",
-					"rdfs:label": "desired decrease measure"
+					"@id": "http://purl.obolibrary.org/obo/PSDO_0000042",
+					"rdfs:label": "desired decrease"
 				})
 			msg_obj = json.loads(json.dumps(message_template))  # deep copy
 			msg_obj['is_about'] = is_about_objs

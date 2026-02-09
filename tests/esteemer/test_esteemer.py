@@ -142,7 +142,7 @@ def performance_data_frame():
     
     g = Graph()
     g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("PONV05"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increasing_measure))))
+    g.add((BNode("PONV05"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
     startup.base_graph = g
 
     return perf_df
@@ -239,7 +239,7 @@ def test_select_candidate():
 
 
 def test_get_trend_info():
-    candidate_resource = Trend._resource(0.0034, PSDO.desired_increasing_measure)
+    candidate_resource = Trend._resource(0.0034, PSDO.desired_increase)
     mods = Trend.moderators([candidate_resource])[0]
     assert mods["trend_size"] == pytest.approx(0.0068)
     assert Trend.signal_type in mods["type"]

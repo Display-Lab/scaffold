@@ -10,7 +10,7 @@ from scaffold.utils.namespace import PSDO, SLOWMO
 
 class Comparison(Signal):
     signal_type = PSDO.performance_gap_content
-    measure_types = [PSDO.desired_increasing_measure, PSDO.desired_decreasing_measure]
+    measure_types = [PSDO.desired_increase, PSDO.desired_decrease]
 
     @staticmethod
     def detect(
@@ -61,14 +61,14 @@ class Comparison(Signal):
         # Add the signal node and value
         base.add(SLOWMO.PerformanceGapSize, Literal(gap))
         
-        if current_measure_type == PSDO.desired_increasing_measure:
+        if current_measure_type == PSDO.desired_increase:
             base.add(
                 RDF.type,
                 PSDO.positive_performance_gap_content
                 if gap >= 0
                 else PSDO.negative_performance_gap_content,
             )
-        elif current_measure_type == PSDO.desired_decreasing_measure:
+        elif current_measure_type == PSDO.desired_decrease:
             base.add(
                 RDF.type,
                 PSDO.positive_performance_gap_content
