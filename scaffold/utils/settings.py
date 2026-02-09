@@ -32,6 +32,7 @@ class Settings:
         # self.version = pypro["tool"]["poetry"]["version"]
 
         # Knowledge settings
+        self.min_count = config("min_count", cast=int, default=10)
         self.meas_period = config("meas_period", cast=int, default=1)
         self.manifest = config("manifest", cast=str, default=None)
         self.mpm = config("mpm", cast=str, default=None)

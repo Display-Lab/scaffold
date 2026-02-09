@@ -190,6 +190,11 @@ Local file path or URL (see .env.remote for github URL formats). All are require
 - default: 1
 - note: for example for a data that is collected quarterly this needs to be set to 3
 
+#### min_count: Defines the minumum counts to consider a performance rate valid
+
+- default: 10
+- note: performance data for a measure with a count less than the min_count will be removed before processing
+
 ### Scoring
 
 These control the elements of the scoring algorithm.

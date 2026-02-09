@@ -75,8 +75,18 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             performance_measure_report = pd.read_csv(
                 os.path.join(performance_data_path, "PerformanceMeasureReport.csv"),
                 parse_dates=["period.start", "period.end"],
-                dtype={"subject": str},
+                dtype={"subject": str}                
             )
+            
+            # force the column to numeric and drop bad rows
+            performance_measure_report["measureScore.rate"] = pd.to_numeric(
+                performance_measure_report["measureScore.rate"],
+                errors="coerce"
+            )
+            performance_measure_report = performance_measure_report.dropna(
+                subset=["measureScore.rate"]
+            )
+            
             comparator_measure_report = pd.read_csv(
                 os.path.join(performance_data_path, "ComparatorMeasureReport.csv"),
                 parse_dates=["period.start", "period.end"],
