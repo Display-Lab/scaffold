@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "scaffold"
-version = "1.3"
+version = "2.1"
 description = ""
 authors = ["Zach Landis-Lewis <zachll@umich.edu>"]
 readme = "README.md"

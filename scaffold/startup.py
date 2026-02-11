@@ -115,7 +115,7 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
                     history.set_index("subject", inplace=True, drop=False)
 
         if settings.performance_month:
-            performance_month = settings.settings.performance_month
+            performance_month = settings.performance_month
 
         if performance_m:
             performance_month = performance_m

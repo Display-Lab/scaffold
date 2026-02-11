@@ -22,7 +22,7 @@ git clone https://github.com/Display-Lab/scaffold.git
 cd scaffold
 ```
 
-#### Setup a virtual environment and install dependencies
+#### Setup a virtual environment, install SCAFFOLD and its dependencies
 
 **Using `venv` and `pip`**
 
@@ -46,8 +46,7 @@ source .venv/bin/activate
 ##### For Windows, Mac, and Linux, now complete the following two installs
 
 ```zsh
-pip install -r requirements.txt # this will take a while, so go get a cup of coffee
-pip install uvicorn # not installed by default (needed for running locally)
+pip install . # this will install scaffold 
 ```
 
 **Alternative: Using [Poetry](https://python-poetry.org/) (for developers)**
@@ -63,15 +62,9 @@ poetry shell # activates the enviroment
 If you are using a knowledge base from a separate repository, clone it in a separate location. For sandbox usecases the corresponding knowledge bases are located in each usecase folder in the sandbox.
 
 
-#### Running SCAFFOLD
+#### Prepare environment file
 
-Change back to the root of scaffold
-
-```zsh
-cd scaffold
-```
-
-Create a copy of the `.env.local` file and call it `.env.dev` and update it by changing `path/to/knowledge-base` to point to the local knowledge base that you just checked out. (Don't remove the `file://` for default_preferences and manifest.)
+Create a copy of the `.env.local` file available at the root of SCAFFOLD and call it `.env.dev` and update it by changing `path/to/knowledge-base` to point to the local knowledge base that you just checked out. (Don't remove the `file://` for default_preferences and manifest.)
 
 ```properties
 # .env.dev
@@ -80,79 +73,68 @@ mpm=/Users/bob/knowledge-base/prioritization_algorithms/motivational_potential_m
 manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
 ...
 ```
+#### Running SCAFFOLD
+To test if the pipeline is installed and available to use execute the following command
+
+```zsh
+pipeline --help
+```
+
+You should see the following commands are available:
+- batch
+- batch-csv
+- web
+
+Alternatively you can exexute
+
+```zsh
+python -m scaffold.cli --help
+```
 
 ##### Run SCAFFOLD API 
-There are two different ways to run SCAFFOLD API:
-1. Run SCAFFOLD API using uvicorn 
-```zsh
-ENV_PATH=.env.dev uvicorn scaffold.api:app
-# Expect to see a server start message like this "INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)"
-```
-
-You can use Postman or your favorite tool to send a message and check the results. There is a sample input message file located at `tests/test_cases/input_message.json`. Here is a sample `curl` request:
-
-```zsh
-curl --data "@tests/test_cases/input_message.json" http://localhost:8000/createprecisionfeedback/
-```
-2. Run SCAFFOLD API using CLI (`pipeline web` command )
-
+Run SCAFFOLD API using 
 ```zsh
 ENV_PATH=/user/.../.env.dev pipeline web
 ```
-##### Run SCAFFOLD CLI with JSON inputs
-First install the python app. Then use the following command to run the pipeline on one json input file
+
+Once the API is running, you can use Postman or your favorite tool to send a request and review the results. If you have set up the knowledge base for the Sandbox Hospital Quality Dashboard usecase, below is an example `curl` request that sends an input message to be processed by the API:
 
 ```zsh
-ENV_PATH=/user/.../.env.dev pipeline batch '/path/to/input/file.json'
+curl --data "@sandbox/hospital quality dashboard usecase/data/JSON inputs/input_0b4f8851-6f95-44a0-a771-44959993ea4b.json" http://localhost:8000/createprecisionfeedback/
 ```
-
-Use the following command to run the pipeline on some or all json input files in a folder
+##### Run SCAFFOLD CLI with JSON inputs
+Use the following command to run the pipeline's `batch` command on some or all json input files in a folder
 
 ```zsh
 ENV_PATH=/user/.../.env.dev pipeline batch '/path/to/input/folder/' --max-files 500
 ```
 Use --max-files if you need to limit the number of files to process.
 
+If you need to run the pipeline on a specific json input file use 
+
+```zsh
+ENV_PATH=/user/.../.env.dev pipeline batch '/path/to/input/file.json'
+```
+
+To run SCAFFOLD on the Sandbox Hospital Quality Dashboard Usecas, use the following command from the root of SCAFFOLD
+
+```zsh
+ENV_PATH=/user/.../.env.dev pipeline  batch 'sandbox/hospital quality dashboard usecase/data/JSON inputs' --max-files 10
+```
+
 ##### Run SCAFFOLD CLI with CSV inputs
-First install the python app. Then create the `.env.dev` file as mentioned above. 
-
-```properties
-# .env.dev
-default_preferences=file:///Users/bob/knowledge-base/preferences.json 
-mpm=/Users/bob/knowledge-base/prioritization_algorithms/motivational_potential_model.csv
-manifest=file:///Users/bob/knowledge-base/mpog_local_manifest.yaml
-...
-```
-Then use the following command, from the root of SCAFFOLD repository, to run the pipeline passing the path to the folder that contains csv files
-
+Use the following command to run the pipeline `batch-csv` command 
 ```zsh
-ENV_PATH=/user/.../.env.dev python -m scaffold.cli batch-csv '/path/to/performance/data/folder' --performance-month 2025-01-01 --max-files 500
+ENV_PATH=/user/.../.env.dev pipeline batch-csv '/path/to/performance/data/folder' --performance-month 2025-01-01 --max-files 100
 ```
 
-You can use the path to the local [sandbox example data folder](for hospital quality dashboard usecase use ./sandbox/hospital%20quality%20dashboard%20usecase/data/tabular%20inputs) to run the pipeline on the sandbox example data. You need to use 2025-01-01 for performance month if you are using the hospital quality dashboard usecase from the sandbox.
-
-Alternatively, you can use pip to install the pipeline command and use it to run the pipeline. Use the following command in the root of repository to install SCAFFOLD
-
-```zsh
-pip install .
-```
-
-Then you can use the following command to run the pipeline
-```zsh
-ENV_PATH=/user/.../.env.dev pipeline batch-csv '/path/to/performance/data/folder' --performance-month 2025-01-01 --max-files 500
-```
-
-Alternatively, if you have poetry installed, you can run 
-```zsh
-poetry install
-```
-
-and then you should be able to use the following command to run the pipeline:
-
-```zsh
-ENV_PATH=/user/.../.env.dev pipeline batch_csv '/path/to/performance/data/folder' --performance-month 2025-01-01 --max-files 500
-```
 Use --performance-month to set the performance month for batch_csv command and optional --max-files to limit the cases to process for development.
+
+To run SCAFFOLD on the Sandbox Hospital Quality Dashboard Usecase, use the following command from the root of SCAFFOLD
+
+```zsh
+ENV_PATH=/user/.../.env.dev pipeline  batch-csv 'sandbox/hospital quality dashboard usecase/data/tabular inputs' --performance-month 2025-01-01 --max-files 10
+```
 
 ## Environment variables
 

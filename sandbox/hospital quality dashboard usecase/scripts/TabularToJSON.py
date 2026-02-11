@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "--path",
     type=str,
-    default="/home/faridsei/dev/code/scaffold/data ingestion model/sandbox examples/",
+    default="/home/faridsei/dev/code/scaffold/sandbox/hospital quality dashboard usecase/data/tabular inputs",
     help="Output path",
 )
 parser.add_argument(
@@ -30,7 +30,7 @@ parser.add_argument(
 args = parser.parse_args()
 output_dir = Path(args.path)
 
-new_folder = output_dir / "JSON Messages"
+new_folder = output_dir / "JSON inputs"
 new_folder.mkdir(exist_ok=True)
 
 performance_data_df = pd.read_csv(
