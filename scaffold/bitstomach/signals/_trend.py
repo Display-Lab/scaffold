@@ -33,15 +33,15 @@ class Trend(Signal):
         if not Trend.last_three_periods_are_valid_and_consecutive(perf_data):
             return []
 
-        slope = Trend._detect(perf_data)
+        node = BNode(perf_data["measure"].iloc[0])
+        current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
+   
+        slope = Trend._detect(perf_data, current_measure_type)
 
         if not slope:
             return []
 
-        node = BNode(perf_data["measure"].iloc[0])
-        current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
-   
-        return [Trend._resource(slope, current_measure_type)]
+        return [Trend._resource(slope)]
 
     @staticmethod
     def last_three_periods_are_valid_and_consecutive(perf_data: pd.DataFrame):
@@ -73,23 +73,18 @@ class Trend(Signal):
         return True
 
     @classmethod
-    def _resource(cls, slope: float, current_measure_type: URIRef) -> Resource:
+    def _resource(cls, slope: float) -> Resource:
         """
         adds the performance trend slope, types it as positive or negative to the subgraph
 
         """
         base = super()._resource()
-        if current_measure_type == PSDO.desired_increase:
-            if slope > 0:
-                base.add(RDF.type, PSDO.positive_performance_trend_content)
-            elif slope < 0:
-                base.add(RDF.type, PSDO.negative_performance_trend_content)
-        elif current_measure_type == PSDO.desired_decrease:
-            if slope > 0:
-                base.add(RDF.type, PSDO.negative_performance_trend_content)
-            elif slope < 0:            
-                base.add(RDF.type, PSDO.positive_performance_trend_content)
-
+        
+        if slope > 0:
+            base.add(RDF.type, PSDO.positive_performance_trend_content)
+        elif slope < 0:
+            base.add(RDF.type, PSDO.negative_performance_trend_content)
+        
         base[SLOWMO.PerformanceTrendSlope] = Literal(slope)
 
         return base
@@ -112,7 +107,7 @@ class Trend(Signal):
         return mods
 
     @staticmethod
-    def _detect(perf_data: pd.DataFrame) -> float:
+    def _detect(perf_data: pd.DataFrame, current_measure_type: URIRef) -> float:
         """
         calcolates the slope of a monotonically increasing or decreasing trend over three month.
         """
@@ -127,4 +122,8 @@ class Trend(Signal):
         if change_this_month * change_last_month < 0:
             return 0
 
-        return (performance_rates.iloc[-1] - performance_rates.iloc[-3]) / 2
+        if current_measure_type == PSDO.desired_increase:
+            return (performance_rates.iloc[-1] - performance_rates.iloc[-3]) / 2
+        elif current_measure_type == PSDO.desired_decrease: 
+            return (performance_rates.iloc[-3] - performance_rates.iloc[-1]) / 2
+        return 0

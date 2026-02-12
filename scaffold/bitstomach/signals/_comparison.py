@@ -37,21 +37,21 @@ class Comparison(Signal):
             return []
 
         resources = []
-
-        gaps = Comparison._detect(perf_data, comparator_data)
-
+        
         node = BNode(perf_data["measure"].iloc[0])
         current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
+
+        gaps = Comparison._detect(perf_data, comparator_data, current_measure_type)        
         
         for key, (gap, comparator_value) in gaps.items():
-            r = Comparison._resource(gap, key, comparator_value, current_measure_type)
+            r = Comparison._resource(gap, key, comparator_value)
             resources.append(r)
 
         return resources
 
     @classmethod
     def _resource(
-        cls, gap: float, comparator_iri: str, comparator_value: float, current_measure_type: URIRef
+        cls, gap: float, comparator_iri: str, comparator_value: float
     ) -> Resource:
         """
         adds the performance gap size, types it as positive or negative and adds the comparator to the subgraph
@@ -61,21 +61,14 @@ class Comparison(Signal):
         # Add the signal node and value
         base.add(SLOWMO.PerformanceGapSize, Literal(gap))
         
-        if current_measure_type == PSDO.desired_increase:
-            base.add(
-                RDF.type,
-                PSDO.positive_performance_gap_content
-                if gap >= 0
-                else PSDO.negative_performance_gap_content,
-            )
-        elif current_measure_type == PSDO.desired_decrease:
-            base.add(
-                RDF.type,
-                PSDO.positive_performance_gap_content
-                if gap <= 0
-                else PSDO.negative_performance_gap_content,
-            )
-
+        
+        base.add(
+            RDF.type,
+            PSDO.positive_performance_gap_content
+            if gap >= 0
+            else PSDO.negative_performance_gap_content,
+        )
+        
         # Add the comparator
         c = base.graph.resource(BNode())
         c.set(RDF.type, URIRef(comparator_iri))
@@ -86,7 +79,7 @@ class Comparison(Signal):
         return base
 
     @staticmethod
-    def _detect(perf_data: pd.DataFrame, comparator_data: pd.DataFrame) -> dict:
+    def _detect(perf_data: pd.DataFrame, comparator_data: pd.DataFrame, current_measure_type: URIRef) -> dict:
         """Calculate gap from levels and comparators"""
 
         gaps: dict = {}
@@ -104,7 +97,10 @@ class Comparison(Signal):
                         )
                     ]["measureScore.rate"].iloc[0]                
                 )
-                gap = perf_data[-1:]["measureScore.rate"] - comparator_value
+                if current_measure_type == PSDO.desired_increase:
+                    gap = perf_data[-1:]["measureScore.rate"] - comparator_value
+                elif current_measure_type == PSDO.desired_decrease:
+                    gap = comparator_value - perf_data[-1:]["measureScore.rate"]
 
                 gaps[comparator_iri] = (gap.item(), comparator_value.item())
 

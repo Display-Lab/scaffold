@@ -5,6 +5,7 @@ from rdflib.resource import Resource
 
 from scaffold import context
 from scaffold.utils import SLOWMO
+from scaffold.utils.namespace._PSDO import PSDO
 
 
 def candidates(
@@ -126,6 +127,9 @@ def candidates_records(performer_graph: Graph) -> List[List]:
             "name",
             "acceptable_by",
             "selected",
+            "PerformanceGapSize",
+            "PerformanceTrendSlope",
+            "StreakLength"
         ]
     ]
 
@@ -153,5 +157,30 @@ def candidate_as_record(a_candidate: Resource) -> List:
     representation.append(a_candidate.value(SLOWMO.name))
     representation.append(a_candidate.value(SLOWMO.AcceptableBy))
     representation.append(bool(a_candidate.value(SLOWMO.Selected)))
+    PerformanceGapSize = ""
+    PerformanceTrendSlope = ""
+    StreakLength = ""
+    for signal in a_candidate[PSDO.motivating_information]: 
+        try:
+            PerformanceGapSize = str(round(signal.value(SLOWMO.PerformanceGapSize).value,4))
+        except Exception:
+            pass
+    
+    for signal in a_candidate[PSDO.motivating_information]: 
+        try:
+            PerformanceTrendSlope = str(round(signal.value(SLOWMO.PerformanceTrendSlope).value,4))
+        except Exception:
+            pass
+    
+    for signal in a_candidate[PSDO.motivating_information]: 
+        try:
+            StreakLength = str(round(signal.value(SLOWMO.StreakLength).value,4))
+        except Exception:
+            pass
+        
+    representation.append(PerformanceGapSize)
+    representation.append(PerformanceTrendSlope)
+    representation.append(StreakLength)
+        
 
     return representation
