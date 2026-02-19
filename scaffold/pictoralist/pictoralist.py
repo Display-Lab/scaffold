@@ -96,27 +96,31 @@ class Pictoralist:
         ## Change processing and graphing depending on comparator type:
         # Make changes based on peer 50th percentile benchmark being comparator message "is about"
         if self.comparator_type == "Peer Average":
-            self.performance_data["comparator_level"] = self.performance_data[
-                "http://purl.obolibrary.org/obo/PSDO_0000126"
-            ]  # Select which column of data to keep as the 'comparator_level'
+            if "http://purl.obolibrary.org/obo/PSDO_0000126" in self.performance_data.columns:
+                self.performance_data["comparator_level"] = self.performance_data[
+                    "http://purl.obolibrary.org/obo/PSDO_0000126"
+                ]  # Select which column of data to keep as the 'comparator_level'
 
         # Same as above, but for peer 75th percentile benchmark
         elif self.comparator_type == "Peer Top 25%":
-            self.performance_data["comparator_level"] = self.performance_data[
-                "http://purl.obolibrary.org/obo/PSDO_0000128"
-            ]
+            if "http://purl.obolibrary.org/obo/PSDO_0000128" in self.performance_data.columns:
+                self.performance_data["comparator_level"] = self.performance_data[
+                    "http://purl.obolibrary.org/obo/PSDO_0000128"
+                ]
 
         # Same as above, but for peer 90th percentile benchmark
         elif self.comparator_type == "Peer Top 10%":
-            self.performance_data["comparator_level"] = self.performance_data[
-                "http://purl.obolibrary.org/obo/PSDO_0000129"
-            ]
+            if "http://purl.obolibrary.org/obo/PSDO_0000129" in self.performance_data.columns:
+                self.performance_data["comparator_level"] = self.performance_data[
+                    "http://purl.obolibrary.org/obo/PSDO_0000129"
+                ]
 
         # Same as above, but for goal comparator messages
         else:
-            self.performance_data["comparator_level"] = self.performance_data[
-                "http://purl.obolibrary.org/obo/PSDO_0000094"
-            ]
+            if "http://purl.obolibrary.org/obo/PSDO_0000094" in self.performance_data.columns:
+                self.performance_data["comparator_level"] = self.performance_data[
+                    "http://purl.obolibrary.org/obo/PSDO_0000094"
+                ]
 
         ## Convert values in selected columns for further processing:
         self.performance_data["period.start"] = pd.to_datetime(
@@ -127,9 +131,11 @@ class Pictoralist:
             / self.performance_data["measureScore.denominator"]
             * 100.0
         )  # convert preformance ratio to percentage
-        self.performance_data["goal_percent"] = self.performance_data[
-            "http://purl.obolibrary.org/obo/PSDO_0000094"
-        ]  # convert MPOG goal ratio to percentage
+        
+        if "http://purl.obolibrary.org/obo/PSDO_0000094" in self.performance_data.columns:        
+            self.performance_data["goal_percent"] = self.performance_data[
+                "http://purl.obolibrary.org/obo/PSDO_0000094"
+            ]  # convert MPOG goal ratio to percentage
 
         ## Drop extraneous columns of current dataframe
         cols_to_keep = [

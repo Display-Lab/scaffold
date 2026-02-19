@@ -129,7 +129,8 @@ def candidates_records(performer_graph: Graph) -> List[List]:
             "selected",
             "PerformanceGapSize",
             "PerformanceTrendSlope",
-            "StreakLength"
+            "StreakLength",
+            "denominator"
         ]
     ]
 
@@ -181,6 +182,16 @@ def candidate_as_record(a_candidate: Resource) -> List:
     representation.append(PerformanceGapSize)
     representation.append(PerformanceTrendSlope)
     representation.append(StreakLength)
-        
+    
+    filtered = context.performance_df[
+        (context.performance_df["measure"] == str(a_candidate.value(SLOWMO.RegardingMeasure).identifier)) &
+        (context.performance_df["period.start"] == context.performance_month)
+    ]
+
+    if len(filtered) != 1:
+        raise ValueError(f"Expected exactly 1 row, found {len(filtered)}")
+
+    denominator = filtered.iloc[0]["measureScore.denominator"]
+    representation.append(int(denominator))    
 
     return representation
