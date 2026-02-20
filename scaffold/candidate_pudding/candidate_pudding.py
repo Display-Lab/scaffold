@@ -74,6 +74,9 @@ def acceptable_by(candidate: Resource):
     mi_dispositions = list(candidate[RO.has_disposition])
 
     pre_conditions = set(pathway[CPO_HAS_PRECONDITIONS])
+    
+    if not pre_conditions:
+        raise ValueError(f"The causal pathway {str(pathway.value(URIRef("http://schema.org/name")))} regarding which the candidate is created does not have preconditions defined.")
 
     dispositions = roles + mi_dispositions
 
