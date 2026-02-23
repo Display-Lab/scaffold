@@ -49,17 +49,17 @@ def test_no_trend_returns_none():
 ## Signal detection tests
 def test_trend_is_detected():
     slope = Trend._detect(
-        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [91], [92]])
+        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [91], [92]]), PSDO.desired_increase
     )
     assert slope == 1
 
     slope = Trend._detect(
-        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [94]])
+        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [94]]), PSDO.desired_increase
     )
     assert slope == 2
 
     slope = Trend._detect(
-        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [90], [92], [94]])
+        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [90], [92], [94]]), PSDO.desired_increase
     )
     assert slope == 2
 

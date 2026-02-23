@@ -261,7 +261,10 @@ def score_loss(
 
 
 def comparator_moderators(candidate, motivating_informations, signal: Signal):
-    comparator_type = candidate.value(SLOWMO.RegardingComparator).identifier
+    comparator = candidate.value(SLOWMO.RegardingComparator)
+    if str(comparator) == "None":
+        raise ValueError(f"A candidate is created using a message template which is regarding a comparator that is not defined in the Knowledge Base.")
+    comparator_type = comparator.identifier
 
     moderators = signal.moderators(motivating_informations)
 

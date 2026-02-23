@@ -8,10 +8,11 @@ import matplotlib
 import pandas as pd
 import requests
 from loguru import logger
-from rdflib import Graph
+from rdflib import RDF, Graph
 from requests_file import FileAdapter
 
 from scaffold.utils.graph_operations import manifest_to_graph
+from scaffold.utils.namespace._PSDO import PSDO
 from scaffold.utils.settings import settings
 from scaffold.utils.utils import set_logger
 
@@ -87,10 +88,26 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
                 subset=["measureScore.rate"]
             )
             
+            performance_measure_report["measureScore.denominator"] = pd.to_numeric(
+                performance_measure_report["measureScore.denominator"],
+                errors="coerce"
+            )
+            performance_measure_report = performance_measure_report.dropna(
+                subset=["measureScore.denominator"]
+            )
+            
             comparator_measure_report = pd.read_csv(
                 os.path.join(performance_data_path, "ComparatorMeasureReport.csv"),
                 parse_dates=["period.start", "period.end"],
             )
+            
+            # Filter comparator data based on defined comparators in the graph
+            comparator_uri_refs = list(base_graph.subjects(RDF.type, PSDO.comparator_content))
+            comparator_uri_strings = [str(u) for u in comparator_uri_refs]            
+            comparator_measure_report = comparator_measure_report[
+                comparator_measure_report["group.code"].isin(comparator_uri_strings)
+            ]
+            
             practitioner_role = pd.read_csv(
                 os.path.join(performance_data_path, "PractitionerRole.csv"),
                 dtype={"PractitionerRole.identifier": str},

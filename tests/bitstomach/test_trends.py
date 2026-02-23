@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
-from rdflib import RDF, BNode, Graph, Literal
+from rdflib import RDF, BNode, Graph, Literal, URIRef
 from rdflib.resource import Resource
 
 from scaffold import startup
@@ -47,34 +47,34 @@ def test_no_trend_returns_none(setup_base_graph):
 ## Signal detection tests
 def test_trend_is_detected():
     slope = Trend._detect(
-        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [91], [92]])
+        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [91], [92]]), PSDO.desired_increase
     )
     assert slope == 1
 
     slope = Trend._detect(
-        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [94]])
+        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [94]]), PSDO.desired_increase
     )
     assert slope == 2
 
     slope = Trend._detect(
-        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [90], [92], [94]])
+        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [90], [92], [94]]), PSDO.desired_increase
     )
     assert slope == 2
     
     slope = Trend._detect(
-        pd.DataFrame(columns=["measureScore.rate"], data=[[0.14], [0.12], [0.10]])
+        pd.DataFrame(columns=["measureScore.rate"], data=[[0.14], [0.12], [0.10]]), PSDO.desired_decrease
     )
-    assert pytest.approx(slope) == -0.02
+    assert pytest.approx(slope) == 0.02
 
     slope = Trend._detect(
-        pd.DataFrame(columns=["measureScore.rate"], data=[[0.10], [0.15], [0.20]])
+        pd.DataFrame(columns=["measureScore.rate"], data=[[0.10], [0.15], [0.20]]) , PSDO.desired_decrease
     )
-    assert pytest.approx(slope) == 0.05
+    assert pytest.approx(slope) == -0.05
 
     slope = Trend._detect(
-        pd.DataFrame(columns=["measureScore.rate"], data=[[0.10], [0.15], [0.10], [0.15], [0.20]])
+        pd.DataFrame(columns=["measureScore.rate"], data=[[0.10], [0.15], [0.10], [0.15], [0.20]]), PSDO.desired_decrease
     )
-    assert pytest.approx(slope) == 0.05
+    assert pytest.approx(slope) == -0.05
 
 
 def test_trend_as_resource():
@@ -87,7 +87,7 @@ def test_trend_as_resource():
             },
         )
     signal = Trend.detect(
-        df[df["measure"]=="BP01"]
+        df[df["measure"]=="BP01"], PSDO.desired_increase
     ).pop()
 
     assert isinstance(signal, Resource)
@@ -99,14 +99,14 @@ def test_trend_as_resource():
     assert signal.value(SLOWMO.PerformanceTrendSlope) == Literal(1.0)
 
     signal = Trend.detect(
-        df[df["measure"]=="BP02"]
+        df[df["measure"]=="BP02"], PSDO.desired_decrease
     ).pop()
 
     assert isinstance(signal, Resource)
 
     assert Trend.is_rdf_type_of(signal)
     # assert signal.value(RDF.type).identifier == PSDO.performance_trend_content
-    assert pytest.approx(signal.value(SLOWMO.PerformanceTrendSlope).value) == -0.02
+    assert pytest.approx(signal.value(SLOWMO.PerformanceTrendSlope).value) == 0.02
     
 
 def test_to_moderators_returns_dictionary():
@@ -131,32 +131,32 @@ def test_to_moderators_return_dictionary1():
 
 
 def test_resource_selects_pos_or_neg():
-    r = Trend._resource(3.0, PSDO.desired_increase)
+    r = Trend._resource(3.0)
     types = [t.identifier for t in list(r[RDF.type])]
     assert PSDO.positive_performance_trend_content in types
     assert PSDO.negative_performance_trend_content not in types
 
-    r = Trend._resource(-1.0, PSDO.desired_increase)
+    r = Trend._resource(-1.0)
     types = [t.identifier for t in list(r[RDF.type])]
     assert PSDO.positive_performance_trend_content not in types
     assert PSDO.negative_performance_trend_content in types
 
-    r = Trend._resource(0.0, PSDO.desired_increase)
+    r = Trend._resource(0.0)
     types = [t.identifier for t in list(r[RDF.type])]
     assert PSDO.positive_performance_trend_content not in types
     assert PSDO.negative_performance_trend_content not in types
     
-    r = Trend._resource(3.0, PSDO.desired_decrease)
-    types = [t.identifier for t in list(r[RDF.type])]
-    assert PSDO.negative_performance_trend_content in types
-    assert PSDO.positive_performance_trend_content not in types
-
-    r = Trend._resource(-1.0, PSDO.desired_decrease)
+    r = Trend._resource(3.0)
     types = [t.identifier for t in list(r[RDF.type])]
     assert PSDO.negative_performance_trend_content not in types
     assert PSDO.positive_performance_trend_content in types
 
-    r = Trend._resource(0.0, PSDO.desired_decrease)
+    r = Trend._resource(-1.0)
+    types = [t.identifier for t in list(r[RDF.type])]
+    assert PSDO.negative_performance_trend_content in types
+    assert PSDO.positive_performance_trend_content not in types
+
+    r = Trend._resource(0.0)
     types = [t.identifier for t in list(r[RDF.type])]
     assert PSDO.negative_performance_trend_content not in types
     assert PSDO.positive_performance_trend_content not in types
@@ -319,6 +319,13 @@ def test_partial_mock_with_patch_decorator(mock_detect: Mock):
             return isinstance(other, self.expected_type)
 
     mock_detect.return_value = 42.0
+    
+    g = Graph()
+    g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("BP01"),PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
+    g.add((BNode("BP02"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("BP02"),PSDO.has_desired_direction, Literal(str(PSDO.desired_decrease))))
+    startup.base_graph = g
 
     signal = Trend.detect(
         pd.DataFrame(
@@ -331,7 +338,7 @@ def test_partial_mock_with_patch_decorator(mock_detect: Mock):
         )
     )
 
-    mock_detect.assert_called_once_with(TypeMatcher(pd.DataFrame))
+    mock_detect.assert_called_once_with(TypeMatcher(pd.DataFrame),TypeMatcher(URIRef))
 
     assert signal[0].value(SLOWMO.PerformanceTrendSlope) == Literal(42.0)
 

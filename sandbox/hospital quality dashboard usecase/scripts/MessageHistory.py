@@ -1,4 +1,5 @@
 import argparse
+import os
 import time
 from datetime import datetime
 from pathlib import Path
@@ -14,7 +15,7 @@ start = time.time()
 parser = argparse.ArgumentParser(
     description="PerformanceMeasureReport generator for PractitionerRole."
 )
-parser.add_argument("--path", type=str, default="sandbox_data", help="Output path")
+parser.add_argument("--path", type=str, default="../data/tabular inputs", help="Output path")
 
 args = parser.parse_args()
 output_dir = Path(args.path)

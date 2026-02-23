@@ -188,7 +188,7 @@ def test_multiple_gap_values(perf_data, comparator_data):
 
     assert 3 == len(signals)
 
-    expected_gap_sizes = [0.04, -0.02,0.035]
+    expected_gap_sizes = [-0.04, 0.02,-0.035]
 
     for index, signal in enumerate(signals):
         v = signal.value(SLOWMO.PerformanceGapSize).value
@@ -315,7 +315,7 @@ def test_can_get_dispositions(perf_data, perf_info, comparator_data):
 def test_detect1(perf_data, comparator_data):
     BP01_perf_data = perf_data [perf_data["measure"] == "BP01"]
     BP01_comp_data = comparator_data [comparator_data["measure"] == "BP01"]
-    gaps: dict = Comparison._detect(BP01_perf_data[-1:], BP01_comp_data)
+    gaps: dict = Comparison._detect(BP01_perf_data[-1:], BP01_comp_data, PSDO.desired_increase)
 
     assert gaps["http://purl.obolibrary.org/obo/PSDO_0000129"][0] == pytest.approx(
         -0.01
