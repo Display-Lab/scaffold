@@ -45,7 +45,7 @@ def graph():
 
     performance_content = graph.resource(BNode("performance_content"))
     performance_content.set(RDF.type, PSDO.performance_content)
-    signal = Trend._resource(2.0, PSDO.desired_increase)
+    signal = Trend._resource(2.0)
     signal.add(SLOWMO.RegardingMeasure, measure)
     performance_content.add(PSDO.motivating_information, signal)
     graph += signal.graph
