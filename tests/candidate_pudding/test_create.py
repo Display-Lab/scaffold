@@ -49,7 +49,7 @@ def graph():
     performance_content = graph.resource(BNode("performance_content"))
     performance_content.set(RDF.type, PSDO.performance_content)
     signal = Comparison._resource(
-        -0.04, "http://purl.obolibrary.org/obo/PSDO_0000129", 0.94,PSDO.desired_increase
+        -0.04, "http://purl.obolibrary.org/obo/PSDO_0000129", 0.94
     )
     signal.add(SLOWMO.RegardingMeasure, measure)
     performance_content.add(PSDO.motivating_information, signal)
@@ -137,7 +137,7 @@ def test_add_motivating_information(graph):
     candidate = candidate_pudding.add_motivating_information(candidate)
     assert disposition_count == len(list(candidate[RO.has_disposition]))
 
-    signal = Trend._resource(-0.05,PSDO.desired_increase)
+    signal = Trend._resource(-0.05)
     signal.add(SLOWMO.RegardingMeasure, measure)
     graph.resource(BNode("performance_content")).add(
         PSDO.motivating_information, signal

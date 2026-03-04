@@ -71,7 +71,7 @@ detection_test_set = [
 @pytest.mark.parametrize("perf_level, expected, condition", detection_test_set)
 def test_trend__detect(perf_level: list, expected: float, condition: str):
     perf = pd.DataFrame({"measureScore.rate": perf_level})
-    slope = Trend._detect(perf)
+    slope = Trend._detect(perf,PSDO.desired_increase)
 
     assert slope == pytest.approx(expected), condition + " failed"
 
@@ -85,7 +85,7 @@ mods_test_set = [
 
 @pytest.mark.parametrize("slope, moderator, condition", mods_test_set)
 def test_trend_moderators(slope: float, moderator: float, condition):
-    signal = Trend._resource(slope,PSDO.desired_increase)
+    signal = Trend._resource(slope)
     mods = Trend.moderators([signal])[0]
 
     assert str(mods["trend_size"]) == str(moderator), condition + " failed"
