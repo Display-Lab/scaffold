@@ -24,6 +24,10 @@ message_templates/:
   - below_peer_average_decreasing.json
   - performance_improving_decreasing.json
   - getting_worse_decreasing.json
+  - reached_goal_decreasing.json
+  - achieved_peer_average_decreasing.json
+  - achieved_top_10_peer_benchmark_decreasing.json
+
 causal_pathways/: 
   - goal_approach.json
   - goal_gain.json

@@ -2,8 +2,9 @@ from typing import List, Optional
 
 import numpy as np
 import pandas as pd
-from rdflib import RDF, Literal
+from rdflib import RDF, BNode, Literal, URIRef
 from rdflib.resource import Resource
+from scaffold import startup
 
 from scaffold.bitstomach.signals import Comparison, Signal, Trend
 from scaffold.utils.namespace import PSDO, SLOWMO
@@ -11,7 +12,7 @@ from scaffold.utils.namespace import PSDO, SLOWMO
 
 class Achievement(Signal):
     signal_type = PSDO.achievement_content
-    measure_types = [PSDO.desired_increase]
+    measure_types = [PSDO.desired_increase, PSDO.desired_decrease]
     
     @staticmethod
     def detect(
@@ -43,6 +44,10 @@ class Achievement(Signal):
         ]
 
         achievement_signals = []
+        
+        node = BNode(perf_data["measure"].iloc[0])
+        current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
+
 
         for comparison_signal in positive_comparison_signals:
             previous_comparison_signal = next(
@@ -64,6 +69,7 @@ class Achievement(Signal):
                 perf_data,
                 comparison_signal.value(SLOWMO.RegardingComparator),
                 comparator_data,
+                current_measure_type
             )
 
             mi = Achievement._resource(
@@ -151,7 +157,7 @@ class Achievement(Signal):
 
     @staticmethod
     def _detect(
-        perf_data: pd.DataFrame, comparator: Resource, comparator_data: pd.DataFrame
+        perf_data: pd.DataFrame, comparator: Resource, comparator_data: pd.DataFrame, current_measure_type: URIRef
     ) -> float:
         """
         calculates the number of consecutive negative gaps prior to this months positive gap.
@@ -166,7 +172,11 @@ class Achievement(Signal):
             columns={"measureScore.rate": "comparator"}
         )
         merged = pd.merge(perf_data, comparator_values, on="period.start", how="left")
-        gaps = merged["measureScore.rate"] - merged["comparator"] 
+        
+        if current_measure_type == PSDO.desired_increase:
+            gaps = merged["measureScore.rate"] - merged["comparator"] 
+        elif current_measure_type == PSDO.desired_decrease:
+            gaps = merged["comparator"] - merged["measureScore.rate"]
 
         # find the number of consecutive negative gaps
         diff_reversed = gaps.values[:-1][::-1]
