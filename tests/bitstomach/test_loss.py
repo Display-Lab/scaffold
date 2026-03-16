@@ -24,6 +24,9 @@ def perf_data() -> pd.DataFrame:
         [True, 157, "BP01", "2022-08-01", 0.97, 100.0],
         [True, 157, "BP01", "2022-09-01", 0.96, 100.0],
         [True, 157, "BP01", "2022-10-01", 0.94, 100.0],
+        [True, 157, "BP02", "2022-08-01", 0.10, 100.0],
+        [True, 157, "BP02", "2022-09-01", 0.12, 100.0],
+        [True, 157, "BP02", "2022-10-01", 0.15, 100.0],
     ]
     df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
     df.attrs["performance_month"] = "2022-10-01"
@@ -31,6 +34,8 @@ def perf_data() -> pd.DataFrame:
     g = Graph()
     g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
     g.add((BNode("BP01"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
+    g.add((BNode("BP02"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("BP02"), PSDO.has_desired_direction, Literal(str(PSDO.desired_decrease))))
     startup.base_graph = g
     
     return df
@@ -57,6 +62,18 @@ def comparator_data() -> pd.DataFrame:
         ["BP01", "2022-10-01", 0.85, "http://purl.obolibrary.org/obo/PSDO_0000128"],
         ["BP01", "2022-10-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000129"],
         ["BP01", "2022-10-01", 0.95, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP02", "2022-08-01", 0.12, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP02", "2022-08-01", 0.11, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["BP02", "2022-08-01", 0.10, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["BP02", "2022-08-01", 0.13, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP02", "2022-09-01", 0.12, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP02", "2022-09-01", 0.11, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["BP02", "2022-09-01", 0.10, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["BP02", "2022-09-01", 0.13, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["BP02", "2022-10-01", 0.12, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["BP02", "2022-10-01", 0.11, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["BP02", "2022-10-01", 0.10, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["BP02", "2022-10-01", 0.13, "http://purl.obolibrary.org/obo/PSDO_0000094"],
     ]
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
 
@@ -125,7 +142,7 @@ def test_detect_handles_empty_datframe():
 
 
 def test_signal_properties(perf_data, comparator_data):
-    signals = Loss.detect(perf_data, comparator_data)
+    signals = Loss.detect(perf_data[perf_data["measure"] == "BP01"], comparator_data[comparator_data["measure"] == "BP01"])
     assert isinstance(signals[0], Resource)
 
     slope = signals[0].value(SLOWMO.PerformanceTrendSlope).value
@@ -140,8 +157,8 @@ def test_signal_properties(perf_data, comparator_data):
 
 perf_level_test_set = [
     (
-        [0.97, 0.96, 0.67],
-        [0.80, 0.85, 0.90, 0.95],
+        [0.97, 0.96, 0.67, 0.10, 0.12, 0.17],
+        [0.80, 0.85, 0.90, 0.95, 0.13, 0.14,0.15, 0.16],
         {
             PSDO.peer_average_comparator,
             PSDO.peer_75th_percentile_benchmark,
@@ -151,8 +168,8 @@ perf_level_test_set = [
         "loss all benchmarks",
     ),
     (
-        [0.99, 0.98, 0.67],
-        [0.95, 0.96, 0.99, 0.97],
+        [0.99, 0.98, 0.67, 0.10, 0.12, 0.17],
+        [0.95, 0.96, 0.99, 0.97, 0.13, 0.14,0.18, 0.16],
         {
             PSDO.peer_average_comparator,
             PSDO.peer_75th_percentile_benchmark,
@@ -161,25 +178,25 @@ perf_level_test_set = [
         "loss no peer_90th_percentile_benchmark",
     ),
     (
-        [0.97, 0.90, 0.67],
-        [0.80, 0.94, 0.96, 0.95],
+        [0.97, 0.90, 0.67, 0.10, 0.14, 0.17],
+        [0.80, 0.94, 0.96, 0.95, 0.15, 0.11,0.12, 0.13],
         {
             PSDO.peer_average_comparator,
         },
         "last month positive gap for peer_average_comparator",
     ),
     (
-        [0.97, 0.95, 0.81],
-        [0.80, 0.94, 0.965, 0.95],
+        [0.97, 0.95, 0.81, 0.10, 0.14, 0.16],
+        [0.80, 0.94, 0.965, 0.95, 0.17, 0.15,0.13, 0.14],
         {
             PSDO.peer_75th_percentile_benchmark,
             PSDO.goal_comparator_content,
         },
-        "last month positive gap for peer_average_comparator",
+        "last month positive gap for peer_75th_percentile_benchmark and goal_comparator_content",
     ),
     (
-        [0.67, 0.98, 0.97],
-        [0.80, 0.94, 0.965, 0.95],
+        [0.67, 0.98, 0.97, 0.10, 0.15, 0.14],
+        [0.80, 0.94, 0.965, 0.95, 0.13, 0.14,0.15, 0.16],
         set(),
         "no trend",
     ),
@@ -194,9 +211,17 @@ def test_detect_signal(
 ):
     perf_data2 = perf_data.assign(**{"measureScore.rate": perf_level})
 
-    comparator_data["measureScore.rate"] = comparator_values * 3
+    comparator_data["measureScore.rate"] = comparator_values[0:4] * 3+comparator_values[4:8] * 3
 
-    signals = Loss.detect(perf_data2, comparator_data)
+    signals = Loss.detect(perf_data2[perf_data2["measure"]=="BP01"], comparator_data[comparator_data["measure"]=="BP01"])
+
+    comparators = {
+        s.value(SLOWMO.RegardingComparator / RDF.type).identifier for s in signals
+    }
+
+    assert comparators == types, condition + " failed"
+    
+    signals = Loss.detect(perf_data2[perf_data2["measure"]=="BP02"], comparator_data[comparator_data["measure"]=="BP02"])
 
     comparators = {
         s.value(SLOWMO.RegardingComparator / RDF.type).identifier for s in signals
@@ -209,14 +234,14 @@ def test_detect(perf_data, comparator_data):
     g: Graph = Graph()
     comparator = g.resource(BNode())
     comparator[RDF.type] = PSDO.goal_comparator_content
-    streap_length = Loss._detect(perf_data, comparator, comparator_data)
+    streap_length = Loss._detect(perf_data[perf_data["measure"] == "BP01"], comparator, comparator_data[comparator_data["measure"] == "BP01"],PSDO.desired_increase)
     assert streap_length == 2
 
     new_row_perf = pd.DataFrame(
-        {"period.start": "2022-07-01", "measureScore.rate": [0.98]}
+        {"measure": "BP01","period.start": "2022-07-01", "measureScore.rate": [0.98]}
     )
     new_row_comp = pd.DataFrame(
-        {
+        {   "measure": "BP01",
             "period.start": "2022-07-01",
             "measureScore.rate": [0.95],
             "group.code": "http://purl.obolibrary.org/obo/PSDO_0000094",
@@ -225,14 +250,15 @@ def test_detect(perf_data, comparator_data):
     perf_data = pd.concat([new_row_perf, perf_data], ignore_index=True)
     comparator_data = pd.concat([new_row_comp, comparator_data], ignore_index=True)
 
-    streap_length = Loss._detect(perf_data, comparator, comparator_data)
+    streap_length = Loss._detect(perf_data[perf_data["measure"] == "BP01"], comparator, comparator_data[comparator_data["measure"] == "BP01"],PSDO.desired_increase)
     assert streap_length == 3
 
     new_row_perf = pd.DataFrame(
-        {"period.start": "2022-06-01", "measureScore.rate": [0.94]}
+        {"measure": "BP01","period.start": "2022-06-01", "measureScore.rate": [0.94]}
     )
     new_row_comp = pd.DataFrame(
         {
+            "measure": "BP01",
             "period.start": "2022-06-01",
             "measureScore.rate": [0.95],
             "group.code": "http://purl.obolibrary.org/obo/PSDO_0000094",
@@ -241,17 +267,59 @@ def test_detect(perf_data, comparator_data):
     perf_data = pd.concat([new_row_perf, perf_data], ignore_index=True)
     comparator_data = pd.concat([new_row_comp, comparator_data], ignore_index=True)
 
-    streap_length = Loss._detect(perf_data, comparator, comparator_data)
+    streap_length = Loss._detect(perf_data[perf_data["measure"] == "BP01"], comparator, comparator_data[comparator_data["measure"] == "BP01"],PSDO.desired_increase)
+    assert streap_length == 3    
+    
+    streap_length = Loss._detect(perf_data[perf_data["measure"] == "BP02"], comparator, comparator_data[comparator_data["measure"] == "BP02"],PSDO.desired_decrease)
+    assert streap_length == 2
+
+    new_row_perf = pd.DataFrame(
+        {"measure": "BP02","period.start": "2022-07-01", "measureScore.rate": [0.09]}
+    )
+    new_row_comp = pd.DataFrame(
+        {   "measure": "BP02",
+            "period.start": "2022-07-01",
+            "measureScore.rate": [0.10],
+            "group.code": "http://purl.obolibrary.org/obo/PSDO_0000094",
+        }
+    )
+    perf_data = pd.concat([new_row_perf, perf_data], ignore_index=True)
+    comparator_data = pd.concat([new_row_comp, comparator_data], ignore_index=True)
+
+    streap_length = Loss._detect(perf_data[perf_data["measure"] == "BP02"], comparator, comparator_data[comparator_data["measure"] == "BP02"],PSDO.desired_decrease)
+    assert streap_length == 3
+
+    new_row_perf = pd.DataFrame(
+        {"measure": "BP02","period.start": "2022-06-01", "measureScore.rate": [0.08]}
+    )
+    new_row_comp = pd.DataFrame(
+        {
+            "measure": "BP02",
+            "period.start": "2022-06-01",
+            "measureScore.rate": [0.07],
+            "group.code": "http://purl.obolibrary.org/obo/PSDO_0000094",
+        }
+    )
+    perf_data = pd.concat([new_row_perf, perf_data], ignore_index=True)
+    comparator_data = pd.concat([new_row_comp, comparator_data], ignore_index=True)
+
+    streap_length = Loss._detect(perf_data[perf_data["measure"] == "BP02"], comparator, comparator_data[comparator_data["measure"] == "BP02"],PSDO.desired_decrease)
     assert streap_length == 3
     pass
 
 
 def test_only_current_month_no_loss(perf_data, comparator_data):
     assert [] == Loss.detect(
-        perf_data[-2:], comparator_data
+        perf_data[perf_data["measure"] == "BP01"][-2:], comparator_data[comparator_data["measure"] == "BP01"]
     )  # Prior month but no trend
-    assert [] == Loss.detect(perf_data[-1:], comparator_data)  # only current month
-    assert [] != Loss.detect(perf_data[:], comparator_data)  # three months
+    assert [] == Loss.detect(perf_data[perf_data["measure"] == "BP01"][-1:], comparator_data[comparator_data["measure"] == "BP01"])  # only current month
+    assert [] != Loss.detect(perf_data[perf_data["measure"] == "BP01"][:], comparator_data[comparator_data["measure"] == "BP01"])  # three months
+    
+    assert [] == Loss.detect(
+        perf_data[perf_data["measure"] == "BP02"][-2:], comparator_data[comparator_data["measure"] == "BP02"]
+    )  # Prior month but no trend
+    assert [] == Loss.detect(perf_data[perf_data["measure"] == "BP02"][-1:], comparator_data[comparator_data["measure"] == "BP02"])  # only current month
+    assert [] != Loss.detect(perf_data[perf_data["measure"] == "BP02"][:], comparator_data[comparator_data["measure"] == "BP02"])  # three months
 
 
 def test_moderators_return_dictionary():
