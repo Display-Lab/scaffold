@@ -27,6 +27,11 @@ message_templates/:
   - reached_goal_decreasing.json
   - achieved_peer_average_decreasing.json
   - achieved_top_10_peer_benchmark_decreasing.json
+  - above_goal.json
+  - below_goal.json
+  - no_longer_top_performer_decreasing.json
+  - worsen_above_goal.json
+  - worsen_above_peer_average.json
 
 causal_pathways/: 
   - goal_approach.json
@@ -40,6 +45,7 @@ causal_pathways/:
   - social_loss.json
   - social_worse.json 
   - worsening.json
+  - goal_better.json
 performance_measures/: 
   - measures.json
 .: 

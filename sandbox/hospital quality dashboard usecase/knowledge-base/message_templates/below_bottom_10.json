@@ -69,7 +69,7 @@
     "schema:name": "Social Better"
   },
   "Name": {
-    "@value": "Below Bottom 10 Peer Benchmark"
+    "@value": "Below Bottom 10 Peer Benchmark (d)"
   },
   "Message text": [
     {
@@ -88,7 +88,7 @@
     "@value": "bar chart"
   },
   "schema:isBasedOn": "https://repo.metadatacenter.org/templates/707d3573-8ac9-4e2c-b53b-2026a795308c",
-  "schema:name": "Below Bottom 10 Peer Benchmark",
+  "schema:name": "Below Bottom 10 Peer Benchmark (d)",
   "schema:description": "specification for a possible precision feedback message",
   "pav:createdOn": "2025-01-14T12:10:12-08:00",
   "pav:createdBy": "https://metadatacenter.org/users/da882240-ad9e-42ea-a48b-215e54161ad3",
