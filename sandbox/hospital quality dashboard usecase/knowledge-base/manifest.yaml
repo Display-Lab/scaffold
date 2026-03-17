@@ -32,6 +32,9 @@ message_templates/:
   - no_longer_top_performer_decreasing.json
   - worsen_above_goal.json
   - worsen_above_peer_average.json
+  - approach_goal_decreasing.json
+  - approach_peer_average_decreasing.json
+  - approach_top_10_peer_benchmark_decreasing.json
 
 causal_pathways/: 
   - goal_approach.json
