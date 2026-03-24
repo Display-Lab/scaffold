@@ -5,9 +5,10 @@ from fastapi import HTTPException
 from loguru import logger
 from rdflib import BNode, Graph, Literal
 
-from scaffold import context, startup
+from scaffold import context
 from scaffold.bitstomach import bitstomach
 from scaffold.candidate_pudding import candidate_pudding
+from scaffold.context import get_preferences
 from scaffold.esteemer import esteemer, utils
 from scaffold.pictoralist.pictoralist import Pictoralist
 from scaffold.utils.namespace import PSDO, SLOWMO
@@ -47,20 +48,8 @@ def pipeline():
     # #Esteemer
     logger.debug("Calling Esteemer from main...")
 
-    measures: set[BNode] = set(
-        context.subject_graph.objects(
-            None, PSDO.motivating_information / SLOWMO.RegardingMeasure
-        )
-    )
-
-    for measure in measures:
-        candidates = utils.candidates(
-            context.subject_graph, filter_acceptable=True, measure=measure
-        )
-        for candidate in candidates:
-            esteemer.score(candidate, startup.mpm)
     selected_candidate = esteemer.select_candidate(context.subject_graph)
-    preferences = esteemer.get_preferences()
+    preferences = get_preferences()
  
     if preferences["Display_Format"] and selected_candidate:
         context.subject_graph.resource(selected_candidate)[SLOWMO.Display] = Literal(

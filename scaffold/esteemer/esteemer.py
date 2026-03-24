@@ -5,7 +5,7 @@ from typing import List
 from rdflib import XSD, BNode, Graph, Literal, URIRef
 from rdflib.resource import Resource
 
-from scaffold import context
+from scaffold import context, startup
 from scaffold.bitstomach.signals import (
     Achievement,
     Approach,
@@ -263,7 +263,9 @@ def score_loss(
 def comparator_moderators(candidate, motivating_informations, signal: Signal):
     comparator = candidate.value(SLOWMO.RegardingComparator)
     if str(comparator) == "None":
-        raise ValueError(f"A candidate is created using a message template which is regarding a comparator that is not defined in the Knowledge Base.")
+        raise ValueError(
+            "A candidate is created using a message template which is regarding a comparator that is not defined in the Knowledge Base."
+        )
     comparator_type = comparator.identifier
 
     moderators = signal.moderators(motivating_informations)
@@ -339,7 +341,7 @@ def score_preferences(candidate_resource: Resource, preferences: dict) -> float:
 
 def select_candidate(performer_graph: Graph) -> BNode:
     """
-    applies between measure business rules and selects the candidate based on scores.
+    scores candidates, applies between measure business rules and selects the candidate based on scores.
 
     Parameters:
     - performer_graph (Graph): The performer_graph .
@@ -347,6 +349,12 @@ def select_candidate(performer_graph: Graph) -> BNode:
     Returns:
     BNode: selected candidate.
     """
+
+    candidates = utils.candidates(performer_graph, filter_acceptable=True, measure=None)
+
+    for candidate in candidates:
+        score(candidate, startup.mpm)
+
     # 1. apply between measure business rules (future)
 
     # 2. select candidate
