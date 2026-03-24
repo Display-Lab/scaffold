@@ -349,8 +349,6 @@ def select_candidate(performer_graph: Graph) -> Resource:
     Returns:
     Resource: selected candidate.
     """
-    if not set(performer_graph[: SLOWMO.AcceptableBy :]):
-        return None
 
     candidates = utils.candidates(performer_graph, filter_acceptable=True, measure=None)
 

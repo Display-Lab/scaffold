@@ -23,33 +23,25 @@ def pipeline():
 
     # BitStomach
     logger.debug("Calling BitStomach from main...")
-
     g: Graph = bitstomach.extract_signals(performance_df)
 
     performance_content = g.resource(BNode("performance_content"))
     if len(list(performance_content[PSDO.motivating_information])) == 0:
-        context.subject_graph.close()
-        detail = {
-            "message": "Insufficient significant data found for providing feedback, process aborted.",
-            "subject": context.subject,
-        }
-        raise HTTPException(
-            status_code=400,
-            detail=detail,
-            headers={"400-Error": "Invalid Input Error"},
-        )
+        raise_error("Insufficient significant data found for providing feedback, process aborted. Detail: No motivating information found in the performance content.")
 
     context.subject_graph += g
 
     # candidate_pudding
     logger.debug("Calling candidate_pudding from main...")
     candidate_pudding.create_candidates()
-
-    # #Esteemer
-    logger.debug("Calling Esteemer from main...")
-
-    selected_candidate = esteemer.select_candidate(context.subject_graph)
     
+    if not set(context.subject_graph[: SLOWMO.AcceptableBy :]):
+        raise_error("Insufficient significant data found for providing feedback, process aborted. Detail: No acceptable candidates found after candidate creation.")
+       
+    # esteemer
+    logger.debug("Calling Esteemer from main...")
+    selected_candidate = esteemer.select_candidate(context.subject_graph)
+
     preferences = get_preferences()
  
     if preferences["Display_Format"] and selected_candidate:
@@ -57,7 +49,7 @@ def pipeline():
             preferences["Display_Format"]
         )
 
-    selected_message = utils.render(context.subject_graph, selected_candidate.identifier)
+    selected_message = utils.render(context.subject_graph, selected_candidate.identifier if selected_candidate else None)
 
     ### Pictoralist 2, now on the Nintendo DS: ###
     logger.debug("Calling Pictoralist from main...")
@@ -93,3 +85,15 @@ def pipeline():
     response.update(full_selected_message)
 
     return response
+
+def raise_error(message):
+    context.subject_graph.close()
+    detail = {
+            "message": message,
+            "subject": context.subject,
+        }
+    raise HTTPException(
+            status_code=400,
+            detail=detail,
+            headers={"400-Error": "Invalid Input Error"},
+        )
