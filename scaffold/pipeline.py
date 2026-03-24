@@ -49,14 +49,15 @@ def pipeline():
     logger.debug("Calling Esteemer from main...")
 
     selected_candidate = esteemer.select_candidate(context.subject_graph)
+    
     preferences = get_preferences()
  
     if preferences["Display_Format"] and selected_candidate:
-        context.subject_graph.resource(selected_candidate)[SLOWMO.Display] = Literal(
+        selected_candidate[SLOWMO.Display] = Literal(
             preferences["Display_Format"]
         )
 
-    selected_message = utils.render(context.subject_graph, selected_candidate)
+    selected_message = utils.render(context.subject_graph, selected_candidate.identifier)
 
     ### Pictoralist 2, now on the Nintendo DS: ###
     logger.debug("Calling Pictoralist from main...")

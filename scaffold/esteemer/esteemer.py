@@ -2,7 +2,7 @@ import random
 from datetime import datetime
 from typing import List
 
-from rdflib import XSD, BNode, Graph, Literal, URIRef
+from rdflib import XSD, Graph, Literal, URIRef
 from rdflib.resource import Resource
 
 from scaffold import context, startup
@@ -339,7 +339,7 @@ def score_preferences(candidate_resource: Resource, preferences: dict) -> float:
     )
 
 
-def select_candidate(performer_graph: Graph) -> BNode:
+def select_candidate(performer_graph: Graph) -> Resource:
     """
     scores candidates, applies between measure business rules and selects the candidate based on scores.
 
@@ -347,26 +347,24 @@ def select_candidate(performer_graph: Graph) -> BNode:
     - performer_graph (Graph): The performer_graph .
 
     Returns:
-    BNode: selected candidate.
+    Resource: selected candidate.
     """
+    if not set(performer_graph[: SLOWMO.AcceptableBy :]):
+        return None
 
     candidates = utils.candidates(performer_graph, filter_acceptable=True, measure=None)
 
     for candidate in candidates:
-        score(candidate, startup.mpm)
-
-    # 1. apply between measure business rules (future)
-
-    # 2. select candidate
-
-    # Find the max score
-    if not set(performer_graph[: SLOWMO.AcceptableBy :]):
-        return None
-
-    # filter acceptable candidates
-    candidates = utils.candidates(performer_graph, filter_acceptable=True)
+        score(candidate, startup.mpm)   
 
     # filter scored candidates
+    selected_candidate = select(candidates)
+
+    selected_candidate[SLOWMO.Selected] = Literal(True)
+
+    return selected_candidate
+
+def select(candidates:List[Resource]) -> Resource:
     candidates = [
         candidate
         for candidate in candidates
@@ -391,16 +389,13 @@ def select_candidate(performer_graph: Graph) -> BNode:
     )
 
     candidates_with_max_score = [
-        (candidate.identifier)
+        (candidate)
         for candidate in candidates
         if candidate.value(SLOWMO.Score).value == max_score
     ]
 
     # Randomly select one of the candidates with the known maximum score
     selected_candidate = random.choice(candidates_with_max_score)
-
-    performer_graph.add((selected_candidate, SLOWMO.Selected, Literal(True)))
-
     return selected_candidate
 
 
