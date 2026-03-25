@@ -1491,6 +1491,20 @@ files = [
 ]
 
 [[package]]
+name = "random-candidate-selector"
+version = "0.2.0"
+description = ""
+optional = false
+python-versions = ">=3.11,<4.0"
+files = [
+    {file = "random_candidate_selector-0.2.0-py3-none-any.whl", hash = "sha256:230400e95da582568c6007c36f80a3f9653d980d4a1cd01725f84c8de550cf23"},
+]
+
+[package.source]
+type = "url"
+url = "https://github.com/Display-Lab/knowledge-base/raw/refs/heads/main/prioritization_algorithms/random_candidate_selector/dist/random_candidate_selector-0.2.0-py3-none-any.whl"
+
+[[package]]
 name = "rdflib"
 version = "7.6.0"
 description = "RDFLib is a Python library for working with RDF, a simple yet powerful language for representing information."
@@ -1748,4 +1762,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12,<3.14"
-content-hash = "95949961504260b0384c8df0b47e63bc66ae85220d622bd3e4d30a8e819d4def"
+content-hash = "d74dd2dc8a41a8e3a9248ed94309d8090dff2972262ac767e99e3d954eb26dc1"

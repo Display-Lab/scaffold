@@ -14,6 +14,7 @@ from scaffold.pictoralist.pictoralist import Pictoralist
 from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
 from scaffold.utils.utils import merge_and_pivot, set_logger
+from random_candidate_selector import RandomCandidateSelector
 
 set_logger()
 
@@ -40,7 +41,8 @@ def pipeline():
        
     # esteemer
     logger.debug("Calling Esteemer from main...")
-    selected_candidate = esteemer.select_candidate(context.subject_graph)
+    # selected_candidate = esteemer.select_candidate(context.subject_graph)
+    selected_candidate = RandomCandidateSelector.select_candidate(context.subject_graph)
 
     preferences = get_preferences()
  

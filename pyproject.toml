@@ -22,6 +22,7 @@ typer = "^0.15.2"
 orjson = "^3.10.18"
 uvicorn = "^0.34.2"
 gunicorn = "^23.0.0"
+random-candidate-selector = {url = "https://github.com/Display-Lab/knowledge-base/raw/refs/heads/main/prioritization_algorithms/random_candidate_selector/dist/random_candidate_selector-0.2.0-py3-none-any.whl"}
 
 [tool.poetry.group.dev.dependencies]
 python-slugify = "^8.0.4"
