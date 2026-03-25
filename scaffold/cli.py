@@ -172,7 +172,7 @@ def batch_csv(
 
     logger.info(f"Successful: {success_count}, Failed: {failure_count}")
     analyse_responses()
-    if not stats_only:
+    if not stats_only and logger.at_least("INFO"):
         analyse_candidates(performance_data_path.parent / "messages" / "candidates.csv")
 
 
