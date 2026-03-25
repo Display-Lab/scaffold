@@ -229,15 +229,15 @@ def test_select_candidate():
     with patch("scaffold.esteemer.esteemer.score", return_value=None): # mock score method
         # get graph that has candidates scored by esteemer
         selected_candidate = esteemer.select_candidate(graph)
-        assert str(selected_candidate) in ["candidate1", "candidate2"]
-        assert str(selected_candidate) == "candidate1"
+        assert str(selected_candidate.identifier) in ["candidate1", "candidate2"]
+        assert str(selected_candidate.identifier) == "candidate1"
 
         candidate3 = graph.resource(BNode("candidate3"))
         candidate3[SLOWMO.Score] = Literal(0.2)
         candidate3[SLOWMO.AcceptableBy] = Literal("Social Worse")
         selected_candidate = esteemer.select_candidate(graph)
-        assert str(selected_candidate) in ["candidate1", "candidate3"]
-        assert graph.resource(selected_candidate).value(SLOWMO.Score) == Literal(0.2)
+        assert str(selected_candidate.identifier) in ["candidate1", "candidate3"]
+        assert graph.resource(selected_candidate.identifier).value(SLOWMO.Score) == Literal(0.2)
 
 
 def test_get_trend_info():
