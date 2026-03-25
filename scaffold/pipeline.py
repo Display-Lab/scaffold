@@ -5,14 +5,16 @@ from fastapi import HTTPException
 from loguru import logger
 from rdflib import BNode, Graph, Literal
 
-from scaffold import context, startup
+from scaffold import context
 from scaffold.bitstomach import bitstomach
 from scaffold.candidate_pudding import candidate_pudding
+from scaffold.context import get_preferences
 from scaffold.esteemer import esteemer, utils
 from scaffold.pictoralist.pictoralist import Pictoralist
 from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
 from scaffold.utils.utils import merge_and_pivot, set_logger
+from random_candidate_selector import RandomCandidateSelector
 
 set_logger()
 
@@ -22,52 +24,34 @@ def pipeline():
 
     # BitStomach
     logger.debug("Calling BitStomach from main...")
-
     g: Graph = bitstomach.extract_signals(performance_df)
 
     performance_content = g.resource(BNode("performance_content"))
     if len(list(performance_content[PSDO.motivating_information])) == 0:
-        context.subject_graph.close()
-        detail = {
-            "message": "Insufficient significant data found for providing feedback, process aborted.",
-            "subject": context.subject,
-        }
-        raise HTTPException(
-            status_code=400,
-            detail=detail,
-            headers={"400-Error": "Invalid Input Error"},
-        )
+        raise_error("Insufficient significant data found for providing feedback, process aborted. Detail: No motivating information found in the performance content.")
 
     context.subject_graph += g
 
     # candidate_pudding
     logger.debug("Calling candidate_pudding from main...")
     candidate_pudding.create_candidates()
-
-    # #Esteemer
+    
+    if not set(context.subject_graph[: SLOWMO.AcceptableBy :]):
+        raise_error("Insufficient significant data found for providing feedback, process aborted. Detail: No acceptable candidates found after candidate creation.")
+       
+    # esteemer
     logger.debug("Calling Esteemer from main...")
-
-    measures: set[BNode] = set(
-        context.subject_graph.objects(
-            None, PSDO.motivating_information / SLOWMO.RegardingMeasure
-        )
-    )
-
-    for measure in measures:
-        candidates = utils.candidates(
-            context.subject_graph, filter_acceptable=True, measure=measure
-        )
-        for candidate in candidates:
-            esteemer.score(candidate, startup.mpm)
     selected_candidate = esteemer.select_candidate(context.subject_graph)
-    preferences = esteemer.get_preferences()
+    # selected_candidate = RandomCandidateSelector.select_candidate(context.subject_graph)
+
+    preferences = get_preferences()
  
     if preferences["Display_Format"] and selected_candidate:
-        context.subject_graph.resource(selected_candidate)[SLOWMO.Display] = Literal(
+        selected_candidate[SLOWMO.Display] = Literal(
             preferences["Display_Format"]
         )
 
-    selected_message = utils.render(context.subject_graph, selected_candidate)
+    selected_message = utils.render(context.subject_graph, selected_candidate.identifier if selected_candidate else None)
 
     ### Pictoralist 2, now on the Nintendo DS: ###
     logger.debug("Calling Pictoralist from main...")
@@ -103,3 +87,15 @@ def pipeline():
     response.update(full_selected_message)
 
     return response
+
+def raise_error(message):
+    context.subject_graph.close()
+    detail = {
+            "message": message,
+            "subject": context.subject,
+        }
+    raise HTTPException(
+            status_code=400,
+            detail=detail,
+            headers={"400-Error": "Invalid Input Error"},
+        )
