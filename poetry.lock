@@ -314,16 +314,16 @@ description = "The original prioritization algorithm of SCAFFOLD used for MPOG t
 optional = false
 python-versions = ">=3.12,<3.14"
 files = [
-    {file = "esteemer-0.1.0-py3-none-any.whl", hash = "sha256:126647d16edb0d3678f65e3f3fe6ba371e4b8371c8b60769ed83585aa11cabca"},
+    {file = "esteemer-0.1.0-py3-none-any.whl", hash = "sha256:5fa07f60ed33a13f75af1989b4ae82acf07e83af59e6d12425c464efdc187e02"},
 ]
 
 [package.dependencies]
 random_candidate_selector = {url = "https://github.com/Display-Lab/knowledge-base/raw/refs/heads/main/prioritization_algorithms/random_candidate_selector/dist/random_candidate_selector-0.2.0-py3-none-any.whl"}
-scaffold = {path = "/home/faridsei/dev/code/scaffold/dist/scaffold-2.1-py3-none-any.whl"}
+scaffold = {url = "https://github.com/Display-Lab/scaffold/raw/refs/heads/main/dist/scaffold-2.1-py3-none-any.whl"}
 
 [package.source]
-type = "file"
-url = "../knowledge-base/prioritization_algorithms/esteemer/dist/esteemer-0.1.0-py3-none-any.whl"
+type = "url"
+url = "https://github.com/Display-Lab/knowledge-base/raw/refs/heads/main/prioritization_algorithms/esteemer/dist/esteemer-0.1.0-py3-none-any.whl"
 
 [[package]]
 name = "fastapi"
@@ -1780,4 +1780,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12,<3.14"
-content-hash = "fa74a53f1a41f40ac97c7d486a648ea6178583461ce5eeeab53be8456f9c5325"
+content-hash = "d0ce68182d25aa2def0905698e2c541b8906fa2840914c2e569e6738e74875e9"
