@@ -9,12 +9,13 @@ from scaffold import context
 from scaffold.bitstomach import bitstomach
 from scaffold.candidate_pudding import candidate_pudding
 from scaffold.context import get_preferences
-from scaffold.esteemer import esteemer, utils
 from scaffold.pictoralist.pictoralist import Pictoralist
 from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
-from scaffold.utils.utils import merge_and_pivot, set_logger
+from scaffold.utils.utils import merge_and_pivot, set_logger, render, candidates_records
 from random_candidate_selector import RandomCandidateSelector
+from esteemer.esteemer import select_candidate
+
 
 set_logger()
 
@@ -41,7 +42,8 @@ def pipeline():
        
     # esteemer
     logger.debug("Calling Esteemer from main...")
-    selected_candidate = esteemer.select_candidate(context.subject_graph)
+    selected_candidate = select_candidate(context.subject_graph)
+    # selected_candidate = esteemer.select_candidate(context.subject_graph)
     # selected_candidate = RandomCandidateSelector.select_candidate(context.subject_graph)
 
     preferences = get_preferences()
@@ -51,7 +53,7 @@ def pipeline():
             preferences["Display_Format"]
         )
 
-    selected_message = utils.render(context.subject_graph, selected_candidate.identifier if selected_candidate else None)
+    selected_message = render(context.subject_graph, selected_candidate.identifier if selected_candidate else None)
 
     ### Pictoralist 2, now on the Nintendo DS: ###
     logger.debug("Calling Pictoralist from main...")
@@ -82,7 +84,7 @@ def pipeline():
             "memory_info.rss": mem_info.rss / 1024 / 1024,
         }
 
-        response["candidates"] = utils.candidates_records(context.subject_graph)
+        response["candidates"] = candidates_records(context.subject_graph)
 
     response.update(full_selected_message)
 
