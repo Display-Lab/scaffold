@@ -14,13 +14,8 @@ from dotenv import load_dotenv
 
 class Esteemer(ABC):
     _instances = {}
-    preferences: pd.DataFrame = pd.DataFrame(
-        columns=["subject", "preference.json"], index=["subject"]
-    )
-    history: pd.DataFrame = pd.DataFrame(
-        columns=["subject", "period.start", "period.end", "history.json"],
-        index=["subject"],
-    )
+    preferences: None
+    history: None
     default_preferences = {}
     _env_loaded = False
 
@@ -43,6 +38,11 @@ class Esteemer(ABC):
                     dtype={"period.start": str},
                 )
                 cls.history.set_index("subject", inplace=True, drop=False)
+        else:
+            pd.DataFrame = pd.DataFrame(
+                columns=["subject", "period.start", "period.end", "history.json"],
+                index=["subject"],
+            )
 
     @classmethod
     def load_preferences(cls):
@@ -53,6 +53,10 @@ class Esteemer(ABC):
                     preferences_file, converters={"preferences": json.loads}
                 )
                 cls.preferences.set_index("subject", inplace=True, drop=False)
+        else:
+            pd.DataFrame = pd.DataFrame(
+                columns=["subject", "preference.json"], index=["subject"]
+            )
         if not cls.default_preferences:
             default_preferences_file = os.environ.get("default_preferences")
             se = requests.Session()

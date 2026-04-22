@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "scaffold"
-version = "2.1.1"
+version = "2.1.2"
 description = ""
 authors = ["Zach Landis-Lewis <zachll@umich.edu>"]
 readme = "README.md"
@@ -22,8 +22,8 @@ typer = "^0.15.2"
 orjson = "^3.10.18"
 uvicorn = "^0.34.2"
 gunicorn = "^23.0.0"
-mpm-prioritization = {url = "https://github.com/Display-Lab/knowledge-base/raw/refs/heads/main/prioritization_algorithms/mpm_prioritization/dist/mpm_prioritization-0.1.0-py3-none-any.whl"}
 dotenv = "^0.9.9"
+mpm-prioritization = {url = "https://github.com/Display-Lab/knowledge-base/raw/refs/heads/main/prioritization_algorithms/mpm_prioritization/dist/mpm_prioritization-0.2.0-py3-none-any.whl"}
 
 [tool.poetry.group.dev.dependencies]
 python-slugify = "^8.0.4"

@@ -711,20 +711,20 @@ files = [
 
 [[package]]
 name = "mpm-prioritization"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 optional = false
 python-versions = ">=3.12,<3.14"
 files = [
-    {file = "mpm_prioritization-0.1.0-py3-none-any.whl", hash = "sha256:c5711d57ae66120862a682834602304ea41a8cce6c1ec9089def53702fb42681"},
+    {file = "mpm_prioritization-0.2.0-py3-none-any.whl", hash = "sha256:927ab6ccadcab75e9a7e3d58b433fc292eb7627df3d3183f67d6c9b60bab5f5b"},
 ]
 
 [package.dependencies]
-scaffold = {url = "https://github.com/Display-Lab/scaffold/raw/refs/heads/main/dist/scaffold-2.1-py3-none-any.whl?i=2"}
+scaffold = {url = "https://github.com/Display-Lab/scaffold/raw/refs/heads/main/dist/scaffold-2.1.1-py3-none-any.whl"}
 
 [package.source]
 type = "url"
-url = "https://github.com/Display-Lab/knowledge-base/raw/refs/heads/main/prioritization_algorithms/mpm_prioritization/dist/mpm_prioritization-0.1.0-py3-none-any.whl"
+url = "https://github.com/Display-Lab/knowledge-base/raw/refs/heads/main/prioritization_algorithms/mpm_prioritization/dist/mpm_prioritization-0.2.0-py3-none-any.whl"
 
 [[package]]
 name = "numpy"
@@ -1792,4 +1792,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12,<3.14"
-content-hash = "2332cfcb5aba5e564faa586a6a5809ad85ab96837cb028e4c550b9a11a3390de"
+content-hash = "8b9fcb00c8bac1087572acccb267cb11a5bfc79c8dc32cb718fd86a6b1c07e13"
