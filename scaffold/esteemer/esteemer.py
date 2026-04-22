@@ -14,8 +14,8 @@ from dotenv import load_dotenv
 
 class Esteemer(ABC):
     _instances = {}
-    preferences: None
-    history: None
+    preferences = None
+    history = None
     default_preferences = {}
     _env_loaded = False
 
