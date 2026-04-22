@@ -308,6 +308,19 @@ files = [
 typing-extensions = {version = ">=4.10.0", markers = "python_full_version >= \"3.10\" and python_full_version < \"3.13\""}
 
 [[package]]
+name = "dotenv"
+version = "0.9.9"
+description = "Deprecated package"
+optional = false
+python-versions = "*"
+files = [
+    {file = "dotenv-0.9.9-py2.py3-none-any.whl", hash = "sha256:29cf74a087b31dafdb5a446b6d7e11cbce8ed2741540e2339c69fbef92c94ce9"},
+]
+
+[package.dependencies]
+python-dotenv = "*"
+
+[[package]]
 name = "fastapi"
 version = "0.115.14"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -695,6 +708,23 @@ files = [
     {file = "mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"},
     {file = "mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"},
 ]
+
+[[package]]
+name = "mpm-prioritization"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = ">=3.12,<3.14"
+files = [
+    {file = "mpm_prioritization-0.1.0-py3-none-any.whl", hash = "sha256:c5711d57ae66120862a682834602304ea41a8cce6c1ec9089def53702fb42681"},
+]
+
+[package.dependencies]
+scaffold = {url = "https://github.com/Display-Lab/scaffold/raw/refs/heads/main/dist/scaffold-2.1-py3-none-any.whl?i=2"}
+
+[package.source]
+type = "url"
+url = "https://github.com/Display-Lab/knowledge-base/raw/refs/heads/main/prioritization_algorithms/mpm_prioritization/dist/mpm_prioritization-0.1.0-py3-none-any.whl"
 
 [[package]]
 name = "numpy"
@@ -1381,6 +1411,20 @@ files = [
 ]
 
 [[package]]
+name = "python-dotenv"
+version = "1.2.2"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+optional = false
+python-versions = ">=3.10"
+files = [
+    {file = "python_dotenv-1.2.2-py3-none-any.whl", hash = "sha256:1d8214789a24de455a8b8bd8ae6fe3c6b69a5e3d64aa8a8e5d68e694bbcb285a"},
+    {file = "python_dotenv-1.2.2.tar.gz", hash = "sha256:2c371a91fbd7ba082c2c1dc1f8bf89ca22564a087c2c287cd9b662adde799cf3"},
+]
+
+[package.extras]
+cli = ["click (>=5.0)"]
+
+[[package]]
 name = "python-slugify"
 version = "8.0.4"
 description = "A Python slugify application that also handles Unicode"
@@ -1489,20 +1533,6 @@ files = [
     {file = "pyyaml-6.0.3-cp39-cp39-win_amd64.whl", hash = "sha256:2e71d11abed7344e42a8849600193d15b6def118602c4c176f748e4583246007"},
     {file = "pyyaml-6.0.3.tar.gz", hash = "sha256:d76623373421df22fb4cf8817020cbb7ef15c725b9d5e45f17e189bfc384190f"},
 ]
-
-[[package]]
-name = "random-candidate-selector"
-version = "0.2.0"
-description = ""
-optional = false
-python-versions = ">=3.11,<4.0"
-files = [
-    {file = "random_candidate_selector-0.2.0-py3-none-any.whl", hash = "sha256:230400e95da582568c6007c36f80a3f9653d980d4a1cd01725f84c8de550cf23"},
-]
-
-[package.source]
-type = "url"
-url = "https://github.com/Display-Lab/knowledge-base/raw/refs/heads/main/prioritization_algorithms/random_candidate_selector/dist/random_candidate_selector-0.2.0-py3-none-any.whl"
 
 [[package]]
 name = "rdflib"
@@ -1762,4 +1792,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12,<3.14"
-content-hash = "d74dd2dc8a41a8e3a9248ed94309d8090dff2972262ac767e99e3d954eb26dc1"
+content-hash = "2332cfcb5aba5e564faa586a6a5809ad85ab96837cb028e4c550b9a11a3390de"

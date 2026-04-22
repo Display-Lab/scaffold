@@ -13,8 +13,9 @@ from scaffold.pictoralist.pictoralist import Pictoralist
 from scaffold.utils.namespace import PSDO, SLOWMO
 from scaffold.utils.settings import settings
 from scaffold.utils.utils import merge_and_pivot, set_logger, render, candidates_records
-from random_candidate_selector import RandomCandidateSelector
+# from random_candidate_selector import RandomCandidateSelector
 # from esteemer.esteemer import select_candidate
+from mpm_prioritization.mpm_prioritization_algorithm import MPM_prioritization_algorithm
 
 
 set_logger()
@@ -42,9 +43,9 @@ def pipeline():
        
     # esteemer
     logger.debug("Calling Esteemer from main...")
-    # selected_candidate = select_candidate(context.subject_graph)
+    selected_candidate = MPM_prioritization_algorithm(context.performance_month,context.subject).select_candidate(context.subject_graph)
     # selected_candidate = esteemer.select_candidate(context.subject_graph)
-    selected_candidate = RandomCandidateSelector.select_candidate(context.subject_graph)
+    # selected_candidate = RandomCandidateSelector.select_candidate(context.subject_graph)
 
     preferences = get_preferences()
  

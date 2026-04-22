@@ -8,6 +8,8 @@ import requests
 from rdflib import Graph
 from rdflib.resource import Resource
 from requests_file import FileAdapter
+from dotenv import load_dotenv
+
 
 
 class Esteemer(ABC):
@@ -20,6 +22,7 @@ class Esteemer(ABC):
         index=["subject"],
     )
     default_preferences = {}
+    _env_loaded = False
 
     @abstractmethod
     def score(self, candidate: Resource):
@@ -32,7 +35,7 @@ class Esteemer(ABC):
     @classmethod
     def load_history(cls):
         if cls.history is None:
-            history_file = os.environ.get("hostoty")
+            history_file = os.environ.get("history")
             if os.path.exists(history_file):
                 cls.history = pd.read_csv(
                     history_file,
@@ -59,8 +62,16 @@ class Esteemer(ABC):
             cls.default_preferences = {
                 k.lower(): v for k, v in default_preferences_original_dict.items()
             }
+            
+    @classmethod
+    def _ensure_env_loaded(cls):
+        if not cls._env_loaded:
+            load_dotenv(os.environ.get("ENV_PATH"))
+            cls._env_loaded = True
 
     def __new__(cls, *args, **kwargs):
+        cls._ensure_env_loaded()
+        
         if cls not in cls._instances:
             instance = super().__new__(cls)
             cls.load_history()
