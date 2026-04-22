@@ -34,7 +34,7 @@ class Esteemer(ABC):
             if os.path.exists(history_file):
                 cls.history = pd.read_csv(
                     history_file,
-                    converters={"history.json": json.loads},
+                    converters={"history": json.loads},
                     dtype={"period.start": str},
                 )
                 cls.history.set_index("subject", inplace=True, drop=False)
