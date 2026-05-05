@@ -6,10 +6,10 @@ import pytest
 from rdflib import RDF, BNode, Graph, Literal
 from rdflib.resource import Resource
 
-from scaffold import startup
-from scaffold import context
-from scaffold.bitstomach.signals import Comparison
-from scaffold.utils.namespace import PSDO, SLOWMO
+from src import startup
+from src import context
+from src.bitstomach.signals import Comparison
+from src.utils.namespace import PSDO, SLOWMO
 
 
 @pytest.fixture
