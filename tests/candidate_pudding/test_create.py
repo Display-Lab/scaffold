@@ -2,9 +2,9 @@ import pytest
 from rdflib import RDF, XSD, BNode, Graph, Literal, URIRef
 from rdflib.resource import Resource
 
-from scaffold.bitstomach.signals import Comparison, Trend
-from scaffold.candidate_pudding import candidate_pudding
-from scaffold.utils.namespace import IAO, PSDO, RO, SLOWMO
+from src.bitstomach.signals import Comparison, Trend
+from src.candidate_pudding import candidate_pudding
+from src.utils.namespace import IAO, PSDO, RO, SLOWMO
 
 
 @pytest.fixture

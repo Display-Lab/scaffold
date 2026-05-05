@@ -6,9 +6,9 @@ import pytest
 from rdflib import RDF, BNode, Graph, Literal, URIRef
 from rdflib.resource import Resource
 
-from scaffold import startup
-from scaffold.bitstomach.signals import Comparison, Trend
-from scaffold.utils import PSDO, SLOWMO
+from src import startup
+from src.bitstomach.signals import Comparison, Trend
+from src.utils import PSDO, SLOWMO
 @pytest.fixture
 def setup_base_graph():
     g = Graph()

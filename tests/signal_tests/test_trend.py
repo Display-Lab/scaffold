@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
 
-from scaffold.bitstomach.signals import Trend
-from scaffold.utils.namespace._PSDO import PSDO
+from src.bitstomach.signals import Trend
+from src.utils.namespace._PSDO import PSDO
 
 
 def message() -> dict:
