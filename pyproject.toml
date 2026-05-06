@@ -31,8 +31,6 @@ dev = [
   "python-slugify>=8.0.4,<9.0.0",
   "decoy>=2.1.2,<3.0.0",
   "poethepoet>=0.34.0,<1.0.0",
-  "ruff>=0.11.6,<1.0.0",
-  "pytest>=8.3.5,<9.0.0"
 ]
 
 [tool.setuptools.packages.find]
@@ -55,3 +53,9 @@ ruff = [
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "ruff>=0.15.12",
+]
