@@ -1,7 +1,7 @@
 from rdflib import RDF, BNode, Graph
 
-from scaffold.bitstomach.signals import Comparison, Signal, Trend
-from scaffold.utils.namespace import PSDO, SLOWMO
+from src.bitstomach.signals import Comparison, Signal, Trend
+from src.utils.namespace import PSDO, SLOWMO
 
 
 def test_is_rdf_type_of():

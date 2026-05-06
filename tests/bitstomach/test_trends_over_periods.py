@@ -3,11 +3,11 @@ import pytest
 from rdflib import RDF, BNode, Graph, Literal
 from rdflib.resource import Resource
 
-from scaffold import startup
-from scaffold.bitstomach.signals import Trend
-from scaffold.utils import SLOWMO
-from scaffold.utils.namespace._PSDO import PSDO
-from scaffold.utils.settings import settings
+from src import startup
+from src.bitstomach.signals import Trend
+from src.utils import SLOWMO
+from src.utils.namespace._PSDO import PSDO
+from src.utils.settings import settings
 
 g = Graph()
 g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))

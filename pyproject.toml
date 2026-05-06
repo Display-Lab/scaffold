@@ -1,47 +1,57 @@
-[tool.poetry]
+[project]
 name = "scaffold"
 version = "2.1.4"
 description = ""
-authors = ["Zach Landis-Lewis <zachll@umich.edu>"]
 readme = "README.md"
-packages = [{ include = "scaffold" }]
+authors = [
+  { name = "Zach Landis-Lewis", email = "zachll@umich.edu" }
+]
+requires-python = ">=3.12,<3.14"
 
+dependencies = [
+  "pandas>=2.2.3,<3.0.0",
+  "fastapi>=0.115.12,<1.0.0",
+  "rdflib>=7.1.4,<8.0.0",
+  "matplotlib>=3.10.1,<4.0.0",
+  "psutil>=7.0.0,<8.0.0",
+  "loguru>=0.7.3,<1.0.0",
+  "requests-file>=2.1.0,<3.0.0",
+  "python-decouple>=3.8,<4.0.0",
+  "pyyaml>=6.0.2,<7.0.0",
+  "typer>=0.15.2,<1.0.0",
+  "orjson>=3.10.18,<4.0.0",
+  "uvicorn>=0.34.2,<1.0.0",
+  "gunicorn>=23.0.0,<24.0.0",
+  "dotenv>=0.9.9,<1.0.0",
 
-[tool.poetry.dependencies]
-python = "^3.12,<3.14"
-pandas = "^2.2.3"
-fastapi = "^0.115.12"
-rdflib = "^7.1.4"
-matplotlib = "^3.10.1"
-psutil = "^7.0.0"
-loguru = "^0.7.3"
-requests-file = "^2.1.0"
-python-decouple = "^3.8"
-pyyaml = "^6.0.2"
-typer = "^0.15.2"
-orjson = "^3.10.18"
-uvicorn = "^0.34.2"
-gunicorn = "^23.0.0"
-dotenv = "^0.9.9"
-mpm-prioritization = {url = "https://github.com/Display-Lab/knowledge-base/raw/refs/heads/main/prioritization_algorithms/mpm_prioritization/dist/mpm_prioritization-0.2.3-py3-none-any.whl"}
+]
 
-[tool.poetry.group.dev.dependencies]
-python-slugify = "^8.0.4"
-decoy = "^2.1.2"
-poethepoet = "^0.34.0"
-ruff = "^0.11.6"
-pytest = "^8.3.5"
+[project.optional-dependencies]
+dev = [
+  "python-slugify>=8.0.4,<9.0.0",
+  "decoy>=2.1.2,<3.0.0",
+  "poethepoet>=0.34.0,<1.0.0",
+  "ruff>=0.11.6,<1.0.0",
+  "pytest>=8.3.5,<9.0.0"
+]
 
-[tool.poetry.scripts]
-pipeline = "scaffold.cli:cli"
+[tool.setuptools.packages.find]
+include  = ["src*"]
 
+[project.scripts]
+pipeline = "src.cli:cli"
+
+# keep your existing tool configs
 [tool.ruff.lint]
-extend-select = ["I", "C901"] # sort imports 
+extend-select = ["I", "C901"]
 mccabe.max-complexity = 5
 
 [tool.poe.tasks]
-ruff = [{ cmd = "ruff check --fix --exit-zero" }, { cmd = "ruff format" }]
+ruff = [
+  { cmd = "ruff check --fix --exit-zero" },
+  { cmd = "ruff format" }
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

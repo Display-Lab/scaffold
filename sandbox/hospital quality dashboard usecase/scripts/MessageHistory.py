@@ -7,8 +7,8 @@ from pathlib import Path
 import pandas as pd
 
 # os.environ["ENV_PATH"] = "...." # set this if you are debugging this script 
-from scaffold import context, startup
-from scaffold import pipeline as p
+from src import context, startup
+from src import pipeline as p
 
 start = time.time()
 

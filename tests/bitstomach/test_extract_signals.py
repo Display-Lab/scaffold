@@ -4,9 +4,9 @@ import json
 import pandas as pd
 from rdflib import RDF, BNode, Graph, Literal
 
-from scaffold import context, startup
-from scaffold.bitstomach import bitstomach
-from scaffold.utils.namespace import PSDO
+from src import context, startup
+from src.bitstomach import bitstomach
+from src.utils.namespace import PSDO
 import pytest
 
 COLUMNS = [
