@@ -26,29 +26,15 @@ dependencies = [
 
 ]
 
-[project.optional-dependencies]
-dev = [
-  "python-slugify>=8.0.4,<9.0.0",
-  "decoy>=2.1.2,<3.0.0",
-  "poethepoet>=0.34.0,<1.0.0",
-]
-
 [tool.setuptools.packages.find]
 include  = ["src*"]
 
 [project.scripts]
 pipeline = "src.cli:cli"
 
-# keep your existing tool configs
 [tool.ruff.lint]
 extend-select = ["I", "C901"]
 mccabe.max-complexity = 5
-
-[tool.poe.tasks]
-ruff = [
-  { cmd = "ruff check --fix --exit-zero" },
-  { cmd = "ruff format" }
-]
 
 [build-system]
 requires = ["setuptools", "wheel"]
@@ -58,4 +44,6 @@ build-backend = "setuptools.build_meta"
 dev = [
     "pytest>=8.4.2",
     "ruff>=0.15.12",
+    "python-slugify>=8.0.4,<9.0.0",
+    "decoy>=2.1.2,<3.0.0",
 ]
