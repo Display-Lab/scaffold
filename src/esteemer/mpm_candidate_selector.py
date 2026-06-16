@@ -1,9 +1,17 @@
+import ast
+import csv
+import json
+import os
 import random
 from datetime import datetime
+from io import StringIO
 from typing import List
 
+import pandas as pd
+import requests
 from rdflib import XSD, Graph, Literal, URIRef
 from rdflib.resource import Resource
+from requests_file import FileAdapter
 
 from src.bitstomach.signals import (
     Achievement,
@@ -13,48 +21,55 @@ from src.bitstomach.signals import (
     Signal,
     Trend,
 )
-from src.esteemer.utils import load_mpm_from_env
-from src.utils import utils
 from src.esteemer.esteemer import Esteemer
 from src.esteemer.signals import History
+from src.utils import utils
 from src.utils.namespace import PSDO, SLOWMO
 from src.utils.settings import settings
 
 
+class MPM_candidate_selector(Esteemer):
+    def _initialize(self):
+        self.preferences, self.default_preferences = self._load_preferences()
+        self.history = self._load_history()
+        self.mpm = self._load_mpm_from_env()
 
-
-class MPM_prioritization_algorithm(Esteemer):
-    def __new__(cls, *args, **kwargs):
-        instance = super().__new__(cls, *args, **kwargs)
-        if not hasattr(instance, 'mpm'):
-            instance.mpm = load_mpm_from_env()
-        return instance
-
-    # def __init__(self, performance_month, subject):
-    #     super().__init__(performance_month, subject)
-
-
-    def score(self, candidate: Resource) -> Resource:
+    def _score(self, candidate: Resource) -> Resource:
         """
         Calculates score for a candidate.
         """
         # Get subject from candidate
-        history = self.get_history(self.subject) 
-        preferences = self.get_preferences(self.subject)["Message_Format"]
+        history = self._get_history(self.subject)
+        preferences = self._get_preferences(self.subject)["Message_Format"]
 
         CAUSAL_PATHWAY = {
-            "Social Better": {"score": self._score_better, "rules": self._rule_social_highest},
+            "Social Better": {
+                "score": self._score_better,
+                "rules": self._rule_social_highest,
+            },
             "Social Worse": {"score": self._score_worse, "rules": self._null_rule},
             "Improving": {"score": self._score_improving, "rules": self._null_rule},
             "Worsening": {"score": self._score_worsening, "rules": self._null_rule},
             "Goal Gain": {"score": self._score_gain, "rules": self._null_rule},
             "Goal Loss": {"score": self._score_loss, "rules": self._null_rule},
-            "Social Gain": {"score": self._score_gain, "rules": self._rule_social_highest},
-            "Social Loss": {"score": self._score_loss, "rules": self._rule_social_lowest},
+            "Social Gain": {
+                "score": self._score_gain,
+                "rules": self._rule_social_highest,
+            },
+            "Social Loss": {
+                "score": self._score_loss,
+                "rules": self._rule_social_lowest,
+            },
             "Goal Worse": {"score": self._score_worse, "rules": self._null_rule},
-            "Goal Better": {"score": self._score_better, "rules": self._rule_social_highest},
+            "Goal Better": {
+                "score": self._score_better,
+                "rules": self._rule_social_highest,
+            },
             "Goal Approach": {"score": self._score_approach, "rules": self._null_rule},
-            "Social Approach": {"score": self._score_approach, "rules": self._rule_social_lowest},
+            "Social Approach": {
+                "score": self._score_approach,
+                "rules": self._rule_social_lowest,
+            },
         }
 
         causal_pathway = candidate.value(SLOWMO.AcceptableBy).value
@@ -66,22 +81,32 @@ class MPM_prioritization_algorithm(Esteemer):
             return None
 
         if settings.use_mi:
-            mi_score = score_mi(candidate, motivating_informations, self.mpm[causal_pathway])
+            mi_score = score_mi(
+                candidate, motivating_informations, self.mpm[causal_pathway]
+            )
         else:
             mi_score = 0.0
 
         candidate[URIRef("motivating_score")] = Literal(mi_score, datatype=XSD.double)
 
-        history_score = self._score_history(candidate, history, self.mpm[causal_pathway])
+        history_score = self._score_history(
+            candidate, history, self.mpm[causal_pathway]
+        )
         candidate[URIRef("history_score")] = Literal(history_score, datatype=XSD.double)
 
         preference_score = self._score_preferences(candidate, preferences)
-        candidate[URIRef("preference_score")] = Literal(preference_score, datatype=XSD.double)
+        candidate[URIRef("preference_score")] = Literal(
+            preference_score, datatype=XSD.double
+        )
 
         coachiness_score = self.mpm[causal_pathway]["coachiness"]
-        candidate[URIRef("coachiness_score")] = Literal(coachiness_score, datatype=XSD.double)
+        candidate[URIRef("coachiness_score")] = Literal(
+            coachiness_score, datatype=XSD.double
+        )
 
-        final_calculated_score = self._final_score(mi_score, history_score, preference_score)
+        final_calculated_score = self._final_score(
+            mi_score, history_score, preference_score
+        )
         candidate[SLOWMO.Score] = Literal(final_calculated_score, datatype=XSD.double)
         return candidate
 
@@ -89,9 +114,11 @@ class MPM_prioritization_algorithm(Esteemer):
         """
         Scores candidates, applies business rules, and selects the best candidate.
         """
-        candidates = utils.candidates(performer_graph, filter_acceptable=True, measure=None)
+        candidates = utils.candidates(
+            performer_graph, filter_acceptable=True, measure=None
+        )
         for candidate in candidates:
-            self.score(candidate)
+            self._score(candidate)
         selected_candidate = self._select(candidates)
         selected_candidate[SLOWMO.Selected] = Literal(True)
         return selected_candidate
@@ -101,8 +128,12 @@ class MPM_prioritization_algorithm(Esteemer):
         score = m * 1 + h * 2 + p * 1.3
         return round(score, 2)
 
-    def _score_better(self, candidate: Resource, motivating_informations: List[Resource], mpm: dict) -> float:
-        moderators = self._comparator_moderators(candidate, motivating_informations, Comparison)
+    def _score_better(
+        self, candidate: Resource, motivating_informations: List[Resource], mpm: dict
+    ) -> float:
+        moderators = self._comparator_moderators(
+            candidate, motivating_informations, Comparison
+        )
         return moderators["comparison_size"]
 
     def _null_rule(self, candidate):
@@ -118,7 +149,9 @@ class MPM_prioritization_algorithm(Esteemer):
             )
             return not any(
                 (
-                    candid[SLOWMO.RegardingComparator : PSDO.peer_90th_percentile_benchmark]
+                    candid[
+                        SLOWMO.RegardingComparator : PSDO.peer_90th_percentile_benchmark
+                    ]
                     or candid[
                         SLOWMO.RegardingComparator : PSDO.peer_75th_percentile_benchmark
                     ]
@@ -170,43 +203,65 @@ class MPM_prioritization_algorithm(Esteemer):
             )
         return True
 
-    def _score_worse(self, candidate: Resource, motivating_informations: List[Resource], mpm: dict) -> float:
-        moderators = self._comparator_moderators(candidate, motivating_informations, Comparison)
+    def _score_worse(
+        self, candidate: Resource, motivating_informations: List[Resource], mpm: dict
+    ) -> float:
+        moderators = self._comparator_moderators(
+            candidate, motivating_informations, Comparison
+        )
         return moderators["comparison_size"]
 
-    def _score_improving(self, candidate: Resource, motivating_informations: List[Resource], mpm: dict) -> float:
+    def _score_improving(
+        self, candidate: Resource, motivating_informations: List[Resource], mpm: dict
+    ) -> float:
         moderators = Trend.moderators(motivating_informations)[0]
         return moderators["trend_size"]
 
-    def _score_worsening(self, candidate: Resource, motivating_informations: List[Resource], mpm: dict) -> float:
+    def _score_worsening(
+        self, candidate: Resource, motivating_informations: List[Resource], mpm: dict
+    ) -> float:
         moderators = Trend.moderators(motivating_informations)[0]
         return moderators["trend_size"]
 
-    def _score_approach(self, candidate: Resource, motivating_informations: List[Resource], mpm: dict) -> float:
-        moderators = self._comparator_moderators(candidate, motivating_informations, Approach)
+    def _score_approach(
+        self, candidate: Resource, motivating_informations: List[Resource], mpm: dict
+    ) -> float:
+        moderators = self._comparator_moderators(
+            candidate, motivating_informations, Approach
+        )
         return (
             moderators["comparison_size"] * mpm["comparison_size"]
             + moderators["trend_size"] * mpm["trend_size"]
             + moderators["achievement_recency"] * mpm["achievement_recency"]
         ) / (mpm["comparison_size"] + mpm["trend_size"] + mpm["achievement_recency"])
 
-    def _score_gain(self, candidate: Resource, motivating_informations: List[Resource], mpm: dict) -> float:
-        moderators = self._comparator_moderators(candidate, motivating_informations, Achievement)
+    def _score_gain(
+        self, candidate: Resource, motivating_informations: List[Resource], mpm: dict
+    ) -> float:
+        moderators = self._comparator_moderators(
+            candidate, motivating_informations, Achievement
+        )
         return (
             moderators["comparison_size"] * mpm["comparison_size"]
             + moderators["trend_size"] * mpm["trend_size"]
             + moderators["achievement_recency"] * mpm["achievement_recency"]
         ) / (mpm["comparison_size"] + mpm["trend_size"] + mpm["achievement_recency"])
 
-    def _score_loss(self, candidate: Resource, motivating_informations: List[Resource], mpm: dict) -> float:
-        moderators = self._comparator_moderators(candidate, motivating_informations, Loss)
+    def _score_loss(
+        self, candidate: Resource, motivating_informations: List[Resource], mpm: dict
+    ) -> float:
+        moderators = self._comparator_moderators(
+            candidate, motivating_informations, Loss
+        )
         return (
             moderators["comparison_size"] * mpm["comparison_size"]
             + moderators["trend_size"] * mpm["trend_size"]
             + moderators["loss_recency"] * mpm["loss_recency"]
         ) / (mpm["comparison_size"] + mpm["trend_size"] + mpm["loss_recency"])
 
-    def _comparator_moderators(self, candidate, motivating_informations, signal: Signal):
+    def _comparator_moderators(
+        self, candidate, motivating_informations, signal: Signal
+    ):
         comparator = candidate.value(SLOWMO.RegardingComparator)
         if str(comparator) == "None":
             raise ValueError(
@@ -241,10 +296,14 @@ class MPM_prioritization_algorithm(Esteemer):
             mod["message_recurrence"] * mpm["message_recurrence"]
             + mod["message_recency"] * mpm["message_recency"]
             + mod["measure_recency"] * mpm["measure_recency"]
-        ) / (mpm["message_recurrence"] + mpm["message_recency"] + mpm["measure_recency"])
+        ) / (
+            mpm["message_recurrence"] + mpm["message_recency"] + mpm["measure_recency"]
+        )
         return 1 - history_moderator * mpm["history"]
 
-    def _score_preferences(self, candidate_resource: Resource, preferences: dict) -> float:
+    def _score_preferences(
+        self, candidate_resource: Resource, preferences: dict
+    ) -> float:
         if not settings.use_preferences:
             return 0.0
         return preferences.get(
@@ -262,8 +321,8 @@ class MPM_prioritization_algorithm(Esteemer):
                 candidates, category=1.0
             )
             if not highest_coachiness_candidates:
-                highest_coachiness_candidates = self._candidates_from_coachiness_category(
-                    candidates, category=0.5
+                highest_coachiness_candidates = (
+                    self._candidates_from_coachiness_category(candidates, category=0.5)
                 )
             if highest_coachiness_candidates:
                 candidates = highest_coachiness_candidates
@@ -286,6 +345,114 @@ class MPM_prioritization_algorithm(Esteemer):
             if (candidate.value(URIRef("coachiness_score")).value == category)
         ]
 
+    def _load_mpm_from_env(self) -> dict:
+        mpm_dict = {}
+        mpm_path: str = os.getenv("mpm")
+        if mpm_path is None:
+            raise ValueError(
+                "Environment variable 'mpm' must be set to the MPM file path or URL."
+            )
+        if mpm_path.startswith("http"):
+            response = requests.get(mpm_path)
+            response.raise_for_status()
+            csv_content = StringIO(response.text)
+            file = csv_content
+        else:
+            file = open(mpm_path, mode="r")
 
+        reader = csv.DictReader(file)
+        for row in reader:
+            outer_key = row.pop("causal_pathway")
+            mpm_dict[outer_key] = {
+                k: (float(v) if v != "" else None) for k, v in row.items()
+            }
 
+        if not mpm_path.startswith("http"):
+            file.close()
 
+        return mpm_dict
+
+    def _load_history(self):
+        history: pd.DataFrame = pd.DataFrame(
+            columns=["subject", "period.start", "period.end", "history.json"],
+            index=["subject"],
+        )
+        history_file = os.environ.get("history")
+        if os.path.exists(history_file):
+            history = pd.read_csv(
+                history_file,
+                converters={"history": json.loads},
+                dtype={"period.start": str},
+            )
+            history.set_index("subject", inplace=True, drop=False)
+        return history
+
+    def _load_preferences(self):
+        preferences: pd.DataFrame = pd.DataFrame(
+            columns=["subject", "preference.json"], index=["subject"]
+        )
+        preferences_file = os.environ.get("preferences")
+        if os.path.exists(preferences_file):
+            preferences = pd.read_csv(
+                preferences_file, converters={"preferences": json.loads}
+            )
+            preferences.set_index("subject", inplace=True, drop=False)
+
+        default_preferences_file = os.environ.get("default_preferences")
+        se = requests.Session()
+        se.mount("file://", FileAdapter())
+        default_preferences_text = se.get(default_preferences_file).text
+        default_preferences_original_dict = json.loads(default_preferences_text)
+        default_preferences = {
+            k.lower(): v for k, v in default_preferences_original_dict.items()
+        }
+        return preferences, default_preferences
+
+    def _get_history(self, subject):
+        history_dict = {}
+        try:
+            history_data = self.history[self.history["subject"] == subject].copy()
+            history_data["history.json"] = history_data["history.json"].apply(
+                ast.literal_eval
+            )
+            history_dict = history_data.set_index("period.start")[
+                "history.json"
+            ].to_dict()
+        except Exception:
+            pass
+        return history_dict
+
+    def _get_preferences(self, subject):
+        preferences_dict = {}
+        try:
+            p = ast.literal_eval(self.preferences.loc[subject, "preferences.json"])
+            preferences_dict = self._apply_default_preferences(p)
+        except Exception:
+            preferences_dict = self._apply_default_preferences({})
+        return preferences_dict
+
+    def _apply_default_preferences(self, req_info):
+        preferences_utilities = req_info.get("Utilities", {})
+        input_preferences: dict = preferences_utilities.get("Message_Format", {})
+        individual_preferences: dict = {}
+        for key in input_preferences:
+            individual_preferences[key.lower()] = float(input_preferences[key])
+
+        preferences: dict = self.default_preferences.copy()
+        preferences.update(individual_preferences)
+
+        if preferences:
+            min_value = min(preferences.values())
+            max_value = max(preferences.values())
+            if max_value != min_value:
+                for key in preferences:
+                    preferences[key] = (preferences[key] - min_value) / (
+                        max_value - min_value
+                    )
+
+        display_format = None
+        for key, value in preferences_utilities.get("Display_Format", {}).items():
+            if value == 1 and key != "System-generated":
+                display_format = key.lower()  # display formats are hardcoded with lower case in pictoralist so lower() is used to keep it the same
+
+        return {"Message_Format": preferences, "Display_Format": display_format}

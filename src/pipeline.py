@@ -15,7 +15,7 @@ from src.utils.settings import settings
 from src.utils.utils import merge_and_pivot, set_logger, render, candidates_records
 # from random_candidate_selector import RandomCandidateSelector
 # from esteemer.esteemer import select_candidate
-from src.esteemer.mpm_prioritization_algorithm import MPM_prioritization_algorithm
+from src.esteemer.mpm_candidate_selector import MPM_candidate_selector
 
 
 set_logger()
@@ -43,7 +43,7 @@ def pipeline():
        
     # esteemer
     logger.debug("Calling Esteemer from main...")
-    selected_candidate = MPM_prioritization_algorithm(context.performance_month,context.subject).select_candidate(context.subject_graph)
+    selected_candidate = MPM_candidate_selector(context.performance_month,context.subject).select_candidate(context.subject_graph)
     # selected_candidate = esteemer.select_candidate(context.subject_graph)
     # selected_candidate = RandomCandidateSelector.select_candidate(context.subject_graph)
 

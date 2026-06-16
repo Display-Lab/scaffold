@@ -25,14 +25,14 @@ cd scaffold
 ```
 
 #### Setup a virtual environment, install SCAFFOLD and its dependencies
-
 **Using `venv` and `pip`**
-
+Create a virtual environment using python
 ```zsh
 python --version # make sure you have python 3.12
 python -m venv .venv
 ```
 
+Then activate it.
 ##### For Windows do this next to activate the virtual environment
 
 ```zsh
@@ -51,12 +51,14 @@ source .venv/bin/activate
 pip install . # this will install scaffold 
 ```
 
-**Alternative: Using [Poetry](https://python-poetry.org/) (for developers)**
+**Alternative: Using [uv](https://docs.astral.sh/uv/getting-started/installation/) (for developers)**
 
 ```zsh
-poetry env use 3.12 # optional, but makes sure you have python 3.12 available
-poetry install # creates a virtual environment and install dependencies
-poetry shell # activates the enviroment
+uv venv
+.venv\Scripts\activate.bat # Windows
+source .venv/bin/activate # Mac / Linux 
+uv pip install -e .
+uv pip install -e ".[dev]" #to install dev dependencies
 ```
 
 #### Setup a knowledge base for SCAFFOLD

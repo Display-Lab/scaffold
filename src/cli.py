@@ -21,6 +21,19 @@ from src.utils.utils import (
 cli = typer.Typer(no_args_is_help=True)
 
 
+def _failure_payload(exc: Exception, **extra_fields) -> dict:
+    detail = getattr(exc, "detail", None)
+    if isinstance(detail, dict):
+        payload = dict(detail)
+    else:
+        payload = {"message": str(exc)}
+
+    for key, value in extra_fields.items():
+        if value is not None and key not in payload:
+            payload[key] = value
+    return payload
+
+
 @cli.command()
 def batch(
     file_path: Annotated[
@@ -92,7 +105,7 @@ def batch(
         except Exception as e:
             logger.error(f"✘ Failed to process {input_file}: {e}")
             failure_count += 1
-            full_message = e.detail
+            full_message = _failure_payload(e, input_file=str(input_file))
 
         add_response(full_message)
         if not stats_only:
@@ -164,7 +177,7 @@ def batch_csv(
         except Exception as e:
             logger.error(f"✘ Failed to process Provider_{subject}: {e}")
             failure_count += 1
-            full_message = e.detail
+            full_message = _failure_payload(e, subject=subject)
 
         add_response(full_message)
         if not stats_only:
