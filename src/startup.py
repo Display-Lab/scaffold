@@ -4,6 +4,7 @@ import os
 import pathlib
 from io import StringIO
 
+from dotenv import load_dotenv
 import matplotlib
 import pandas as pd
 import requests
@@ -19,7 +20,6 @@ from src.utils.utils import set_logger
 set_logger()
 
 matplotlib.use("Agg")
-mpm: dict = {}
 default_preferences: dict = {}
 config: dict = {}
 base_graph: Graph = Graph()
@@ -44,6 +44,7 @@ se.mount("file://", FileAdapter())
 def startup(performance_data_path: pathlib.Path = None, performance_m: str = ""):
     ## Log of instance configuration
     logger.debug("Startup configuration for this instance:")
+    load_dotenv(os.environ.get("ENV_PATH"))
     for attribute in dir(settings):
         if not attribute.startswith("__"):
             value = getattr(settings, attribute)
@@ -52,7 +53,6 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
     try:
         global \
             base_graph, \
-            mpm, \
             default_preferences, \
             preferences, \
             history, \
@@ -62,7 +62,6 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             performance_month, \
             config
 
-        mpm = load_mpm()
 
         default_preferences_text = se.get(settings.default_preferences).text
         default_preferences_original_dict = json.loads(default_preferences_text)
@@ -142,26 +141,3 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
         exit(0)
 
 
-### read csv file to a dictionary
-def load_mpm() -> dict:
-    mpm_dict = {}
-
-    if settings.mpm.startswith("http"):
-        response = requests.get(settings.mpm)
-        response.raise_for_status()
-        csv_content = StringIO(response.text)
-        file = csv_content
-    else:
-        file = open(settings.mpm, mode="r")
-
-    reader = csv.DictReader(file)
-    for row in reader:
-        outer_key = row.pop("causal_pathway")
-        mpm_dict[outer_key] = {
-            k: (float(v) if v != "" else None) for k, v in row.items()
-        }
-
-    if not settings.mpm.startswith("http"):
-        file.close()
-
-    return mpm_dict
