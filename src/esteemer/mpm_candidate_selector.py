@@ -33,7 +33,10 @@ class MPM_candidate_selector(Esteemer):
         self.preferences, self.default_preferences = self._load_preferences()
         self.history = self._load_history()
         self.mpm = self._load_mpm_from_env()
-
+        
+    def version(self) -> str:
+        return "1.0"
+    
     def _score(self, candidate: Resource) -> Resource:
         """
         Calculates score for a candidate.

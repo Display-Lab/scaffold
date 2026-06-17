@@ -26,6 +26,9 @@ dependencies = [
 
 ]
 
+[project.entry-points."scaffold.esteemer"]
+mpm_candidate_selector = "src.esteemer.mpm_candidate_selector:MPM_candidate_selector"
+
 [tool.setuptools.packages.find]
 include  = ["src*"]
 
