@@ -10,6 +10,10 @@ class Esteemer(ABC):
     @abstractmethod
     def select_candidate(self, performer_graph: Graph):
         pass
+    
+    @abstractmethod
+    def version(self) -> str:
+        pass
 
     def __new__(cls, *args, **kwargs):
         if cls not in cls._instances:

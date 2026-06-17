@@ -148,6 +148,14 @@ Local file path or URL (see .env.remote for github URL formats). All are require
 
 #### mpm: Path to the mpm csv file
 
+#### config: Path to the configuration
+For now this config file contains the esteemer plugin name and version in a yaml file with a content like:
+
+plugins:
+  scaffold.esteemer:
+    name: mpm_candidate_selector
+    version: "1.0.0"
+    
 #### default_preferences: Path to the default preferences json file
 
 #### manifest: Path to the manifest file that includes differend pieces of the base graph including (causal pathways, message templates, measures and comparators). See [manifest configuration](#manifest-configuration) for more detail

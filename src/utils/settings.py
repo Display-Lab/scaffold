@@ -35,6 +35,7 @@ class Settings:
         self.min_count = config("min_count", cast=int, default=10)
         self.meas_period = config("meas_period", cast=int, default=1)
         self.manifest = config("manifest", cast=str, default=None)
+        self.config = config("config", cast=str, default=None)
         self.default_preferences = config("default_preferences", cast=str, default=None)
 
         # self.preferences = config("preferences", cast=str, default=None)

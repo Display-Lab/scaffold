@@ -1,13 +1,17 @@
 import re
 import sys
+from importlib.metadata import entry_points
 from typing import List
+from urllib.request import urlopen
 
 import pandas as pd
+import yaml
 from loguru import logger
 from rdflib import DCTERMS, RDF, BNode, Graph, URIRef
 from rdflib.resource import Resource
 
-from src import context
+from src import context, startup
+from src.esteemer.esteemer import Esteemer
 from src.utils import SLOWMO
 from src.utils.namespace._PSDO import PSDO
 from src.utils.settings import settings
@@ -55,11 +59,9 @@ def analyse_candidates(OUTPUT):
 
 def build_table(grouping_column):
     candidate_df["selected1"] = (
-        pd.to_numeric(candidate_df["selected"], errors="coerce")
-        .fillna(0)
-        .astype(int)
+        pd.to_numeric(candidate_df["selected"], errors="coerce").fillna(0).astype(int)
     )
-    
+
     report_table = (
         candidate_df.groupby(grouping_column)["selected1"]
         .agg(acceptable=("count"), selected=("sum"))
@@ -131,7 +133,6 @@ def add_response(response_data):
     response_df = pd.concat(
         [response_df, pd.DataFrame(response_dict)], ignore_index=True
     )
-    print(response_dict, end="\r")
 
 
 def extract_number(filename):
@@ -151,8 +152,8 @@ def set_logger():
         format="{level}|  {message}",
         level=settings.log_level,
     )
-    logger.at_least = (
-        lambda lvl: logger.level(lvl).no >= logger.level(settings.log_level).no
+    logger.at_least = lambda lvl: (
+        logger.level(lvl).no >= logger.level(settings.log_level).no
     )
 
 
@@ -181,6 +182,7 @@ def merge_and_pivot(performance_df):
     performance_df = final_df.copy()
 
     return performance_df
+
 
 def candidates(
     performer_graph: Graph, measure: BNode = None, filter_acceptable: bool = False
@@ -304,7 +306,7 @@ def candidates_records(performer_graph: Graph) -> List[List]:
             "PerformanceGapSize",
             "PerformanceTrendSlope",
             "StreakLength",
-            "denominator"
+            "denominator",
         ]
     ]
 
@@ -335,37 +337,79 @@ def candidate_as_record(a_candidate: Resource) -> List:
     PerformanceGapSize = ""
     PerformanceTrendSlope = ""
     StreakLength = ""
-    for signal in a_candidate[PSDO.motivating_information]: 
+    for signal in a_candidate[PSDO.motivating_information]:
         try:
-            PerformanceGapSize = str(round(signal.value(SLOWMO.PerformanceGapSize).value,4))
+            PerformanceGapSize = str(
+                round(signal.value(SLOWMO.PerformanceGapSize).value, 4)
+            )
         except Exception:
             pass
-    
-    for signal in a_candidate[PSDO.motivating_information]: 
+
+    for signal in a_candidate[PSDO.motivating_information]:
         try:
-            PerformanceTrendSlope = str(round(signal.value(SLOWMO.PerformanceTrendSlope).value,4))
+            PerformanceTrendSlope = str(
+                round(signal.value(SLOWMO.PerformanceTrendSlope).value, 4)
+            )
         except Exception:
             pass
-    
-    for signal in a_candidate[PSDO.motivating_information]: 
+
+    for signal in a_candidate[PSDO.motivating_information]:
         try:
-            StreakLength = str(round(signal.value(SLOWMO.StreakLength).value,4))
+            StreakLength = str(round(signal.value(SLOWMO.StreakLength).value, 4))
         except Exception:
             pass
-        
+
     representation.append(PerformanceGapSize)
     representation.append(PerformanceTrendSlope)
     representation.append(StreakLength)
-    
+
     filtered = context.performance_df[
-        (context.performance_df["measure"] == str(a_candidate.value(SLOWMO.RegardingMeasure).identifier)) &
-        (context.performance_df["period.start"] == context.performance_month)
+        (
+            context.performance_df["measure"]
+            == str(a_candidate.value(SLOWMO.RegardingMeasure).identifier)
+        )
+        & (context.performance_df["period.start"] == context.performance_month)
     ]
 
     if len(filtered) != 1:
         raise ValueError(f"Expected exactly 1 row, found {len(filtered)}")
 
     denominator = filtered.iloc[0]["measureScore.denominator"]
-    representation.append(int(denominator))    
+    representation.append(int(denominator))
 
     return representation
+
+
+def load_kb_config(config_path: str) -> dict:
+    try:
+        with urlopen(config_path) as f:
+            return yaml.safe_load(f.read().decode("utf-8"))
+
+    except Exception as e:
+        logger.error(f"Error loading knowledgebase config: {e}")
+
+
+def load_esteemer(performance_month: str, subject: str):
+    plugins = entry_points(group="scaffold.esteemer")
+
+    for ep in plugins:
+        if ep.name == startup.esteemer_plugin_name:
+            cls = ep.load()
+            obj = cls(performance_month=performance_month, subject=subject)
+
+            if not isinstance(obj, Esteemer):
+                raise TypeError(
+                    f"{startup.esteemer_plugin_name} does not implement required select_candidate(performer_graph: Graph) method."
+                )
+            plugin_version = obj.version()
+
+            if plugin_version != startup.esteemer_plugin_version:
+                raise ValueError(
+                    f"Plugin '{startup.esteemer_plugin_name}' version mismatch. "
+                    f"Expected '{startup.esteemer_plugin_version}', "
+                    f"found '{plugin_version}'."
+                )
+
+            return obj
+
+    raise ValueError(f"Plugin '{startup.esteemer_plugin_name}' not found.")

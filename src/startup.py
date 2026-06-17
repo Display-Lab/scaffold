@@ -15,7 +15,7 @@ from requests_file import FileAdapter
 from src.utils.graph_operations import manifest_to_graph
 from src.utils.namespace._PSDO import PSDO
 from src.utils.settings import settings
-from src.utils.utils import set_logger
+from src.utils.utils import load_kb_config, set_logger
 
 set_logger()
 
@@ -35,6 +35,8 @@ practitioner_role = pd.DataFrame()
 comparator_measure_report = pd.DataFrame()
 
 performance_month = ""
+esteemer_plugin_name = ""
+esteemer_plugin_version = ""
 
 # Set up request session as se, config to handle file URIs with FileAdapter
 se = requests.Session()
@@ -60,7 +62,9 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             comparator_measure_report, \
             practitioner_role, \
             performance_month, \
-            config
+            config, \
+            esteemer_plugin_name, \
+            esteemer_plugin_version
 
 
         default_preferences_text = se.get(settings.default_preferences).text
@@ -70,6 +74,12 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
         }
 
         base_graph = manifest_to_graph(settings.manifest)
+        kb_config = load_kb_config(settings.config)
+        plugin_cfg = kb_config.get("plugins", {}).get("scaffold.esteemer")
+        if not plugin_cfg:
+            raise ValueError("No scaffold.esteemer plugin configured")
+        esteemer_plugin_name = plugin_cfg.get("name")
+        esteemer_plugin_version = plugin_cfg.get("version")
 
         if performance_data_path:
             performance_measure_report = pd.read_csv(
