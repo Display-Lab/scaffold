@@ -9,12 +9,16 @@ from src import context
 from src.bitstomach import bitstomach
 from src.candidate_pudding import candidate_pudding
 from src.context import get_preferences
-
-
 from src.pictoralist.pictoralist import Pictoralist
 from src.utils.namespace import PSDO, SLOWMO
 from src.utils.settings import settings
-from src.utils.utils import candidates_records, load_esteemer, merge_and_pivot, render, set_logger
+from src.utils.utils import (
+    candidates_records,
+    load_esteemer,
+    merge_and_pivot,
+    render,
+    set_logger,
+)
 
 set_logger()
 
@@ -41,7 +45,7 @@ def pipeline():
        
     # esteemer
     logger.debug("Calling Esteemer from main...")
-    esteemer = load_esteemer("mpm_candidate_selector", "1.0",context.performance_month,context.subject)
+    esteemer = load_esteemer(context.performance_month,context.subject)
     selected_candidate = esteemer.select_candidate(context.subject_graph)    
 
     preferences = get_preferences()

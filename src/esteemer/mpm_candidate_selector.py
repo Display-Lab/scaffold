@@ -35,7 +35,7 @@ class MPM_candidate_selector(Esteemer):
         self.mpm = self._load_mpm_from_env()
         
     def version(self) -> str:
-        return "1.0"
+        return "1.0.0"
     
     def _score(self, candidate: Resource) -> Resource:
         """

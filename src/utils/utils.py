@@ -2,13 +2,15 @@ import re
 import sys
 from importlib.metadata import entry_points
 from typing import List
+from urllib.request import urlopen
 
 import pandas as pd
+import yaml
 from loguru import logger
 from rdflib import DCTERMS, RDF, BNode, Graph, URIRef
 from rdflib.resource import Resource
 
-from src import context
+from src import context, startup
 from src.esteemer.esteemer import Esteemer
 from src.utils import SLOWMO
 from src.utils.namespace._PSDO import PSDO
@@ -131,7 +133,6 @@ def add_response(response_data):
     response_df = pd.concat(
         [response_df, pd.DataFrame(response_dict)], ignore_index=True
     )
-    print(response_dict, end="\r")
 
 
 def extract_number(filename):
@@ -379,29 +380,36 @@ def candidate_as_record(a_candidate: Resource) -> List:
     return representation
 
 
-def load_esteemer(
-    name: str, required_version: str, performance_month: str, subject: str
-):
+def load_kb_config(config_path: str) -> dict:
+    try:
+        with urlopen(config_path) as f:
+            return yaml.safe_load(f.read().decode("utf-8"))
+
+    except Exception as e:
+        logger.error(f"Error loading knowledgebase config: {e}")
+
+
+def load_esteemer(performance_month: str, subject: str):
     plugins = entry_points(group="scaffold.esteemer")
 
     for ep in plugins:
-        if ep.name == name:
+        if ep.name == startup.esteemer_plugin_name:
             cls = ep.load()
             obj = cls(performance_month=performance_month, subject=subject)
 
             if not isinstance(obj, Esteemer):
                 raise TypeError(
-                    f"{name} does not implement required select_candidate(performer_graph: Graph) method."
+                    f"{startup.esteemer_plugin_name} does not implement required select_candidate(performer_graph: Graph) method."
                 )
             plugin_version = obj.version()
 
-            if plugin_version != required_version:
+            if plugin_version != startup.esteemer_plugin_version:
                 raise ValueError(
-                    f"Plugin '{name}' version mismatch. "
-                    f"Expected '{required_version}', "
+                    f"Plugin '{startup.esteemer_plugin_name}' version mismatch. "
+                    f"Expected '{startup.esteemer_plugin_version}', "
                     f"found '{plugin_version}'."
                 )
 
             return obj
 
-    raise ValueError(f"Plugin '{name}' not found.")
+    raise ValueError(f"Plugin '{startup.esteemer_plugin_name}' not found.")
