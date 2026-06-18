@@ -28,6 +28,7 @@ dependencies = [
 
 [project.entry-points."scaffold.esteemer"]
 mpm_candidate_selector = "src.esteemer.mpm_candidate_selector:MPM_candidate_selector"
+random_candidate_selector = "src.esteemer.random_candidate_selector:Random_candidate_selector"
 
 [tool.setuptools.packages.find]
 include  = ["src*"]
