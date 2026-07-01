@@ -113,12 +113,12 @@ class MPM_candidate_selector(Esteemer):
         candidate[SLOWMO.Score] = Literal(final_calculated_score, datatype=XSD.double)
         return candidate
 
-    def select_candidate(self, performer_graph: Graph) -> Resource:
+    def select_candidate(self) -> Resource:
         """
         Scores candidates, applies business rules, and selects the best candidate.
         """
         candidates = utils.candidates(
-            performer_graph, filter_acceptable=True, measure=None
+            self.subject_graph, filter_acceptable=True, measure=None
         )
         for candidate in candidates:
             self._score(candidate)
@@ -423,12 +423,29 @@ class MPM_candidate_selector(Esteemer):
             ].to_dict()
         except Exception:
             pass
+        
+        history_dict_from_request = {}
+        try:
+            history_list = self.req_info.get("History", {})
+            history_dict_from_request = {
+                item["period.start"]: {k: v for k, v in item.items() if k != "period.end" and k != "period.start"}
+                for item in history_list
+            }
+        except Exception:
+            pass
+        
+        for key, value in history_dict_from_request.items():
+            if key not in history_dict:
+                history_dict[key] = value
         return history_dict
 
     def _get_preferences(self, subject):
         preferences_dict = {}
         try:
-            p = ast.literal_eval(self.preferences.loc[subject, "preferences.json"])
+            if self.req_info:
+                p = self.req_info.get("Preferences", {})
+            else: 
+                p = ast.literal_eval(self.preferences.loc[subject, "preferences.json"])
             preferences_dict = self._apply_default_preferences(p)
         except Exception:
             preferences_dict = self._apply_default_preferences({})

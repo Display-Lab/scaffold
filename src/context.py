@@ -6,27 +6,28 @@ from rdflib import Graph
 from src import startup
 
 preferences_dict = {}
-history_dict = {}
 subject = "0"
 performance_month = ""
 performance_df: pd.DataFrame
 comparator_df: pd.DataFrame
 subject_graph = Graph()
 practitioner_role = pd.DataFrame()
+request_info = None
 
 
 def from_req(req_info):
     global \
         preferences_dict, \
-        history_dict, \
         subject, \
         performance_month, \
         performance_df, \
         subject_graph, \
         comparator_df, \
-        practitioner_role
+        practitioner_role,\
+        request_info
 
     try:
+        request_info = req_info
         performance_df = pd.DataFrame(req_info["performance_measure_report"])
         
         comparator_df = pd.DataFrame(req_info["comparator_measure_report"])
@@ -49,16 +50,6 @@ def from_req(req_info):
     except Exception:
         preferences_dict = set_preferences({})
 
-    history_dict = {}
-    try:
-        history_list = req_info.get("History", {})
-        history_dict = {
-            item["period.start"]: {k: v for k, v in item.items() if k != "period.end" and k != "period.start"}
-            for item in history_list
-        }
-    except Exception:
-        pass
-
     subject_graph = Graph()
     subject_graph += startup.base_graph
 
@@ -66,7 +57,6 @@ def from_req(req_info):
 def from_global(subject_num):
     global \
         preferences_dict, \
-        history_dict, \
         subject, \
         performance_month, \
         performance_df, \
@@ -108,15 +98,6 @@ def from_global(subject_num):
     except Exception:
         preferences_dict = set_preferences({})
 
-    history_dict = {}
-    try:
-        history_data = startup.history[startup.history["subject"] == subject].copy()
-        history_data["history.json"] = history_data["history.json"].apply(
-            ast.literal_eval
-        )
-        history_dict = history_data.set_index("period.start")["history.json"].to_dict()
-    except Exception:
-        pass
 
     subject_graph = Graph()
     subject_graph += startup.base_graph
@@ -125,11 +106,6 @@ def from_global(subject_num):
 def get_preferences():
     global preferences_dict
     return preferences_dict
-
-
-def get_history():
-    global history_dict
-    return history_dict
 
 
 def set_preferences(req_info):

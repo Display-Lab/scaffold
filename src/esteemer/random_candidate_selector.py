@@ -13,26 +13,23 @@ class Random_candidate_selector(Esteemer):
     def version(self) -> str:
         return "1.0.1"
     
-    def select_candidate(self, performer_graph: Graph) -> Resource:
+    def select_candidate(self) -> Resource:
         """
-        randomly selects a candidate.
-
-        Parameters:
-        - performer_graph (Graph): The performer_graph .
+        randomly selects a candidate.        
 
         Returns:
         BNode: selected candidate.
         """
-        
+        subject_graph = self.subject_graph
         candidates = [
-            performer_graph.resource(subject)
-            for subject in performer_graph.subjects(
+            subject_graph.resource(subject)
+            for subject in subject_graph.subjects(
                 RDF.type,
                 URIRef("http://example.com/slowmo#Candidate")
             )
             if (subject,
                 URIRef("http://example.com/slowmo#AcceptableBy"),
-                None) in performer_graph
+                None) in subject_graph
         ]  
     
         selected_candidate = random.choice(candidates)
