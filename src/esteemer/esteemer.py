@@ -8,7 +8,7 @@ class Esteemer(ABC):
     _env_loaded = False
 
     @abstractmethod
-    def select_candidate(self, performer_graph: Graph):
+    def select_candidate(self):
         pass
     
     @abstractmethod
@@ -21,9 +21,11 @@ class Esteemer(ABC):
             cls._instances[cls] = instance
         return cls._instances[cls]
 
-    def __init__(self, performance_month: str, subject: str):
-        self.performance_month = performance_month
-        self.subject = subject
+    def __init__(self, context):
+        self.performance_month = context.performance_month
+        self.subject = context.subject
+        self.req_info =context.request_info
+        self.subject_graph=context.subject_graph
 
         if not getattr(self, "_initialized", False):
             self._initialize()

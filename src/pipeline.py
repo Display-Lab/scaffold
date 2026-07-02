@@ -45,8 +45,8 @@ def pipeline():
        
     # esteemer
     logger.debug("Calling Esteemer from main...")
-    esteemer = load_esteemer(context.performance_month,context.subject)
-    selected_candidate = esteemer.select_candidate(context.subject_graph)    
+    esteemer = load_esteemer(context)
+    selected_candidate = esteemer.select_candidate()    
 
     preferences = get_preferences()
  

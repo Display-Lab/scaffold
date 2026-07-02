@@ -185,13 +185,13 @@ def merge_and_pivot(performance_df):
 
 
 def candidates(
-    performer_graph: Graph, measure: BNode = None, filter_acceptable: bool = False
+    subject_graph: Graph, measure: BNode = None, filter_acceptable: bool = False
 ) -> List[Resource]:
     """
     Retrieve a list of candidate resources from the performer graph.
 
     Parameters:
-        performer_graph (Graph): The performer_graph.
+        subject_graph (Graph): The subject_graph.
         measure (BNode, optional): The measure to filter candidates. Defaults to None.
         filter_acceptable (bool, optional): Whether to filter candidates based on acceptability. Defaults to False.
 
@@ -200,8 +200,8 @@ def candidates(
     """
 
     candidates = [
-        performer_graph.resource(subject)
-        for subject in performer_graph.subjects(RDF.type, SLOWMO.Candidate)
+        subject_graph.resource(subject)
+        for subject in subject_graph.subjects(RDF.type, SLOWMO.Candidate)
     ]
 
     candidates = [
@@ -222,12 +222,12 @@ def candidates(
     return candidates
 
 
-def render(performer_graph: Graph, candidate: BNode) -> dict:
+def render(subject_graph: Graph, candidate: BNode) -> dict:
     """
     creates selected message from a selected candidate.
 
     Parameters:
-    - performer_graph (Graph): The performer_graph.
+    - subject_graph (Graph): The subject_graph.
     - candidate (BNode): The candidate.
 
     Returns:
@@ -242,18 +242,18 @@ def render(performer_graph: Graph, candidate: BNode) -> dict:
     else:
         temp_name = SLOWMO.name  # URI of template name?
         o2wea = []
-        candidate_resource = performer_graph.resource(candidate)
+        candidate_resource = subject_graph.resource(candidate)
 
         ## Format selected_candidate to return for pictoralist-ing
-        for s21, p21, o21 in performer_graph.triples(
+        for s21, p21, o21 in subject_graph.triples(
             (candidate, SLOWMO.AncestorTemplate, None)
         ):
             s_m["template_id"] = o21
         # Duplicate logic above and use to pull template name
-        for s21, p21, o21 in performer_graph.triples((candidate, temp_name, None)):
+        for s21, p21, o21 in subject_graph.triples((candidate, temp_name, None)):
             s_m["template_name"] = o21
 
-        for s2, p2, o2 in performer_graph.triples(
+        for s2, p2, o2 in subject_graph.triples(
             (candidate, URIRef("psdo:PerformanceSummaryTextualEntity"), None)
         ):
             s_m["message_text"] = o2
@@ -265,7 +265,7 @@ def render(performer_graph: Graph, candidate: BNode) -> dict:
 
         # for s9,p9,o9 in self.spek_tp.triples((s,p8,None)):
         #     s_m["Comparator Type"] = o9
-        for s2we, p2we, o2we in performer_graph.triples(
+        for s2we, p2we, o2we in subject_graph.triples(
             (candidate, SLOWMO.AcceptableBy, None)
         ):
             o2wea.append(o2we)
@@ -281,12 +281,12 @@ def render(performer_graph: Graph, candidate: BNode) -> dict:
         return s_m
 
 
-def candidates_records(performer_graph: Graph) -> List[List]:
+def candidates_records(subject_graph: Graph) -> List[List]:
     """
     provides the representation of candidates as a dictionary.
 
     Parameters:
-    - performer_graph (Graph): The performer_graph.
+    - subject_graph (Graph): The subject_graph.
 
     Returns:
     dict: The representation of candidates as a dictionary.
@@ -310,7 +310,7 @@ def candidates_records(performer_graph: Graph) -> List[List]:
         ]
     ]
 
-    for a_candidate in candidates(performer_graph, filter_acceptable=True):
+    for a_candidate in candidates(subject_graph, filter_acceptable=True):
         # representation = candidate_as_dictionary(a_candidate)
         representation = candidate_as_record(a_candidate)
 
@@ -389,17 +389,17 @@ def load_kb_config(config_path: str) -> dict:
         logger.error(f"Error loading knowledgebase config: {e}")
 
 
-def load_esteemer(performance_month: str, subject: str):
+def load_esteemer(context):
     plugins = entry_points(group="scaffold.esteemer")
 
     for ep in plugins:
         if ep.name == startup.esteemer_plugin_name:
             cls = ep.load()
-            obj = cls(performance_month=performance_month, subject=subject)
+            obj = cls(context=context)
 
             if not isinstance(obj, Esteemer):
                 raise TypeError(
-                    f"{startup.esteemer_plugin_name} does not implement required select_candidate(performer_graph: Graph) method."
+                    f"{startup.esteemer_plugin_name} does not implement required select_candidate() method."
                 )
             plugin_version = obj.version()
 
