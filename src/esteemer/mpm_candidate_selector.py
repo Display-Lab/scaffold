@@ -12,6 +12,7 @@ import requests
 from rdflib import XSD, Graph, Literal, URIRef
 from rdflib.resource import Resource
 from requests_file import FileAdapter
+from scaffold_sdk.esteemer import Esteemer
 
 from src.bitstomach.signals import (
     Achievement,
@@ -21,7 +22,6 @@ from src.bitstomach.signals import (
     Signal,
     Trend,
 )
-from src.esteemer.esteemer import Esteemer
 from src.esteemer.signals import History
 from src.utils import utils
 from src.utils.namespace import PSDO, SLOWMO

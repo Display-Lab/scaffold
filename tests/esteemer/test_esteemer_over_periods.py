@@ -8,7 +8,7 @@ from rdflib import RDF, XSD, BNode, Graph, Literal, URIRef
 from src import context, startup
 from src.bitstomach.bitstomach import prepare
 from src.bitstomach.signals import Comparison
-from src.esteemer.esteemer import Esteemer
+from scaffold_sdk.esteemer import Esteemer
 from src.esteemer.mpm_candidate_selector import MPM_candidate_selector
 
 from src.esteemer.signals._history import History
@@ -214,7 +214,10 @@ def test_history_with_two_recurrances(candidate_resource, history):
         "_load_preferences",
         return_value=({},{})
     ):
-        score = MPM_candidate_selector(performance_month="2023-08-01",subject=157)._score_history(candidate_resource, history, MPM["Social Better"])
+        context.subject = 157
+        context.performance_month = "2023-08-01"
+
+        score = MPM_candidate_selector(context)._score_history(candidate_resource, history, MPM["Social Better"])
     assert score == pytest.approx(0.586589)
 
     signal = History.detect(
@@ -361,7 +364,9 @@ def test_history_with_two_recurrances_periodic(
         "_load_preferences",
         return_value=({},{})
     ):
-        score = MPM_candidate_selector(performance_month="2024-01-01",subject=157)._score_history(
+        context.subject = 157
+        context.performance_month = "2024-01-01"
+        score = MPM_candidate_selector(context)._score_history(
             candidate_resource_periodic, history_periodic, MPM["Social Better"]
         )
 

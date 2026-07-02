@@ -2,8 +2,7 @@ import random
 
 from rdflib import RDF, Graph, Literal, URIRef
 from rdflib.resource import Resource
-
-from src.esteemer.esteemer import Esteemer
+from scaffold_sdk.esteemer import Esteemer
 
 
 class Random_candidate_selector(Esteemer):

@@ -9,8 +9,8 @@ from src import context, startup
 from src.bitstomach.bitstomach import prepare
 from src.bitstomach.signals import Achievement, Comparison, Loss, Trend
 from src.utils.namespace import PSDO, SLOWMO
+from scaffold_sdk.esteemer import Esteemer
 
-from src.esteemer.esteemer import Esteemer
 from src.esteemer.mpm_candidate_selector import MPM_candidate_selector
 
 TEMPLATE_A = "https://repo.metadatacenter.org/template-instances/9e71ec9e-26f3-442a-8278-569bcd58e708"
@@ -217,12 +217,16 @@ def patched_dependencies():
         yield
 
 def test_score(candidate_resource):
-    MPM_candidate_selector(performance_month="2023-08-01", subject=157)._score(candidate_resource)
+    context.subject = 157
+    context.performance_month = "2023-08-01"
+    MPM_candidate_selector(context)._score(candidate_resource)
     assert candidate_resource.value(SLOWMO.Score).value == pytest.approx(2.05)
 
 
 def test_calculate_preference_score(candidate_resource):
-    assert MPM_candidate_selector(performance_month="", subject=157)._score_preferences(candidate_resource, {}) == 0
+    context.subject = 157
+    context.performance_month = ""
+    assert MPM_candidate_selector(context)._score_preferences(candidate_resource, {}) == 0
 
 
 def test_select_candidate():
@@ -242,17 +246,19 @@ def test_select_candidate():
     candidate1[SLOWMO.AcceptableBy] = Literal("Improving")
 
     with patch.object(MPM_candidate_selector,"_score", return_value=None):
-        # get graph that has candidates scored by Esteemer
-        selected_candidate = MPM_candidate_selector(performance_month="", subject=157).select_candidate(graph)
-        assert str(selected_candidate.identifier) in ["candidate1", "candidate2"]
-        assert str(selected_candidate.identifier) == "candidate1"
+        with patch.object(context, "subject_graph", graph):
+            context.subject = 157
+            context.performance_month = ""
+            selected_candidate = MPM_candidate_selector(context).select_candidate()
+            assert str(selected_candidate.identifier) in ["candidate1", "candidate2"]
+            assert str(selected_candidate.identifier) == "candidate1"
 
-        candidate3 = graph.resource(BNode("candidate3"))
-        candidate3[SLOWMO.Score] = Literal(0.2)
-        candidate3[SLOWMO.AcceptableBy] = Literal("Social Worse")
-        selected_candidate = MPM_candidate_selector(performance_month="", subject=157).select_candidate(graph)
-        assert str(selected_candidate.identifier) in ["candidate1", "candidate3"]
-        assert graph.resource(selected_candidate.identifier).value(SLOWMO.Score) == Literal(0.2)
+            candidate3 = graph.resource(BNode("candidate3"))
+            candidate3[SLOWMO.Score] = Literal(0.2)
+            candidate3[SLOWMO.AcceptableBy] = Literal("Social Worse")
+            selected_candidate = MPM_candidate_selector(context).select_candidate()
+            assert str(selected_candidate.identifier) in ["candidate1", "candidate3"]
+            assert graph.resource(selected_candidate.identifier).value(SLOWMO.Score) == Literal(0.2)
 
 
 def test_get_trend_info():
@@ -266,12 +272,16 @@ def test_get_trend_info():
 
 
 def test_no_history_signal_is_score_0(candidate_resource):
-    assert MPM_candidate_selector(performance_month="2023-08-01", subject=157)._score_history(candidate_resource, {}, {}) == 1.0
-    assert MPM_candidate_selector(performance_month="2023-08-01", subject=157)._score_history(candidate_resource, None, {}) == 1.0
+    context.subject = 157
+    context.performance_month = "2023-08-01"
+    assert MPM_candidate_selector(context)._score_history(candidate_resource, {}, {}) == 1.0
+    assert MPM_candidate_selector(context)._score_history(candidate_resource, None, {}) == 1.0
 
 
 def test_history_with_two_recurrances(candidate_resource, history):
-    score = MPM_candidate_selector(performance_month="2023-08-01", subject=157)._score_history(candidate_resource, history, MPM["Social Better"])
+    context.subject = 157
+    context.performance_month = "2023-08-01"
+    score = MPM_candidate_selector(context)._score_history(candidate_resource, history, MPM["Social Better"])
     assert score == pytest.approx(0.586589)
 
 
@@ -284,7 +294,10 @@ def test_social_better_score(performance_data_frame, comparator_data_frame):
     motivating_informations = Comparison.detect(
         performance_data_frame, comparator_data_frame
     )
-    score = MPM_candidate_selector(performance_month="", subject=157)._score_better(
+    context.subject = 157
+    context.performance_month = ""
+    
+    score = MPM_candidate_selector(context)._score_better(
         candidate_resource, motivating_informations, MPM["Social Better"]
     )
     assert score == pytest.approx(0.05)
@@ -343,7 +356,9 @@ def test_social_worse_score():
     startup.base_graph = g
 
     motivating_informations = Comparison.detect(data_frame, comparator_df)
-    score = MPM_candidate_selector(performance_month="", subject=157)._score_worse(
+    context.subject = 157
+    context.performance_month = ""
+    score = MPM_candidate_selector(context)._score_worse(
         candidate_resource, motivating_informations, MPM["Social Worse"]
     )
     assert score == pytest.approx(0.02)
@@ -369,7 +384,9 @@ def test_improving_score():
             },  # slope 1.0
         )
     )
-    score = MPM_candidate_selector(performance_month="", subject=157)._score_improving(
+    context.subject = 157
+    context.performance_month = ""
+    score = MPM_candidate_selector(context)._score_improving(
         candidate_resource, motivating_informations, MPM["Improving"]
     )
     assert score == pytest.approx(0.02)
@@ -395,7 +412,9 @@ def test_worsening_score():
             },  # slope 1.0
         )
     )
-    score = MPM_candidate_selector(performance_month="", subject=157)._score_worsening(
+    context.subject = 157
+    context.performance_month = ""
+    score = MPM_candidate_selector(context)._score_worsening(
         candidate_resource, motivating_informations, MPM["Worsening"]
     )
     assert score == pytest.approx(0.02)
@@ -443,7 +462,9 @@ def test_goal_gain_score():
     startup.base_graph = g
 
     motivating_informations = Achievement.detect(data_frame, comparator_df)
-    score = MPM_candidate_selector(performance_month="", subject=157)._score_gain(
+    context.subject = 157
+    context.performance_month = ""
+    score = MPM_candidate_selector(context)._score_gain(
         candidate_resource, motivating_informations, MPM["Goal Gain"]
     )
     assert score == pytest.approx(0.062407407407407404)
@@ -491,7 +512,9 @@ def test_goal_loss_score():
     startup.base_graph = g
 
     motivating_informations = Loss.detect(data_frame, comparator_df)
-    score = MPM_candidate_selector(performance_month="", subject=157)._score_loss(
+    context.subject = 157
+    context.performance_month = ""
+    score = MPM_candidate_selector(context)._score_loss(
         candidate_resource, motivating_informations, MPM["Goal Loss"]
     )
     assert score == pytest.approx(0.0696296)

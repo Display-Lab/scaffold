@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.12,<3.14"
 
 dependencies = [
+  "scaffold-sdk>=0.1.0,<0.2.0",
   "pandas>=2.2.3,<3.0.0",
   "fastapi>=0.115.12,<1.0.0",
   "rdflib>=7.1.4,<8.0.0",
