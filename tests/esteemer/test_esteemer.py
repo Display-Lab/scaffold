@@ -315,8 +315,30 @@ def test_social_better_score(performance_data_frame, comparator_data_frame):
     )
     assert score == pytest.approx(0.05)
 
+@pytest.fixture
+def comparator_data():
+    comparator_data = [
+        [
+            "period.start",
+            "measureScore.rate",
+            "group.code",
+        ],
+        ["2023-11-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2023-11-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2023-11-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2023-11-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["2023-12-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2023-12-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2023-12-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2023-12-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["2024-01-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
+        ["2024-01-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
+        ["2024-01-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
+        ["2024-01-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+    ]
+    return comparator_data
 
-def test_social_worse_score():
+def test_social_worse_score(comparator_data):
     data_frame = pd.DataFrame(
         {
             "subject": [157, 157, 157],
@@ -337,26 +359,7 @@ def test_social_worse_score():
             "http://purl.obolibrary.org/obo/PSDO_0000094",
         ],
     )
-    comparator_data = [
-        [
-            "period.start",
-            "measureScore.rate",
-            "group.code",
-        ],
-        ["2023-11-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2023-11-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["2023-11-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["2023-11-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["2023-12-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2023-12-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["2023-12-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["2023-12-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["2024-01-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2024-01-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["2024-01-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["2024-01-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-    ]
-
+    
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
 
     graph = Graph()
@@ -452,7 +455,7 @@ def test_worsening_score():
     assert score == pytest.approx(0.02)
 
 
-def test_goal_gain_score():
+def test_goal_gain_score(comparator_data):
     data_frame = pd.DataFrame(
         {
             "measure": ["PONV05", "PONV05", "PONV05"],
@@ -463,25 +466,6 @@ def test_goal_gain_score():
         columns=["measure", "period.start", "valid", "measureScore.rate"],
     )
 
-    comparator_data = [
-        [
-            "period.start",
-            "measureScore.rate",
-            "group.code",
-        ],
-        ["2023-11-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2023-11-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["2023-11-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["2023-11-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["2023-12-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2023-12-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["2023-12-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["2023-12-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["2024-01-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2024-01-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["2024-01-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["2024-01-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-    ]
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
     graph = Graph()
     candidate_resource = graph.resource(BNode())
@@ -508,7 +492,7 @@ def test_goal_gain_score():
     assert score == pytest.approx(0.062407407407407404)
 
 
-def test_goal_loss_score():
+def test_goal_loss_score(comparator_data):
     data_frame = pd.DataFrame(
         {
             "measure": ["PONV05", "PONV05", "PONV05"],
@@ -518,25 +502,7 @@ def test_goal_loss_score():
         },
         columns=["measure", "period.start", "valid", "measureScore.rate"],
     )
-    comparator_data = [
-        [
-            "period.start",
-            "measureScore.rate",
-            "group.code",
-        ],
-        ["2023-11-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2023-11-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["2023-11-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["2023-11-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["2023-12-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2023-12-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["2023-12-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["2023-12-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["2024-01-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2024-01-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["2024-01-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["2024-01-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-    ]
+    
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
 
     graph = Graph()
