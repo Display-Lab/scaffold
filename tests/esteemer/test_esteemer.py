@@ -1,4 +1,3 @@
-import json
 from unittest.mock import patch
 
 import pandas as pd
@@ -11,94 +10,12 @@ from src.bitstomach.signals import Achievement, Comparison, Loss, Trend
 from src.esteemer.mpm_candidate_selector import MPM_candidate_selector
 from src.utils.namespace import PSDO, SLOWMO
 
-TEMPLATE_A = "https://repo.metadatacenter.org/template-instances/9e71ec9e-26f3-442a-8278-569bcd58e708"
-MPM = {
-    "Social Worse": {
-        "comparison_size": 0.5,
-        "message_recency": 0.9,
-        "message_recurrence": 0.5,
-        "measure_recency": 0.5,
-        "coachiness": 1.0,
-    },
-    "Social Better": {
-        "comparison_size": 0.5,
-        "message_recency": 0.9,
-        "message_recurrence": 0.9,
-        "measure_recency": 0.5,
-        "coachiness": 0.0,
-        "history": 0.7,
-    },
-    "Improving": {
-        "trend_size": 0.8,
-        "message_recency": 0.9,
-        "message_recurrence": 0.9,
-        "measure_recency": 1.0,
-        "coachiness": 0.5,
-    },
-    "Worsening": {
-        "trend_size": 0.8,
-        "message_recency": 0.9,
-        "message_recurrence": 0.5,
-        "measure_recency": 1.0,
-        "coachiness": 1.0,
-    },
-    "Goal Gain": {
-        "comparison_size": 0.5,
-        "trend_size": 0.8,
-        "achievement_recency": 0.5,
-        "message_recency": 0.9,
-        "message_recurrence": 0.9,
-        "measure_recency": 0.5,
-        "coachiness": 0.5,
-    },
-    "Goal Loss": {
-        "comparison_size": 0.5,
-        "trend_size": 0.8,
-        "loss_recency": 0.5,
-        "message_recency": 0.9,
-        "message_recurrence": 0.5,
-        "measure_recency": 0.5,
-        "coachiness": 1.0,
-    },
-}
-
-comparators = [
-    {
-        "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
-        "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"],
-    },
-    {
-        "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
-        "@type": [
-            "http://purl.obolibrary.org/obo/PSDO_0000093",
-            "http://purl.obolibrary.org/obo/PSDO_0000095",
-        ],
-    },
-    {
-        "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
-        "@type": [
-            "http://purl.obolibrary.org/obo/PSDO_0000093",
-            "http://purl.obolibrary.org/obo/PSDO_0000095",
-        ],
-    },
-    {
-        "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
-        "@type": [
-            "http://purl.obolibrary.org/obo/PSDO_0000093",
-            "http://purl.obolibrary.org/obo/PSDO_0000095",
-        ],
-    },
-]
-jsonld_str = json.dumps(comparators)
-
-context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
-
 
 @pytest.fixture
-def history():
+def history(template_a):
     return {
         "2023-04-01": {
-            "message_template": TEMPLATE_A,
+            "message_template": template_a,
             "acceptable_by": "Social better",
             "measure": "PONV05",
         },
@@ -108,7 +25,7 @@ def history():
             "measure": "PONV05",
         },
         "2023-06-01": {
-            "message_template": TEMPLATE_A,
+            "message_template": template_a,
             "acceptable_by": "Social Better",
             "measure": "PONV05",
         },
@@ -121,7 +38,7 @@ def history():
 
 
 @pytest.fixture
-def performance_data_frame():
+def performance_data_frame(set_desired_increase_graph):
     performance_data = [
         [
             "subject",
@@ -141,16 +58,7 @@ def performance_data_frame():
     context.performance_month = "2023-08-01"
     perf_df = prepare()
 
-    g = Graph()
-    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add(
-        (
-            BNode("PONV05"),
-            PSDO.has_desired_direction,
-            Literal(str(PSDO.desired_increase)),
-        )
-    )
-    startup.base_graph = g
+    set_desired_increase_graph("PONV05")
 
     return perf_df
 
@@ -182,33 +90,16 @@ def comparator_data_frame():
 
 
 @pytest.fixture
-def candidate_resource(performance_data_frame, comparator_data_frame):
-    graph = Graph()
-
-    candidate_resource = graph.resource(BNode())
-    candidate_resource[SLOWMO.RegardingComparator] = PSDO.peer_90th_percentile_benchmark
-    candidate_resource[SLOWMO.AcceptableBy] = Literal("Social Better")
-    candidate_resource[SLOWMO.AncestorTemplate] = URIRef(TEMPLATE_A)
-    candidate_resource[SLOWMO.RegardingMeasure] = BNode("PONV05")
-
-    motivating_informations = Comparison.detect(
-        performance_data_frame, comparator_data_frame
-    )
-
-    performance_content = graph.resource(BNode("performance_content"))
-    for s in motivating_informations:
-        candidate_resource.add(PSDO.motivating_information, s)
-        s[SLOWMO.RegardingMeasure] = BNode("PONV05")
-        performance_content.add(PSDO.motivating_information, s.identifier)
-        graph += s.graph
-
-    return candidate_resource
+def candidate_resource(
+    performance_data_frame, comparator_data_frame, build_comparison_candidate
+):
+    return build_comparison_candidate(performance_data_frame, comparator_data_frame)
 
 
 @pytest.fixture(autouse=True)
-def patched_dependencies():
+def patched_dependencies(history, mpm):
     with (
-        patch.object(MPM_candidate_selector, "_load_mpm_from_env", return_value=MPM),
+        patch.object(MPM_candidate_selector, "_load_mpm_from_env", return_value=mpm),
         patch.object(MPM_candidate_selector, "_load_history", return_value=history),
         patch.object(
             MPM_candidate_selector, "_load_preferences", return_value=({}, {})
@@ -289,16 +180,16 @@ def test_no_history_signal_is_score_0(candidate_resource):
     )
 
 
-def test_history_with_two_recurrances(candidate_resource, history):
+def test_history_with_two_recurrances(candidate_resource, history, mpm):
     context.subject = 157
     context.performance_month = "2023-08-01"
     score = MPM_candidate_selector(context)._score_history(
-        candidate_resource, history, MPM["Social Better"]
+        candidate_resource, history, mpm["Social Better"]
     )
     assert score == pytest.approx(0.586589)
 
 
-def test_social_better_score(performance_data_frame, comparator_data_frame):
+def test_social_better_score(performance_data_frame, comparator_data_frame, mpm):
     graph = Graph()
     candidate_resource = graph.resource(BNode())
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.peer_90th_percentile_benchmark
@@ -311,7 +202,7 @@ def test_social_better_score(performance_data_frame, comparator_data_frame):
     context.performance_month = ""
 
     score = MPM_candidate_selector(context)._score_better(
-        candidate_resource, motivating_informations, MPM["Social Better"]
+        candidate_resource, motivating_informations, mpm["Social Better"]
     )
     assert score == pytest.approx(0.05)
 
@@ -338,7 +229,7 @@ def comparator_data():
     ]
     return comparator_data
 
-def test_social_worse_score(comparator_data):
+def test_social_worse_score(comparator_data, set_desired_increase_graph, mpm):
     data_frame = pd.DataFrame(
         {
             "subject": [157, 157, 157],
@@ -367,41 +258,23 @@ def test_social_worse_score(comparator_data):
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.peer_average_comparator
     candidate_resource[SLOWMO.AcceptableBy] = Literal("Social Worse")
 
-    g = Graph()
-    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add(
-        (
-            BNode("PONV05"),
-            PSDO.has_desired_direction,
-            Literal(str(PSDO.desired_increase)),
-        )
-    )
-    startup.base_graph = g
+    set_desired_increase_graph("PONV05")
 
     motivating_informations = Comparison.detect(data_frame, comparator_df)
     context.subject = 157
     context.performance_month = ""
     score = MPM_candidate_selector(context)._score_worse(
-        candidate_resource, motivating_informations, MPM["Social Worse"]
+        candidate_resource, motivating_informations, mpm["Social Worse"]
     )
     assert score == pytest.approx(0.02)
 
 
-def test_improving_score():
+def test_improving_score(set_desired_increase_graph, mpm):
     graph = Graph()
     candidate_resource = graph.resource(BNode())
     candidate_resource[SLOWMO.AcceptableBy] = Literal("Improving")
 
-    g = Graph()
-    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add(
-        (
-            BNode("PONV05"),
-            PSDO.has_desired_direction,
-            Literal(str(PSDO.desired_increase)),
-        )
-    )
-    startup.base_graph = g
+    set_desired_increase_graph("PONV05")
 
     motivating_informations = Trend.detect(
         pd.DataFrame(
@@ -416,26 +289,17 @@ def test_improving_score():
     context.subject = 157
     context.performance_month = ""
     score = MPM_candidate_selector(context)._score_improving(
-        candidate_resource, motivating_informations, MPM["Improving"]
+        candidate_resource, motivating_informations, mpm["Improving"]
     )
     assert score == pytest.approx(0.02)
 
 
-def test_worsening_score():
+def test_worsening_score(set_desired_increase_graph, mpm):
     graph = Graph()
     candidate_resource = graph.resource(BNode())
     candidate_resource[SLOWMO.AcceptableBy] = Literal("Worsening")
 
-    g = Graph()
-    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add(
-        (
-            BNode("PONV05"),
-            PSDO.has_desired_direction,
-            Literal(str(PSDO.desired_increase)),
-        )
-    )
-    startup.base_graph = g
+    set_desired_increase_graph("PONV05")
 
     motivating_informations = Trend.detect(
         pd.DataFrame(
@@ -450,12 +314,12 @@ def test_worsening_score():
     context.subject = 157
     context.performance_month = ""
     score = MPM_candidate_selector(context)._score_worsening(
-        candidate_resource, motivating_informations, MPM["Worsening"]
+        candidate_resource, motivating_informations, mpm["Worsening"]
     )
     assert score == pytest.approx(0.02)
 
 
-def test_goal_gain_score(comparator_data):
+def test_goal_gain_score(comparator_data, set_desired_increase_graph, mpm):
     data_frame = pd.DataFrame(
         {
             "measure": ["PONV05", "PONV05", "PONV05"],
@@ -472,27 +336,18 @@ def test_goal_gain_score(comparator_data):
     candidate_resource[SLOWMO.AcceptableBy] = Literal("Goal Gain")
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.goal_comparator_content
 
-    g = Graph()
-    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add(
-        (
-            BNode("PONV05"),
-            PSDO.has_desired_direction,
-            Literal(str(PSDO.desired_increase)),
-        )
-    )
-    startup.base_graph = g
+    set_desired_increase_graph("PONV05")
 
     motivating_informations = Achievement.detect(data_frame, comparator_df)
     context.subject = 157
     context.performance_month = ""
     score = MPM_candidate_selector(context)._score_gain(
-        candidate_resource, motivating_informations, MPM["Goal Gain"]
+        candidate_resource, motivating_informations, mpm["Goal Gain"]
     )
     assert score == pytest.approx(0.062407407407407404)
 
 
-def test_goal_loss_score(comparator_data):
+def test_goal_loss_score(comparator_data, set_desired_increase_graph, mpm):
     data_frame = pd.DataFrame(
         {
             "measure": ["PONV05", "PONV05", "PONV05"],
@@ -510,21 +365,12 @@ def test_goal_loss_score(comparator_data):
     candidate_resource[SLOWMO.AcceptableBy] = Literal("Goal Loss")
     candidate_resource[SLOWMO.RegardingComparator] = PSDO.goal_comparator_content
 
-    g = Graph()
-    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add(
-        (
-            BNode("PONV05"),
-            PSDO.has_desired_direction,
-            Literal(str(PSDO.desired_increase)),
-        )
-    )
-    startup.base_graph = g
+    set_desired_increase_graph("PONV05")
 
     motivating_informations = Loss.detect(data_frame, comparator_df)
     context.subject = 157
     context.performance_month = ""
     score = MPM_candidate_selector(context)._score_loss(
-        candidate_resource, motivating_informations, MPM["Goal Loss"]
+        candidate_resource, motivating_informations, mpm["Goal Loss"]
     )
     assert score == pytest.approx(0.0696296)

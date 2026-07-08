@@ -1,10 +1,9 @@
-import json
 from datetime import datetime
 from unittest.mock import patch
 
 import pandas as pd
 import pytest
-from rdflib import RDF, XSD, BNode, Graph, Literal, URIRef
+from rdflib import XSD, BNode, Graph, Literal, URIRef
 
 from src import context, startup
 from src.bitstomach.bitstomach import prepare
@@ -13,93 +12,11 @@ from src.esteemer.mpm_candidate_selector import MPM_candidate_selector
 from src.esteemer.signals._history import History
 from src.utils.namespace import PSDO, SLOWMO
 
-TEMPLATE_A = "https://repo.metadatacenter.org/template-instances/9e71ec9e-26f3-442a-8278-569bcd58e708"
-MPM = {
-    "Social Worse": {
-        "comparison_size": 0.5,
-        "message_recency": 0.9,
-        "message_recurrence": 0.5,
-        "measure_recency": 0.5,
-        "coachiness": 1.0,
-    },
-    "Social Better": {
-        "comparison_size": 0.5,
-        "message_recency": 0.9,
-        "message_recurrence": 0.9,
-        "measure_recency": 0.5,
-        "coachiness": 0.0,
-        "history": 0.7,
-    },
-    "improving": {
-        "trend_size": 0.8,
-        "message_recency": 0.9,
-        "message_recurrence": 0.9,
-        "measure_recency": 1.0,
-        "coachiness": 0.5,
-    },
-    "Worsening": {
-        "trend_size": 0.8,
-        "message_recency": 0.9,
-        "message_recurrence": 0.5,
-        "measure_recency": 1.0,
-        "coachiness": 1.0,
-    },
-    "Goal Gain": {
-        "comparison_size": 0.5,
-        "trend_size": 0.8,
-        "achievement_recency": 0.5,
-        "message_recency": 0.9,
-        "message_recurrence": 0.9,
-        "measure_recency": 0.5,
-        "coachiness": 0.5,
-    },
-    "Goal Loss": {
-        "comparison_size": 0.5,
-        "trend_size": 0.8,
-        "loss_recency": 0.5,
-        "message_recency": 0.9,
-        "message_recurrence": 0.5,
-        "measure_recency": 0.5,
-        "coachiness": 1.0,
-    },
-}
-
-comparators = [
-    {
-        "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
-        "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"],
-    },
-    {
-        "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
-        "@type": [
-            "http://purl.obolibrary.org/obo/PSDO_0000093",
-            "http://purl.obolibrary.org/obo/PSDO_0000095",
-        ],
-    },
-    {
-        "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
-        "@type": [
-            "http://purl.obolibrary.org/obo/PSDO_0000093",
-            "http://purl.obolibrary.org/obo/PSDO_0000095",
-        ],
-    },
-    {
-        "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
-        "@type": [
-            "http://purl.obolibrary.org/obo/PSDO_0000093",
-            "http://purl.obolibrary.org/obo/PSDO_0000095",
-        ],
-    },
-]
-jsonld_str = json.dumps(comparators)
-
-context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
-
 @pytest.fixture
-def history_periodic():
+def history_periodic(template_a):
     return {
         "2023-01-01": {
-            "message_template": TEMPLATE_A,
+            "message_template": template_a,
             "acceptable_by": "Social better",
             "measure": "PONV05",
         },
@@ -109,7 +26,7 @@ def history_periodic():
             "measure": "PONV05",
         },
         "2023-07-01": {
-            "message_template": TEMPLATE_A,
+            "message_template": template_a,
             "acceptable_by": "Social Better",
             "measure": "PONV05",
         },
@@ -122,7 +39,7 @@ def history_periodic():
 
 
 @pytest.fixture
-def performance_data_frame_periodic():
+def performance_data_frame_periodic(set_desired_increase_graph):
     performance_data = [
         [
             "subject",
@@ -140,16 +57,7 @@ def performance_data_frame_periodic():
     context.subject = 157
     context.performance_df = performance_df
     context.performance_month = "2024-01-01"
-    g = Graph()
-    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add(
-        (
-            BNode("PONV05"),
-            PSDO.has_desired_direction,
-            Literal(str(PSDO.desired_increase)),
-        )
-    )
-    startup.base_graph = g
+    set_desired_increase_graph("PONV05")
     perf_df = prepare()
     return perf_df
 
@@ -182,35 +90,20 @@ def comparator_data_frame_periodic():
 
 @pytest.fixture
 def candidate_resource_periodic(
-    performance_data_frame_periodic, comparator_data_frame_periodic
+    performance_data_frame_periodic,
+    comparator_data_frame_periodic,
+    build_comparison_candidate,
 ):
-    graph = Graph()
-
-    candidate_resource = graph.resource(BNode())
-    candidate_resource[SLOWMO.RegardingComparator] = PSDO.peer_90th_percentile_benchmark
-    candidate_resource[SLOWMO.AcceptableBy] = Literal("Social Better")
-    candidate_resource[SLOWMO.AncestorTemplate] = URIRef(TEMPLATE_A)
-    candidate_resource[SLOWMO.RegardingMeasure] = BNode("PONV05")
-
-    motivating_informations = Comparison.detect(
+    return build_comparison_candidate(
         performance_data_frame_periodic, comparator_data_frame_periodic
     )
 
-    performance_content = graph.resource(BNode("performance_content"))
-    for s in motivating_informations:
-        candidate_resource.add(PSDO.motivating_information, s)
-        s[SLOWMO.RegardingMeasure] = BNode("PONV05")
-        performance_content.add(PSDO.motivating_information, s.identifier)
-        graph += s.graph
-
-    return candidate_resource
-
 
 def test_history_with_two_recurrances_periodic(
-    candidate_resource_periodic, history_periodic
+    candidate_resource_periodic, history_periodic, mpm, template_a
 ):
     with (
-        patch.object(MPM_candidate_selector, "_load_mpm_from_env", return_value=MPM),
+        patch.object(MPM_candidate_selector, "_load_mpm_from_env", return_value=mpm),
         patch.object(MPM_candidate_selector, "_load_history", return_value=history_periodic),
         patch.object(
             MPM_candidate_selector, "_load_preferences", return_value=({}, {})
@@ -219,7 +112,7 @@ def test_history_with_two_recurrances_periodic(
         context.subject = 157
         context.performance_month = "2024-01-01"
         score = MPM_candidate_selector(context)._score_history(
-            candidate_resource_periodic, history_periodic, MPM["Social Better"]
+            candidate_resource_periodic, history_periodic, mpm["Social Better"]
         )
 
     assert score == pytest.approx(0.70325174)
@@ -228,7 +121,7 @@ def test_history_with_two_recurrances_periodic(
         history_periodic,
         {
             datetime.fromisoformat("2024-01-01"): {
-                "message_template": TEMPLATE_A,
+                "message_template": template_a,
                 "acceptable_by": "Social better",
                 "measure": "PONV05",
             }
