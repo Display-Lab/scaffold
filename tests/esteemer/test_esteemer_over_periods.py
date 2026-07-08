@@ -3,14 +3,18 @@ from unittest.mock import patch
 
 import pandas as pd
 import pytest
-from rdflib import XSD, BNode, Graph, Literal, URIRef
+from rdflib import XSD, Literal, URIRef
 
-from src import context, startup
+from src import context
 from src.bitstomach.bitstomach import prepare
-from src.bitstomach.signals import Comparison
 from src.esteemer.mpm_candidate_selector import MPM_candidate_selector
 from src.esteemer.signals._history import History
-from src.utils.namespace import PSDO, SLOWMO
+from src.utils.namespace import PSDO
+
+PEER_AVERAGE_URI = str(PSDO.peer_average_comparator)
+PEER_75TH_URI = str(PSDO.peer_75th_percentile_benchmark)
+PEER_90TH_URI = str(PSDO.peer_90th_percentile_benchmark)
+GOAL_COMPARATOR_URI = str(PSDO.goal_comparator_content)
 
 @pytest.fixture
 def history_periodic(template_a):
@@ -71,18 +75,18 @@ def comparator_data_frame_periodic():
             "measureScore.rate",
             "group.code",
         ],
-        ["PONV05", "2023-07-01", 84.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["PONV05", "2023-07-01", 88.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["PONV05", "2023-07-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["PONV05", "2023-07-01", 99.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["PONV05", "2023-10-01", 84.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["PONV05", "2023-10-01", 88.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["PONV05", "2023-10-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["PONV05", "2023-10-01", 99.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["PONV05", "2024-01-01", 84.0, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["PONV05", "2024-01-01", 88.0, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["PONV05", "2024-01-01", 90.0, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["PONV05", "2024-01-01", 99.0, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["PONV05", "2023-07-01", 84.0, PEER_AVERAGE_URI],
+        ["PONV05", "2023-07-01", 88.0, PEER_75TH_URI],
+        ["PONV05", "2023-07-01", 90.0, PEER_90TH_URI],
+        ["PONV05", "2023-07-01", 99.0, GOAL_COMPARATOR_URI],
+        ["PONV05", "2023-10-01", 84.0, PEER_AVERAGE_URI],
+        ["PONV05", "2023-10-01", 88.0, PEER_75TH_URI],
+        ["PONV05", "2023-10-01", 90.0, PEER_90TH_URI],
+        ["PONV05", "2023-10-01", 99.0, GOAL_COMPARATOR_URI],
+        ["PONV05", "2024-01-01", 84.0, PEER_AVERAGE_URI],
+        ["PONV05", "2024-01-01", 88.0, PEER_75TH_URI],
+        ["PONV05", "2024-01-01", 90.0, PEER_90TH_URI],
+        ["PONV05", "2024-01-01", 99.0, GOAL_COMPARATOR_URI],
     ]
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
     return comparator_df

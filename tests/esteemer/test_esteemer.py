@@ -4,11 +4,16 @@ import pandas as pd
 import pytest
 from rdflib import RDF, BNode, Graph, Literal, URIRef
 
-from src import context, startup
+from src import context
 from src.bitstomach.bitstomach import prepare
 from src.bitstomach.signals import Achievement, Comparison, Loss, Trend
 from src.esteemer.mpm_candidate_selector import MPM_candidate_selector
 from src.utils.namespace import PSDO, SLOWMO
+
+PEER_AVERAGE_URI = str(PSDO.peer_average_comparator)
+PEER_75TH_URI = str(PSDO.peer_75th_percentile_benchmark)
+PEER_90TH_URI = str(PSDO.peer_90th_percentile_benchmark)
+GOAL_COMPARATOR_URI = str(PSDO.goal_comparator_content)
 
 
 @pytest.fixture
@@ -72,18 +77,18 @@ def comparator_data_frame():
             "measureScore.rate",
             "group.code",
         ],
-        ["PONV05", "2023-06-01", 0.84, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["PONV05", "2023-06-01", 0.88, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["PONV05", "2023-06-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["PONV05", "2023-06-01", 0.99, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["PONV05", "2023-07-01", 0.84, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["PONV05", "2023-07-01", 0.88, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["PONV05", "2023-07-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["PONV05", "2023-07-01", 0.99, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["PONV05", "2023-08-01", 0.84, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["PONV05", "2023-08-01", 0.88, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["PONV05", "2023-08-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["PONV05", "2023-08-01", 0.99, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["PONV05", "2023-06-01", 0.84, PEER_AVERAGE_URI],
+        ["PONV05", "2023-06-01", 0.88, PEER_75TH_URI],
+        ["PONV05", "2023-06-01", 0.90, PEER_90TH_URI],
+        ["PONV05", "2023-06-01", 0.99, GOAL_COMPARATOR_URI],
+        ["PONV05", "2023-07-01", 0.84, PEER_AVERAGE_URI],
+        ["PONV05", "2023-07-01", 0.88, PEER_75TH_URI],
+        ["PONV05", "2023-07-01", 0.90, PEER_90TH_URI],
+        ["PONV05", "2023-07-01", 0.99, GOAL_COMPARATOR_URI],
+        ["PONV05", "2023-08-01", 0.84, PEER_AVERAGE_URI],
+        ["PONV05", "2023-08-01", 0.88, PEER_75TH_URI],
+        ["PONV05", "2023-08-01", 0.90, PEER_90TH_URI],
+        ["PONV05", "2023-08-01", 0.99, GOAL_COMPARATOR_URI],
     ]
     comparator_df = pd.DataFrame(comparator_data[1:], columns=comparator_data[0])
     return comparator_df
@@ -152,9 +157,10 @@ def test_select_candidate():
             candidate3[SLOWMO.AcceptableBy] = Literal("Social Worse")
             selected_candidate = MPM_candidate_selector(context).select_candidate()
             assert str(selected_candidate.identifier) in ["candidate1", "candidate3"]
-            assert graph.resource(selected_candidate.identifier).value(
+            selected_score = graph.resource(selected_candidate.identifier).value(
                 SLOWMO.Score
-            ) == Literal(0.2)
+            )
+            assert selected_score.toPython() == pytest.approx(0.2)
 
 
 def test_get_trend_info():
@@ -214,18 +220,18 @@ def comparator_data():
             "measureScore.rate",
             "group.code",
         ],
-        ["2023-11-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2023-11-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["2023-11-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["2023-11-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["2023-12-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2023-12-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["2023-12-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["2023-12-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
-        ["2024-01-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000126"],
-        ["2024-01-01", 0.92, "http://purl.obolibrary.org/obo/PSDO_0000128"],
-        ["2024-01-01", 0.94, "http://purl.obolibrary.org/obo/PSDO_0000129"],
-        ["2024-01-01", 0.90, "http://purl.obolibrary.org/obo/PSDO_0000094"],
+        ["2023-11-01", 0.90, PEER_AVERAGE_URI],
+        ["2023-11-01", 0.92, PEER_75TH_URI],
+        ["2023-11-01", 0.94, PEER_90TH_URI],
+        ["2023-11-01", 0.90, GOAL_COMPARATOR_URI],
+        ["2023-12-01", 0.90, PEER_AVERAGE_URI],
+        ["2023-12-01", 0.92, PEER_75TH_URI],
+        ["2023-12-01", 0.94, PEER_90TH_URI],
+        ["2023-12-01", 0.90, GOAL_COMPARATOR_URI],
+        ["2024-01-01", 0.90, PEER_AVERAGE_URI],
+        ["2024-01-01", 0.92, PEER_75TH_URI],
+        ["2024-01-01", 0.94, PEER_90TH_URI],
+        ["2024-01-01", 0.90, GOAL_COMPARATOR_URI],
     ]
     return comparator_data
 
@@ -244,10 +250,10 @@ def test_social_worse_score(comparator_data, set_desired_increase_graph, mpm):
             "period.start",
             "valid",
             "measureScore.rate",
-            "http://purl.obolibrary.org/obo/PSDO_0000126",
-            "http://purl.obolibrary.org/obo/PSDO_0000128",
-            "http://purl.obolibrary.org/obo/PSDO_0000129",
-            "http://purl.obolibrary.org/obo/PSDO_0000094",
+            PEER_AVERAGE_URI,
+            PEER_75TH_URI,
+            PEER_90TH_URI,
+            GOAL_COMPARATOR_URI,
         ],
     )
     

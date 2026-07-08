@@ -9,8 +9,12 @@ from src.utils.namespace import PSDO, SLOWMO
 
 JSONLD_ID_KEY = "@id"
 JSONLD_TYPE_KEY = "@type"
-PSDO_COMPARATOR_TYPE = "http://purl.obolibrary.org/obo/PSDO_0000093"
-PSDO_PEER_GROUP_TYPE = "http://purl.obolibrary.org/obo/PSDO_0000095"
+PSDO_COMPARATOR_TYPE = str(PSDO.comparator_content)
+PSDO_PEER_GROUP_TYPE = str(PSDO.social_comparator_content)
+PSDO_GOAL_COMPARATOR_URI = str(PSDO.goal_comparator_content)
+PSDO_PEER_AVERAGE_URI = str(PSDO.peer_average_comparator)
+PSDO_PEER_75TH_URI = str(PSDO.peer_75th_percentile_benchmark)
+PSDO_PEER_90TH_URI = str(PSDO.peer_90th_percentile_benchmark)
 
 
 @pytest.fixture
@@ -75,25 +79,25 @@ def mpm():
 def comparators():
     return [
         {
-            JSONLD_ID_KEY: "http://purl.obolibrary.org/obo/PSDO_0000094",
+            JSONLD_ID_KEY: PSDO_GOAL_COMPARATOR_URI,
             JSONLD_TYPE_KEY: [PSDO_COMPARATOR_TYPE],
         },
         {
-            JSONLD_ID_KEY: "http://purl.obolibrary.org/obo/PSDO_0000126",
+            JSONLD_ID_KEY: PSDO_PEER_AVERAGE_URI,
             JSONLD_TYPE_KEY: [
                 PSDO_COMPARATOR_TYPE,
                 PSDO_PEER_GROUP_TYPE,
             ],
         },
         {
-            JSONLD_ID_KEY: "http://purl.obolibrary.org/obo/PSDO_0000128",
+            JSONLD_ID_KEY: PSDO_PEER_75TH_URI,
             JSONLD_TYPE_KEY: [
                 PSDO_COMPARATOR_TYPE,
                 PSDO_PEER_GROUP_TYPE,
             ],
         },
         {
-            JSONLD_ID_KEY: "http://purl.obolibrary.org/obo/PSDO_0000129",
+            JSONLD_ID_KEY: PSDO_PEER_90TH_URI,
             JSONLD_TYPE_KEY: [
                 PSDO_COMPARATOR_TYPE,
                 PSDO_PEER_GROUP_TYPE,
