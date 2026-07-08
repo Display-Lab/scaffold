@@ -7,6 +7,11 @@ from src import context, startup
 from src.bitstomach.signals import Comparison
 from src.utils.namespace import PSDO, SLOWMO
 
+JSONLD_ID_KEY = "@id"
+JSONLD_TYPE_KEY = "@type"
+PSDO_COMPARATOR_TYPE = "http://purl.obolibrary.org/obo/PSDO_0000093"
+PSDO_PEER_GROUP_TYPE = "http://purl.obolibrary.org/obo/PSDO_0000095"
+
 
 @pytest.fixture
 def template_a():
@@ -70,28 +75,28 @@ def mpm():
 def comparators():
     return [
         {
-            "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
-            "@type": ["http://purl.obolibrary.org/obo/PSDO_0000093"],
+            JSONLD_ID_KEY: "http://purl.obolibrary.org/obo/PSDO_0000094",
+            JSONLD_TYPE_KEY: [PSDO_COMPARATOR_TYPE],
         },
         {
-            "@id": "http://purl.obolibrary.org/obo/PSDO_0000126",
-            "@type": [
-                "http://purl.obolibrary.org/obo/PSDO_0000093",
-                "http://purl.obolibrary.org/obo/PSDO_0000095",
+            JSONLD_ID_KEY: "http://purl.obolibrary.org/obo/PSDO_0000126",
+            JSONLD_TYPE_KEY: [
+                PSDO_COMPARATOR_TYPE,
+                PSDO_PEER_GROUP_TYPE,
             ],
         },
         {
-            "@id": "http://purl.obolibrary.org/obo/PSDO_0000128",
-            "@type": [
-                "http://purl.obolibrary.org/obo/PSDO_0000093",
-                "http://purl.obolibrary.org/obo/PSDO_0000095",
+            JSONLD_ID_KEY: "http://purl.obolibrary.org/obo/PSDO_0000128",
+            JSONLD_TYPE_KEY: [
+                PSDO_COMPARATOR_TYPE,
+                PSDO_PEER_GROUP_TYPE,
             ],
         },
         {
-            "@id": "http://purl.obolibrary.org/obo/PSDO_0000129",
-            "@type": [
-                "http://purl.obolibrary.org/obo/PSDO_0000093",
-                "http://purl.obolibrary.org/obo/PSDO_0000095",
+            JSONLD_ID_KEY: "http://purl.obolibrary.org/obo/PSDO_0000129",
+            JSONLD_TYPE_KEY: [
+                PSDO_COMPARATOR_TYPE,
+                PSDO_PEER_GROUP_TYPE,
             ],
         },
     ]
