@@ -24,7 +24,6 @@ dependencies = [
   "uvicorn>=0.34.2,<1.0.0",
   "gunicorn>=23.0.0,<24.0.0",
   "dotenv>=0.9.9,<1.0.0",
-
 ]
 
 [project.entry-points."scaffold.esteemer"]
@@ -40,6 +39,9 @@ pipeline = "src.cli:cli"
 [tool.ruff.lint]
 extend-select = ["I", "C901"]
 mccabe.max-complexity = 5
+
+[tool.uv.sources]
+scaffold-sdk = { url = "https://github.com/Display-Lab/scaffold/releases/download/v2.1.4/scaffold_sdk-0.1.0-py3-none-any.whl" }
 
 [build-system]
 requires = ["setuptools", "wheel"]
