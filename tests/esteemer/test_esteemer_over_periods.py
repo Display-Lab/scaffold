@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from unittest.mock import patch
+
 import pandas as pd
 import pytest
 from rdflib import RDF, XSD, BNode, Graph, Literal, URIRef
@@ -8,9 +9,7 @@ from rdflib import RDF, XSD, BNode, Graph, Literal, URIRef
 from src import context, startup
 from src.bitstomach.bitstomach import prepare
 from src.bitstomach.signals import Comparison
-from scaffold_sdk.esteemer import Esteemer
 from src.esteemer.mpm_candidate_selector import MPM_candidate_selector
-
 from src.esteemer.signals._history import History
 from src.utils.namespace import PSDO, SLOWMO
 
@@ -144,10 +143,16 @@ def performance_data_frame():
     context.performance_month = "2023-08-01"
     g = Graph()
     g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("PONV05"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
+    g.add(
+        (
+            BNode("PONV05"),
+            PSDO.has_desired_direction,
+            Literal(str(PSDO.desired_increase)),
+        )
+    )
     startup.base_graph = g
     perf_df = prepare()
-    
+
     return perf_df
 
 
@@ -202,22 +207,19 @@ def candidate_resource(performance_data_frame, comparator_data_frame):
 
 
 def test_history_with_two_recurrances(candidate_resource, history):
-    with patch.object(MPM_candidate_selector,
-        "_load_mpm_from_env",
-        return_value=MPM
-    ), patch.object(
-        MPM_candidate_selector,
-        "_load_history",
-        return_value=history
-    ), patch.object(
-        MPM_candidate_selector,
-        "_load_preferences",
-        return_value=({},{})
+    with (
+        patch.object(MPM_candidate_selector, "_load_mpm_from_env", return_value=MPM),
+        patch.object(MPM_candidate_selector, "_load_history", return_value=history),
+        patch.object(
+            MPM_candidate_selector, "_load_preferences", return_value=({}, {})
+        ),
     ):
         context.subject = 157
         context.performance_month = "2023-08-01"
 
-        score = MPM_candidate_selector(context)._score_history(candidate_resource, history, MPM["Social Better"])
+        score = MPM_candidate_selector(context)._score_history(
+            candidate_resource, history, MPM["Social Better"]
+        )
     assert score == pytest.approx(0.586589)
 
     signal = History.detect(
@@ -291,7 +293,13 @@ def performance_data_frame_periodic():
     context.performance_month = "2024-01-01"
     g = Graph()
     g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("PONV05"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
+    g.add(
+        (
+            BNode("PONV05"),
+            PSDO.has_desired_direction,
+            Literal(str(PSDO.desired_increase)),
+        )
+    )
     startup.base_graph = g
     perf_df = prepare()
     return perf_df
@@ -352,17 +360,12 @@ def candidate_resource_periodic(
 def test_history_with_two_recurrances_periodic(
     candidate_resource_periodic, history_periodic
 ):
-    with patch.object(MPM_candidate_selector,
-        "_load_mpm_from_env",
-        return_value=MPM
-    ), patch.object(
-        MPM_candidate_selector,
-        "_load_history",
-        return_value=history
-    ), patch.object(
-        MPM_candidate_selector,
-        "_load_preferences",
-        return_value=({},{})
+    with (
+        patch.object(MPM_candidate_selector, "_load_mpm_from_env", return_value=MPM),
+        patch.object(MPM_candidate_selector, "_load_history", return_value=history),
+        patch.object(
+            MPM_candidate_selector, "_load_preferences", return_value=({}, {})
+        ),
     ):
         context.subject = 157
         context.performance_month = "2024-01-01"

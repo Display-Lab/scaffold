@@ -16,8 +16,24 @@ my-scaffold-esteemer/
       __init__.py
       plugin.py
 ```
+## 2. Add scaffold-sdk to your package
+If you are using uv the following command will add scaffold-sdk as a dependency to your package:
+```
+uv add https://github.com/Display-Lab/scaffold/releases/download/v2.1.4/scaffold_sdk-0.1.0-py3-none-any.whl
+```
 
-## 2. Add plugin metadata and entry point
+So your pyproject.toml will include the following:
+```toml
+...
+dependencies = [
+  "scaffold-sdk",
+]
+
+[tool.uv.sources]
+scaffold-sdk = { url = "https://github.com/Display-Lab/scaffold/releases/download/v2.1.4/scaffold_sdk-0.1.0-py3-none-any.whl" }
+```
+
+## 3. Add plugin metadata and entry point
 
 In your plugin pyproject.toml:
 
@@ -27,7 +43,7 @@ name = "my-scaffold-esteemer"
 version = "0.1.0"
 requires-python = ">=3.12,<3.14"
 dependencies = [
-  "scaffold-sdk>=0.1.0,<0.2.0"
+  "scaffold-sdk",
 ]
 
 [project.entry-points."scaffold.esteemer"]
@@ -35,6 +51,9 @@ my_plugin = "my_scaffold_esteemer.plugin:MyPluginEsteemer"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.uv.sources]
+scaffold-sdk = { url = "https://github.com/Display-Lab/scaffold/releases/download/v2.1.4/scaffold_sdk-0.1.0-py3-none-any.whl" }
 ```
 
 ## 3. Implement the Esteemer class

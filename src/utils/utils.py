@@ -9,7 +9,7 @@ import yaml
 from loguru import logger
 from rdflib import DCTERMS, RDF, BNode, Graph, URIRef
 from rdflib.resource import Resource
-from scaffold_sdk.esteemer import Esteemer
+from scaffold_sdk import Esteemer
 
 from src import context, startup
 from src.utils import SLOWMO

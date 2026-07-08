@@ -48,7 +48,6 @@ source .venv/bin/activate
 ##### For Windows, Mac, and Linux, now complete the following two installs
 
 ```zsh
-pip install ./scaffold-sdk
 pip install . # this will install scaffold 
 ```
 
@@ -58,7 +57,6 @@ pip install . # this will install scaffold
 uv venv
 .venv\Scripts\activate.bat # Windows
 source .venv/bin/activate # Mac / Linux 
-uv pip install -e ./scaffold-sdk
 uv pip install -e .
 uv pip install -e ".[dev]" #to install dev dependencies
 ```
