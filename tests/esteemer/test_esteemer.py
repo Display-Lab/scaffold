@@ -178,11 +178,11 @@ def test_no_history_signal_is_score_0(candidate_resource):
     context.performance_month = "2023-08-01"
     assert (
         MPM_candidate_selector(context)._score_history(candidate_resource, {}, {})
-        == 1.0
+        == pytest.approx(1.0)
     )
     assert (
         MPM_candidate_selector(context)._score_history(candidate_resource, None, {})
-        == 1.0
+        == pytest.approx(1.0)
     )
 
 
