@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-from rdflib import Graph
-
 
 class Esteemer(ABC):
     _instances = {}
@@ -10,7 +8,7 @@ class Esteemer(ABC):
     @abstractmethod
     def select_candidate(self):
         pass
-    
+
     @abstractmethod
     def version(self) -> str:
         pass
@@ -24,8 +22,8 @@ class Esteemer(ABC):
     def __init__(self, context):
         self.performance_month = context.performance_month
         self.subject = context.subject
-        self.req_info =context.request_info
-        self.subject_graph=context.subject_graph
+        self.req_info = context.request_info
+        self.subject_graph = context.subject_graph
 
         if not getattr(self, "_initialized", False):
             self._initialize()

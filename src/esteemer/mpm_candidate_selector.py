@@ -12,6 +12,7 @@ import requests
 from rdflib import XSD, Graph, Literal, URIRef
 from rdflib.resource import Resource
 from requests_file import FileAdapter
+from scaffold_sdk import Esteemer
 
 from src.bitstomach.signals import (
     Achievement,
@@ -21,7 +22,6 @@ from src.bitstomach.signals import (
     Signal,
     Trend,
 )
-from src.esteemer.esteemer import Esteemer
 from src.esteemer.signals import History
 from src.utils import utils
 from src.utils.namespace import PSDO, SLOWMO
@@ -33,10 +33,10 @@ class MPM_candidate_selector(Esteemer):
         self.preferences, self.default_preferences = self._load_preferences()
         self.history = self._load_history()
         self.mpm = self._load_mpm_from_env()
-        
+
     def version(self) -> str:
         return "1.0.0"
-    
+
     def _score(self, candidate: Resource) -> Resource:
         """
         Calculates score for a candidate.
@@ -423,17 +423,21 @@ class MPM_candidate_selector(Esteemer):
             ].to_dict()
         except Exception:
             pass
-        
+
         history_dict_from_request = {}
         try:
             history_list = self.req_info.get("History", {})
             history_dict_from_request = {
-                item["period.start"]: {k: v for k, v in item.items() if k != "period.end" and k != "period.start"}
+                item["period.start"]: {
+                    k: v
+                    for k, v in item.items()
+                    if k != "period.end" and k != "period.start"
+                }
                 for item in history_list
             }
         except Exception:
             pass
-        
+
         for key, value in history_dict_from_request.items():
             if key not in history_dict:
                 history_dict[key] = value
@@ -444,7 +448,7 @@ class MPM_candidate_selector(Esteemer):
         try:
             if self.req_info:
                 p = self.req_info.get("Preferences", {})
-            else: 
+            else:
                 p = ast.literal_eval(self.preferences.loc[subject, "preferences.json"])
             preferences_dict = self._apply_default_preferences(p)
         except Exception:

@@ -1,0 +1,18 @@
+[project]
+name = "scaffold-sdk"
+version = "0.1.0"
+description = "Developer SDK for reusable SCAFFOLD base abstractions"
+readme = "README.md"
+authors = [
+  { name = "Zach Landis-Lewis", email = "zachll@umich.edu" }
+]
+requires-python = ">=3.12,<3.14"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["scaffold_sdk*"]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

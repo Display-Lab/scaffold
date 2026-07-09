@@ -140,6 +140,29 @@ To run SCAFFOLD on the Sandbox Hospital Quality Dashboard Usecase, use the follo
 ENV_PATH=/user/.../.env.dev pipeline  batch-csv 'sandbox/hospital quality dashboard usecase/data/tabular inputs' --performance-month 2025-01-01 --max-files 10
 ```
 
+## Developer SDK imports
+
+SCAFFOLD now exposes reusable developer-facing base classes through the `scaffold_sdk` package namespace.
+
+Example:
+
+```python
+from scaffold_sdk import Esteemer
+```
+
+The SDK is split into a standalone distribution named `scaffold-sdk` in the `scaffold-sdk/` folder.
+
+For local development from this repository, install the SDK first:
+
+```zsh
+pip install -e ./scaffold-sdk
+pip install -e .
+```
+
+## External Esteemer plugin guide
+
+For a complete guide to creating and using an external `scaffold.esteemer` plugin, see [src/esteemer/README.md](src/esteemer/README.md).
+
 ## Environment variables
 
 ### Knowledge base settings
