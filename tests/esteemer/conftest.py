@@ -5,7 +5,7 @@ from rdflib import RDF, BNode, Graph, Literal, URIRef
 
 from src import context, startup
 from src.bitstomach.signals import Comparison
-from src.utils.namespace import PSDO, SLOWMO
+from src.utils.namespace import FHIR, PSDO, SLOWMO
 
 JSONLD_ID_KEY = "@id"
 JSONLD_TYPE_KEY = "@type"
@@ -116,12 +116,12 @@ def setup_subject_graph(comparators):
 def set_desired_increase_graph():
     def _set(measure="PONV05"):
         g = Graph()
-        g.add((BNode(measure), RDF.type, PSDO.performance_measure_content))
+        g.add((BNode(measure), RDF.type, FHIR.Measure))
         g.add(
             (
                 BNode(measure),
-                PSDO.has_desired_direction,
-                Literal(str(PSDO.desired_increase)),
+                FHIR.improvementNotation,
+                Literal("increase"),
             )
         )
         startup.base_graph = g

@@ -3,8 +3,9 @@ from rdflib import RDF, BNode, Graph
 
 from src import context, startup
 from src.bitstomach.signals import SIGNALS
-from src.utils.namespace import PSDO, SLOWMO
+from src.utils.namespace import FHIR, PSDO, SLOWMO
 from src.utils.settings import settings
+
 
 def extract_signals(perf_df: pd.DataFrame) -> Graph:
     """
@@ -18,7 +19,6 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
     if perf_df.empty:
         return g
 
-    
     for measure in perf_df.attrs["valid_measures"]:
         measure_df = (
             perf_df[perf_df["measure"] == measure].tail(12).sort_values("period.start")
@@ -45,7 +45,9 @@ def prepare():
         performance_df["period.start"] <= context.performance_month
     ].copy()
 
-    performance_df["valid"] = performance_df["measureScore.denominator"] >= settings.min_count
+    performance_df["valid"] = (
+        performance_df["measureScore.denominator"] >= settings.min_count
+    )
 
     performance_df.attrs["valid_measures"] = performance_df[
         (
@@ -54,7 +56,7 @@ def prepare():
         )
     ]["measure"]
 
-    measures = set(startup.base_graph[: RDF.type : PSDO.performance_measure_content])
+    measures = set(startup.base_graph[: RDF.type : FHIR.Measure])
 
     performance_df.attrs["valid_measures"] = [
         m for m in performance_df.attrs["valid_measures"] if BNode(m) in measures

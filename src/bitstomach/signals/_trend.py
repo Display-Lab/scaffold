@@ -7,14 +7,14 @@ from rdflib.resource import Resource
 
 from src import startup
 from src.bitstomach.signals import Signal
-from src.utils import PSDO, SLOWMO
+from src.utils import FHIR, PSDO, SLOWMO
 from src.utils.settings import settings
 
 
 class Trend(Signal):
     # TODO: Allow an array of types
     signal_type = PSDO.performance_trend_content
-    measure_types = [PSDO.desired_increase, PSDO.desired_decrease]
+    measure_types = ["increase", "decrease"]
 
     @staticmethod
     def detect(
@@ -26,7 +26,7 @@ class Trend(Signal):
         """
         if perf_data.empty:
             raise ValueError
-        
+
         if Trend.check(perf_data) is False:
             return []
 
@@ -34,8 +34,11 @@ class Trend(Signal):
             return []
 
         node = BNode(perf_data["measure"].iloc[0])
-        current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
-   
+        # current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
+        current_measure_type = next(
+            startup.base_graph.objects(node, FHIR.measure_group_improvement_notation),
+            None,
+        ).value
         slope = Trend._detect(perf_data, current_measure_type)
 
         if not slope:
@@ -79,12 +82,12 @@ class Trend(Signal):
 
         """
         base = super()._resource()
-        
+
         if slope > 0:
             base.add(RDF.type, PSDO.positive_performance_trend_content)
         elif slope < 0:
             base.add(RDF.type, PSDO.negative_performance_trend_content)
-        
+
         base[SLOWMO.PerformanceTrendSlope] = Literal(slope)
 
         return base
@@ -122,8 +125,8 @@ class Trend(Signal):
         if change_this_month * change_last_month < 0:
             return 0
 
-        if current_measure_type == PSDO.desired_increase:
+        if current_measure_type == "increase":
             return (performance_rates.iloc[-1] - performance_rates.iloc[-3]) / 2
-        elif current_measure_type == PSDO.desired_decrease: 
+        elif current_measure_type == "decrease":
             return (performance_rates.iloc[-3] - performance_rates.iloc[-1]) / 2
         return 0

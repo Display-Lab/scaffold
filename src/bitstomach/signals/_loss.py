@@ -4,15 +4,15 @@ import numpy as np
 import pandas as pd
 from rdflib import RDF, BNode, Literal, URIRef
 from rdflib.resource import Resource
-from src import startup
 
+from src import startup
 from src.bitstomach.signals import Comparison, Signal, Trend
-from src.utils.namespace import PSDO, SLOWMO
+from src.utils.namespace import FHIR, PSDO, SLOWMO
 
 
 class Loss(Signal):
     signal_type = PSDO.loss_content
-    measure_types = [PSDO.desired_increase, PSDO.desired_decrease]
+    measure_types = ["increase", "decrease"]
 
     @staticmethod
     def detect(
@@ -20,7 +20,7 @@ class Loss(Signal):
     ) -> Optional[List[Resource]]:
         if perf_data.empty:
             raise ValueError
-        
+
         if Loss.check(perf_data) is False:
             return []
 
@@ -45,8 +45,11 @@ class Loss(Signal):
 
         loss_signals = []
         node = BNode(perf_data["measure"].iloc[0])
-        current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
-
+        # current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
+        current_measure_type = next(
+            startup.base_graph.objects(node, FHIR.measure_group_improvement_notation),
+            None,
+        ).value
 
         for comparison_signal in negative_comparison_signals:
             previous_comparison_signal = next(
@@ -68,7 +71,7 @@ class Loss(Signal):
                 perf_data,
                 comparison_signal.value(SLOWMO.RegardingComparator),
                 comparator_data,
-                current_measure_type
+                current_measure_type,
             )
 
             mi = Loss._resource(
@@ -156,7 +159,10 @@ class Loss(Signal):
 
     @staticmethod
     def _detect(
-        perf_data: pd.DataFrame, comparator: Resource, comparator_data: pd.DataFrame, current_measure_type: URIRef
+        perf_data: pd.DataFrame,
+        comparator: Resource,
+        comparator_data: pd.DataFrame,
+        current_measure_type: URIRef,
     ) -> float:
         """
         calculates the number of consecutive positive gaps prior to this months negative gap.
@@ -171,9 +177,9 @@ class Loss(Signal):
             columns={"measureScore.rate": "comparator"}
         )
         merged = pd.merge(perf_data, comparator_values, on="period.start", how="left")
-        if current_measure_type == PSDO.desired_increase:
+        if current_measure_type == "increase":
             gaps = merged["measureScore.rate"] - merged["comparator"]
-        elif current_measure_type == PSDO.desired_decrease:
+        elif current_measure_type == "decrease":
             gaps = merged["comparator"] - merged["measureScore.rate"]
 
         # find the number of consecutive positive gaps

@@ -48,6 +48,7 @@ source .venv/bin/activate
 ##### For Windows, Mac, and Linux, now complete the following two installs
 
 ```zsh
+pip install .\scaffold-sdk
 pip install . # this will install scaffold 
 ```
 

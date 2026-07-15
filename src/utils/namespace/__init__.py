@@ -55,6 +55,7 @@ class AliasingDefinedNamespace(
 
 # import at end to avoid circular reference when namespaces import `AliasingDefinedNamespace`
 from src.utils.namespace._CPO import CPO  # noqa: E402
+from src.utils.namespace._FHIR import FHIR  # noqa: E402
 from src.utils.namespace._IAO import IAO  # noqa: E402
 from src.utils.namespace._PSDO import PSDO  # noqa: E402
 from src.utils.namespace._RO import RO  # noqa: E402
@@ -68,4 +69,5 @@ _NAMESPACE_PREFIXES_PFP = {
     "ro": RO,
     "iao": IAO,
     "schema": SCHEMA,
+    "fhir": FHIR,
 }

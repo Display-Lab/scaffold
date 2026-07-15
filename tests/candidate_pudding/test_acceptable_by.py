@@ -3,7 +3,7 @@ from rdflib import RDF, XSD, BNode, Graph, Literal, URIRef
 
 from src.bitstomach.signals import Trend
 from src.candidate_pudding import candidate_pudding
-from src.utils.namespace import IAO, PSDO, SLOWMO
+from src.utils.namespace import FHIR, IAO, PSDO, SLOWMO
 
 IMPROVING_TEMPLATE = URIRef(
     "https://repo.metadatacenter.org/template-instances/0ae1872f-5593-4891-8713-7d5e815c0b00"
@@ -18,7 +18,7 @@ def graph():
     graph = Graph()
 
     measure = graph.resource(BNode("PONV05"))
-    measure[RDF.type] = PSDO.performance_measure_content
+    measure[RDF.type] = FHIR.Measure
 
     template = graph.resource(IMPROVING_TEMPLATE)
     template[RDF.type] = candidate_pudding.PERFORMANCE_SUMMARY_DISPLAY_TEMPLATE

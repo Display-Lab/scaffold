@@ -8,9 +8,8 @@ from rdflib.resource import Resource
 from src import context, startup
 from src.bitstomach.signals import Achievement
 from src.bitstomach.signals._comparison import Comparison
-from src.utils.namespace import PSDO, SLOWMO
+from src.utils.namespace import FHIR, PSDO, SLOWMO
 from src.utils.settings import settings
-
 
 comparators = [
     {
@@ -43,6 +42,7 @@ jsonld_str = json.dumps(comparators)
 
 context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
 
+
 @pytest.fixture(autouse=True)
 def reset_global():
     yield
@@ -68,8 +68,8 @@ def perf_data() -> pd.DataFrame:
     df.attrs["performance_month"] = "2022-10-01"
 
     g = Graph()
-    g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("BP01"),PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
+    g.add((BNode("BP01"), RDF.type, FHIR.Measure))
+    g.add((BNode("BP01"), FHIR.improvementNotation, Literal("increase")))
     startup.base_graph = g
 
     return df
