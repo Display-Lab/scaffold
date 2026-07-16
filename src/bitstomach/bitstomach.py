@@ -56,10 +56,9 @@ def prepare():
         )
     ]["measure"]
 
-    measures = set(startup.base_graph[: RDF.type : FHIR.Measure])
-
+  
     performance_df.attrs["valid_measures"] = [
-        m for m in performance_df.attrs["valid_measures"] if BNode(m) in measures
-    ]
+        m for m in performance_df.attrs["valid_measures"] if m in startup.measure_catalog
+    ]  
 
     return performance_df

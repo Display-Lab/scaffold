@@ -5,8 +5,7 @@ from rdflib.resource import Resource
 
 from src import context, startup
 from src.bitstomach.signals import Signal
-from src.utils.namespace import CPO, IAO, PSDO, RO, SCHEMA, SLOWMO
-from src.utils.namespace._FHIR import FHIR
+from src.utils.namespace import CPO, FHIR, IAO, PSDO, RO, SCHEMA, SLOWMO
 
 PERFORMANCE_SUMMARY_DISPLAY_TEMPLATE = URIRef(
     "http://data.bioontology.org/ontologies/PSDO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPSDO_0000002"

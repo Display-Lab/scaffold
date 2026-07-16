@@ -1,17 +1,16 @@
-import csv
 import json
 import os
 import pathlib
-from io import StringIO
 
-from dotenv import load_dotenv
 import matplotlib
 import pandas as pd
 import requests
+from dotenv import load_dotenv
 from loguru import logger
 from rdflib import RDF, Graph
 from requests_file import FileAdapter
 
+from src.models import MeasureCatalog
 from src.utils.graph_operations import manifest_to_graph
 from src.utils.namespace._PSDO import PSDO
 from src.utils.settings import settings
@@ -37,6 +36,7 @@ comparator_measure_report = pd.DataFrame()
 performance_month = ""
 esteemer_plugin_name = ""
 esteemer_plugin_version = ""
+measure_catalog = None
 
 # Set up request session as se, config to handle file URIs with FileAdapter
 se = requests.Session()
@@ -64,7 +64,8 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
             performance_month, \
             config, \
             esteemer_plugin_name, \
-            esteemer_plugin_version
+            esteemer_plugin_version, \
+            measure_catalog
 
 
         default_preferences_text = se.get(settings.default_preferences).text
@@ -74,6 +75,8 @@ def startup(performance_data_path: pathlib.Path = None, performance_m: str = "")
         }
 
         base_graph = manifest_to_graph(settings.manifest)
+        
+        measure_catalog = MeasureCatalog.from_graph(base_graph)
         kb_config = load_kb_config(settings.config)
         plugin_cfg = kb_config.get("plugins", {}).get("scaffold.esteemer")
         if not plugin_cfg:
