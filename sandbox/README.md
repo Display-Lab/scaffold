@@ -300,5 +300,5 @@ Successful: 100, Failed: 0
 SCAFFOLD also creates a `messages` folder, which contains a summary of the generated candidates (`candidates.csv`) and a detailed JSON file for each generated message. Each JSON file includes information about the selected message, all created candidates with their scoring details, and any generated images.
 
 ## SCAFFOLD Knowledge Base
-SCAFFOLD requires a knowledge base that contains feedback message templates, prioritization algorithms, performance measures, configuration files, and other supporting resources. For more information about the knowledge base and its structure, see the [Sandbox Knowledge Base documentation](hospital%20quality%20dashboard%20usecase/knowledge-base/readme.md).
+SCAFFOLD requires a knowledge base that contains feedback message templates, prioritization algorithms, performance measures, configuration files, and other supporting resources. For more information about the knowledge base and its structure, see the [Sandbox Knowledge Base](hospital%20quality%20dashboard%20usecase/knowledge-base/).
 

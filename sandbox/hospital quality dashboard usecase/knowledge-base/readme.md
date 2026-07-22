@@ -13,7 +13,9 @@ Taken together, all of the elements in the knowledge base can be used by a preci
 
 
 ### Performance measures
-Each performance measure is an indicator or metric that represents a standard for measuring performance, here providers of healthcare services. Performance measures are commonly grouped into process measures that assess care-related decisions and actions, and outcome measures that assess the resulting impact on patients' experiences and health.
+Each performance measure is an indicator or metric that represents a standard for assessing healthcare provider performance. Measures are commonly grouped into process measures, which evaluate care-related decisions and actions, and outcome measures, which evaluate effects on patients’ experiences and health. 
+
+In this knowledge base, measures are now created in a FHIR-aligned format, meaning they follow the core structure of the HL7 FHIR Measure resource so they can be represented consistently and exchanged more reliably across systems. This includes standardized elements such as identifier, name, title, type, and improvement notation. Improvement notation captures the desired direction of performance change for a measure, and its value can be either increase or decrease depending on what better performance means for that specific measure.
 
 
 ### Message templates
