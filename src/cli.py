@@ -147,7 +147,7 @@ def batch_csv(
     success_count = 0
     failure_count = 0
     for subject in (
-        startup.performance_measure_report["subject"].drop_duplicates().head(max_files)
+        startup.practitioner_role["PractitionerRole.identifier"].drop_duplicates().head(max_files)
     ):
         try:
             context.from_global(subject)

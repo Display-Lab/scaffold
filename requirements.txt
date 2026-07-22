@@ -69,8 +69,10 @@ packaging==26.2
     #   pytest
 pandas==2.3.3
     # via scaffold
-pillow==12.2.0
-    # via matplotlib
+pillow==12.3.0
+    # via
+    #   matplotlib
+    #   scaffold
 pluggy==1.6.0
     # via pytest
 psutil==7.2.2
@@ -137,8 +139,10 @@ typing-inspection==0.4.2
     #   pydantic
 tzdata==2026.2
     # via pandas
-urllib3==2.6.3
-    # via requests
+urllib3==2.7.0
+    # via
+    #   requests
+    #   scaffold
 uvicorn==0.46.0
     # via scaffold
 win32-setctime==1.2.0 ; sys_platform == 'win32'

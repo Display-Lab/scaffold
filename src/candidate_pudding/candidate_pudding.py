@@ -74,9 +74,11 @@ def acceptable_by(candidate: Resource):
     mi_dispositions = list(candidate[RO.has_disposition])
 
     pre_conditions = set(pathway[CPO_HAS_PRECONDITIONS])
-    
+
     if not pre_conditions:
-        raise ValueError(f"The causal pathway {str(pathway.value(URIRef("http://schema.org/name")))} regarding which the candidate is created does not have preconditions defined.")
+        raise ValueError(
+            f"The causal pathway {str(pathway.value(URIRef('http://schema.org/name')))} regarding which the candidate is created does not have preconditions defined."
+        )
 
     dispositions = roles + mi_dispositions
 
@@ -127,17 +129,21 @@ def create_candidates():
         for template in context.subject_graph[
             : RDF.type : PERFORMANCE_SUMMARY_DISPLAY_TEMPLATE
         ]:
-            # check if the measure type matches the template type
-            node = BNode(measure)
-            measure_type = next(startup.base_graph.objects(node, PSDO.has_desired_direction))
+    
+            measure_type =  startup.measure_catalog[str(measure)].improvement_notation
+            
+            if measure_type == "increase":
+                measure_type_iri = PSDO.desired_increase
+            else:
+                measure_type_iri = PSDO.desired_decrease
             template_resource = context.subject_graph.resource(template)
             template_is_about = list(template_resource[IAO.is_about])
             if not any(
-                str(res.identifier) == str(measure_type.value)
+                str(res.identifier) == str(measure_type_iri)
                 for res in template_is_about
             ):
                 continue
-            
+
             candidate = create_candidate(measure_resource, template_resource)
             if not candidate:
                 continue

@@ -106,7 +106,13 @@ plugins:
 
 name must match the entry-point key (my_plugin above), and version must match version() from your plugin class.
 
-## 6. Run SCAFFOLD
+## 6. Point SCAFFOLD to the config file
+The SCAFFOLD environment file (.env) should point to the config file:
+```
+config=file:///path/to/the/config/file/config.yaml
+```
+
+## 7. Run SCAFFOLD
 
 Run pipeline batch or pipeline batch-csv as usual. SCAFFOLD will load the configured plugin and raise a clear error if:
 - the plugin is not installed,

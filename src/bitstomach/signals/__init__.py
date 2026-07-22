@@ -3,25 +3,25 @@ from typing import List
 from rdflib import RDF, BNode, Graph, URIRef
 from rdflib.resource import Resource
 
-from src.utils import PSDO
 from src import startup
+from src.utils import PSDO
+
 
 class Signal:
     signal_type: URIRef
     measure_types: List[URIRef]
-    
+
     @classmethod
     def detect(self, performance_df, comparator_df=None):
         raise NotImplementedError("Subclasses must implement detect()")
-    
+
     @classmethod
     def check(self, performance_df):
         """
         checks if the signal can process the measure based on measure type
         """
-        node = BNode(performance_df["measure"].iloc[0])
-        measure_type = next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value
-        if URIRef(measure_type) not in self.measure_types:
+        measure_type = startup.measure_catalog[performance_df["measure"].iloc[0]].improvement_notation
+        if measure_type not in self.measure_types:
             return False
         return True
 

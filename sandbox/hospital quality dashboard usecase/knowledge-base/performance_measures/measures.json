@@ -1,128 +1,131 @@
 {
   "@context": {
-    "@vocab": "http://schema.org/",
-    "slowmo": "http://example.com/slowmo#",
-    "csvw": "http://www.w3.org/ns/csvw#",
-    "dc": "http://purl.org/dc/terms/",
-    "PSDO": "http://purl.obolibrary.org/obo/",
-    "slowmo:Measure": "http://example.com/slowmo#Measure",
-    "slowmo:IsAboutPerformer": "http://example.com/slowmo#IsAboutPerformer",
-    "slowmo:ColumnUse": "http://example.com/slowmo#ColumnUse",
-    "slowmo:IsAboutTemplate": "http://example.com/slowmo#IsAboutTemplate",
-    "slowmo:spek": "http://example.com/slowmo#spek",
-    "slowmo:IsAboutCausalPathway": "http://example.com/slowmo#IsAboutCausalPathway",
-    "slowmo:IsAboutOrganization": "http://example.com/slowmo#IsAboutOrganization",
-    "slowmo:IsAboutMeasure": "http://example.com/slowmo#IsAboutMeasure",
-    "slowmo:InputTable": "http://example.com/slowmo#InputTable",
-    "slowmo:WithComparator": "http://example.com/slowmo#WithComparator",
-    "has_part": "http://purl.obolibrary.org/obo/bfo#BFO_0000051",
-    "has_disposition": "http://purl.obolibrary.org/obo/RO_0000091",
-    "has_desired_direction":"http://purl.obolibrary.org/obo/PSDO_0000034"
+    "fhir": "http://hl7.org/fhir/",
+    "Measure": "fhir:Measure",
+    "identifier": "fhir:Measure.identifier",
+    "name": "fhir:Measure.name",
+    "title": "fhir:Measure.title",
+    "group": "fhir:Measure.group",
+    "type": "fhir:Measure.group.type",
+    "improvementNotation": "fhir:Measure.group.improvementNotation"
   },
-  "@id": "http://example.com/app#display-lab",
-  "@type": "http://example.com/slowmo#spek",
-  "slowmo:IsAboutOrganization": {
-    "@type": "Organization",
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "USA",
-      "addressRegion": "MI",
-      "streetAddress": "DLHS, 1161 NIB, 300 N Ingalls St.",
-      "postalCode": "48109",
-      "name": "DisplayLab"
-    }
-  },
-  "slowmo:IsAboutMeasure": [
+  "@graph": [
     {
       "@id": "_:Transfer-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "Transfers Completed",
+      "@type": "Measure",
       "identifier": "Transfer-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
+      "name": "Transfer-01",
+      "title": "Transfers Completed",
+      "type": "process",
+      "improvementNotation": "increase"
     },
     {
       "@id": "_:Hand-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "Hand Hygiene",
+      "@type": "Measure",
       "identifier": "Hand-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
+      "name": "Hand-01",
+      "title": "Hand Hygiene",
+      "type": "process",
+      "improvementNotation": "increase"
     },
     {
       "@id": "_:Provider-Rating-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "Rating of Providers",
+      "@type": "Measure",
       "identifier": "Provider-Rating-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
+      "name": "Provider-Rating-01",
+      "title": "Rating of Providers",
+      "type": "process",
+      "improvementNotation": "increase"
     },
     {
       "@id": "_:Care-Rating-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "Rating of Care",
+      "@type": "Measure",
       "identifier": "Care-Rating-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
+      "name": "Care-Rating-01",
+      "title": "Rating of Care",
+      "type": "process",
+      "improvementNotation": "increase"
     },
     {
       "@id": "_:Clean-Rating-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "Rating of Cleanliness",
+      "@type": "Measure",
       "identifier": "Clean-Rating-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
+      "name": "Clean-Rating-01",
+      "title": "Rating of Cleanliness",
+      "type": "process",
+      "improvementNotation": "increase"
     },
     {
       "@id": "_:Quiet-Rating-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "Rating of Quietness",
+      "@type": "Measure",
       "identifier": "Quiet-Rating-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
+      "name": "Quiet-Rating-01",
+      "title": "Rating of Quietness",
+      "type": "process",
+      "improvementNotation": "increase"
     },
     {
       "@id": "_:Patient-Concern-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "Provider clearly addressed patient concerns",
+      "@type": "Measure",
       "identifier": "Patient-Concern-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
+      "name": "Patient-Concern-01",
+      "title": "Provider clearly addressed patient concerns",
+      "type": "process",
+      "improvementNotation": "increase"
     },
     {
       "@id": "_:Discharge-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "Speed of Discharge",
+      "@type": "Measure",
       "identifier": "Discharge-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
+      "name": "Discharge-01",
+      "title": "Speed of Discharge",
+      "type": "process",
+      "improvementNotation": "increase"
     },
     {
       "@id": "_:Nurse-informed-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "Nurses kept patient informed",
+      "@type": "Measure",
       "identifier": "Nurse-informed-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
+      "name": "Nurse-informed-01",
+      "title": "Nurse-informed-01: Nurse Informed",
+      "type": "process",
+      "improvementNotation": "increase"
     },
     {
       "@id": "_:Nurse-language-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "Nurses informed using clear language",
+      "@type": "Measure",
       "identifier": "Nurse-language-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
+      "name": "Nurse-language-01",
+      "title": "Nurses informed using clear language",
+      "type": "process",
+      "improvementNotation": "increase"
     },
     {
       "@id": "_:Physician-language-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "Physician informed using clear language",
+      "@type": "Measure",
       "identifier": "Physician-language-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
+      "name": "Physician-language-01",
+      "title": "Physician informed using clear language",
+      "type": "process",
+      "improvementNotation": "increase"
     },
     {
       "@id": "_:Physician-informed-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "Physician kept patient informed",
+      "@type": "Measure",
       "identifier": "Physician-informed-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000039"
+      "name": "Physician-informed-01",
+      "title": "Physician kept patient informed",
+      "type": "process",
+      "improvementNotation": "increase"
     },
     {
       "@id": "_:Readmission-Ratting-01",
-      "@type": "http://purl.obolibrary.org/obo/PSDO_0000102",
-      "dc:title": "30 Day Readmission Rate",
+      "@type": "Measure",
       "identifier": "Readmission-Ratting-01",
-      "has_desired_direction": "http://purl.obolibrary.org/obo/PSDO_0000042"
+      "name": "Readmission-Ratting-01",
+      "title": "30 Day Readmission Rate",
+      "type": "outcome",
+      "improvementNotation": "decrease"
     }
   ]
 }

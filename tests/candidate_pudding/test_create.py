@@ -4,7 +4,7 @@ from rdflib.resource import Resource
 
 from src.bitstomach.signals import Comparison, Trend
 from src.candidate_pudding import candidate_pudding
-from src.utils.namespace import IAO, PSDO, RO, SLOWMO
+from src.utils.namespace import FHIR, IAO, PSDO, RO, SLOWMO
 
 
 @pytest.fixture
@@ -12,7 +12,7 @@ def graph():
     graph = Graph()
 
     measure = graph.resource(BNode("PONV05"))
-    measure[RDF.type] = PSDO.performance_measure_content
+    measure[RDF.type] = FHIR.Measure
 
     template = graph.resource(
         URIRef(
@@ -75,7 +75,6 @@ def test_create_candidate(graph):
             "https://repo.metadatacenter.org/template-instances/9e71ec9e-26f3-442a-8278-569bcd58e708"
         )
     )
-    
 
     # when
     candidate = candidate_pudding.create_candidate(measure, template)

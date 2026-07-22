@@ -1,13 +1,13 @@
 import json
 
-
 import pandas as pd
+import pytest
 from rdflib import RDF, BNode, Graph, Literal
 
 from src import context, startup
 from src.bitstomach import bitstomach
-from src.utils.namespace import PSDO
-import pytest
+from src.models import Measure
+from src.utils.namespace import FHIR, PSDO
 
 COLUMNS = [
     "subject",
@@ -18,18 +18,26 @@ COLUMNS = [
 ]
 
 
-
-
-
 @pytest.fixture
-def prep_base_graph() :
-    g = Graph()
-    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("PONV05"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
-    g.add((BNode("SUS04"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("SUS04"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
-    startup.base_graph = g
+def prep_base_graph():
     
+    startup.measure_catalog = {
+        "PONV05": Measure(
+            identifier="PONV05",
+            name="PONV05",
+            title="",
+            measure_type="process",
+            improvement_notation="increase",
+        ),
+        "SUS04": Measure(
+            identifier="SUS04",
+            name="SUS04",
+            title="",
+            measure_type="process",
+            improvement_notation="increase",
+        )
+    }
+
     comparators = [
         {
             "@id": "http://purl.obolibrary.org/obo/PSDO_0000094",
@@ -60,6 +68,7 @@ def prep_base_graph() :
     jsonld_str = json.dumps(comparators)
 
     context.subject_graph = Graph().parse(data=jsonld_str, format="json-ld")
+
 
 def test_extract_signals_return_a_graph():
     df = pd.DataFrame()
@@ -131,10 +140,10 @@ def test_fix_up_marks_low_count_as_invalid():
     context.performance_df = performance_df
 
     g = Graph()
-    g.add((BNode("PONV05"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("SUS04"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
-    g.add((BNode("BP02"), RDF.type, PSDO.performance_measure_content))
+    g.add((BNode("PONV05"), RDF.type, FHIR.Measure))
+    g.add((BNode("SUS04"), RDF.type, FHIR.Measure))
+    g.add((BNode("BP01"), RDF.type, FHIR.Measure))
+    g.add((BNode("BP02"), RDF.type, FHIR.Measure))
     startup.base_graph = g
 
     perf_df = bitstomach.prepare()

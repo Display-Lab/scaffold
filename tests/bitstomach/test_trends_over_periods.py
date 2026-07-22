@@ -6,13 +6,15 @@ from rdflib.resource import Resource
 from src import startup
 from src.bitstomach.signals import Trend
 from src.utils import SLOWMO
-from src.utils.namespace._PSDO import PSDO
+from src.utils.namespace import FHIR
 from src.utils.settings import settings
 
 g = Graph()
-g.add((BNode("BP01"), RDF.type, PSDO.performance_measure_content))
-g.add((BNode("BP01"), PSDO.has_desired_direction, Literal(str(PSDO.desired_increase))))
+g.add((BNode("BP01"), RDF.type, FHIR.Measure))
+g.add((BNode("BP01"), FHIR.improvementNotation, Literal("increase")))
+
 startup.base_graph = g
+
 
 @pytest.fixture(autouse=True)
 def reset_global():
@@ -24,7 +26,7 @@ def test_no_trend_returns_none():
     mi = Trend.detect(
         pd.DataFrame(
             {
-                "measure":"BP01",
+                "measure": "BP01",
                 "measureScore.rate": [90, 90, 90],
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
                 "valid": True,
@@ -36,7 +38,7 @@ def test_no_trend_returns_none():
     mi = Trend.detect(
         pd.DataFrame(
             {
-                "measure":"BP01",
+                "measure": "BP01",
                 "measureScore.rate": [90, 90, 90],
                 "period.start": ["2024-01-01", "2024-04-01", "2024-05-01"],
                 "valid": True,
@@ -49,17 +51,20 @@ def test_no_trend_returns_none():
 ## Signal detection tests
 def test_trend_is_detected():
     slope = Trend._detect(
-        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [91], [92]]), PSDO.desired_increase
+        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [91], [92]]), "increase"
     )
     assert slope == 1
 
     slope = Trend._detect(
-        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [94]]), PSDO.desired_increase
+        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [94]]), "increase"
     )
     assert slope == 2
 
     slope = Trend._detect(
-        pd.DataFrame(columns=["measureScore.rate"], data=[[90], [92], [90], [92], [94]]), PSDO.desired_increase
+        pd.DataFrame(
+            columns=["measureScore.rate"], data=[[90], [92], [90], [92], [94]]
+        ),
+        "increase",
     )
     assert slope == 2
 
@@ -68,7 +73,7 @@ def test_trend_as_resource():
     signal = Trend.detect(
         pd.DataFrame(
             {
-                "measure":"BP01",
+                "measure": "BP01",
                 "measureScore.rate": [90, 91, 92],
                 "period.start": ["2023-11-01", "2023-12-01", "2024-01-01"],
                 "valid": True,
@@ -85,7 +90,7 @@ def test_trend_as_resource():
     signal = Trend.detect(
         pd.DataFrame(
             {
-                "measure":"BP01",
+                "measure": "BP01",
                 "measureScore.rate": [90, 91, 92],
                 "period.start": ["2024-01-01", "2024-04-01", "2024-07-01"],
                 "valid": True,

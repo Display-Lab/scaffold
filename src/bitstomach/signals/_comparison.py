@@ -8,9 +8,10 @@ from src import context, startup
 from src.bitstomach.signals import Signal
 from src.utils.namespace import PSDO, SLOWMO
 
+
 class Comparison(Signal):
     signal_type = PSDO.performance_gap_content
-    measure_types = [PSDO.desired_increase, PSDO.desired_decrease]
+    measure_types = ["increase", "decrease"]
 
     @staticmethod
     def detect(
@@ -37,12 +38,10 @@ class Comparison(Signal):
             return []
 
         resources = []
-        
-        node = BNode(perf_data["measure"].iloc[0])
-        current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
 
-        gaps = Comparison._detect(perf_data, comparator_data, current_measure_type)        
-        
+        current_measure_type =  startup.measure_catalog[perf_data["measure"].iloc[0]].improvement_notation
+        gaps = Comparison._detect(perf_data, comparator_data, current_measure_type)
+
         for key, (gap, comparator_value) in gaps.items():
             r = Comparison._resource(gap, key, comparator_value)
             resources.append(r)
@@ -60,15 +59,14 @@ class Comparison(Signal):
 
         # Add the signal node and value
         base.add(SLOWMO.PerformanceGapSize, Literal(gap))
-        
-        
+
         base.add(
             RDF.type,
             PSDO.positive_performance_gap_content
             if gap >= 0
             else PSDO.negative_performance_gap_content,
         )
-        
+
         # Add the comparator
         c = base.graph.resource(BNode())
         c.set(RDF.type, URIRef(comparator_iri))
@@ -79,7 +77,11 @@ class Comparison(Signal):
         return base
 
     @staticmethod
-    def _detect(perf_data: pd.DataFrame, comparator_data: pd.DataFrame, current_measure_type: URIRef) -> dict:
+    def _detect(
+        perf_data: pd.DataFrame,
+        comparator_data: pd.DataFrame,
+        current_measure_type: URIRef,
+    ) -> dict:
         """Calculate gap from levels and comparators"""
 
         gaps: dict = {}
@@ -88,18 +90,16 @@ class Comparison(Signal):
         ):
             comparator_iri = str(comparator)
             if comparator_iri in comparator_data["group.code"].tolist():
-                comparator_value = (
-                    comparator_data[
-                        (comparator_data["group.code"] == comparator_iri)
-                        & (
-                            comparator_data["period.start"]
-                            == perf_data[-1:]["period.start"].iloc[0]
-                        )
-                    ]["measureScore.rate"].iloc[0]                
-                )
-                if current_measure_type == PSDO.desired_increase:
+                comparator_value = comparator_data[
+                    (comparator_data["group.code"] == comparator_iri)
+                    & (
+                        comparator_data["period.start"]
+                        == perf_data[-1:]["period.start"].iloc[0]
+                    )
+                ]["measureScore.rate"].iloc[0]
+                if current_measure_type == "increase":
                     gap = perf_data[-1:]["measureScore.rate"] - comparator_value
-                elif current_measure_type == PSDO.desired_decrease:
+                elif current_measure_type == "decrease":
                     gap = comparator_value - perf_data[-1:]["measureScore.rate"]
 
                 gaps[comparator_iri] = (gap.item(), comparator_value.item())

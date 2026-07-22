@@ -16,3 +16,6 @@ from src.utils.namespace import (
 from src.utils.namespace import (
     SLOWMO as SLOWMO,
 )
+from src.utils.namespace import (
+    FHIR as FHIR,
+)

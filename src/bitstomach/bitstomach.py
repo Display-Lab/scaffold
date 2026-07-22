@@ -6,6 +6,7 @@ from src.bitstomach.signals import SIGNALS
 from src.utils.namespace import PSDO, SLOWMO
 from src.utils.settings import settings
 
+
 def extract_signals(perf_df: pd.DataFrame) -> Graph:
     """
     Prepares performance data, loops through measures and calls each signal detect method,
@@ -18,7 +19,6 @@ def extract_signals(perf_df: pd.DataFrame) -> Graph:
     if perf_df.empty:
         return g
 
-    
     for measure in perf_df.attrs["valid_measures"]:
         measure_df = (
             perf_df[perf_df["measure"] == measure].tail(12).sort_values("period.start")
@@ -45,8 +45,12 @@ def prepare():
         performance_df["period.start"] <= context.performance_month
     ].copy()
 
-    performance_df["valid"] = performance_df["measureScore.denominator"] >= settings.min_count
+    # Mark rows as valid when denominator meets minimum count.
+    performance_df["valid"] = (
+        performance_df["measureScore.denominator"] >= settings.min_count
+    )
 
+    # Collect measures that are valid for the current performance month.
     performance_df.attrs["valid_measures"] = performance_df[
         (
             (performance_df["period.start"] == context.performance_month)
@@ -54,10 +58,9 @@ def prepare():
         )
     ]["measure"]
 
-    measures = set(startup.base_graph[: RDF.type : PSDO.performance_measure_content])
-
+    # Keep only measures that exist in the startup measure catalog.
     performance_df.attrs["valid_measures"] = [
-        m for m in performance_df.attrs["valid_measures"] if BNode(m) in measures
-    ]
+        m for m in performance_df.attrs["valid_measures"] if m in startup.measure_catalog
+    ]  
 
     return performance_df

@@ -48,6 +48,7 @@ source .venv/bin/activate
 ##### For Windows, Mac, and Linux, now complete the following two installs
 
 ```zsh
+pip install .\scaffold-sdk
 pip install . # this will install scaffold 
 ```
 
@@ -178,7 +179,9 @@ plugins:
   scaffold.esteemer:
     name: mpm_candidate_selector
     version: "1.0.0"
-    
+
+This configuration file specifies which candidate selection algorithm (plugin) SCAFFOLD should use. We recommend including this file in the knowledge base so that the selected configuration is preserved across knowledge base releases.
+
 #### default_preferences: Path to the default preferences json file
 
 #### manifest: Path to the manifest file that includes differend pieces of the base graph including (causal pathways, message templates, measures and comparators). See [manifest configuration](#manifest-configuration) for more detail

@@ -13,7 +13,7 @@ from scaffold_sdk import Esteemer
 
 from src import context, startup
 from src.utils import SLOWMO
-from src.utils.namespace._PSDO import PSDO
+from src.utils.namespace import PSDO, FHIR
 from src.utils.settings import settings
 
 candidate_df: pd.DataFrame = pd.DataFrame()
@@ -274,7 +274,7 @@ def render(subject_graph: Graph, candidate: BNode) -> dict:
 
         measure = candidate_resource.value(SLOWMO.RegardingMeasure)
         s_m["measure_name"] = str(measure.identifier)
-        s_m["measure_title"] = measure.value(DCTERMS.title).value
+        s_m["measure_title"] = measure.value(FHIR.title).value
         s_m["comparator_type"] = candidate_resource.value(
             SLOWMO.RegardingComparator / SLOWMO.DisplayName
         )

@@ -2,7 +2,6 @@ import pandas as pd
 import pytest
 
 from src.bitstomach.signals import Trend
-from src.utils.namespace._PSDO import PSDO
 
 
 def message() -> dict:
@@ -43,7 +42,7 @@ def perf(message: dict) -> pd.DataFrame:
     perf["pos_trend"] = (
         perf["measureScore.rate"]
         .rolling(window=3)
-        .apply(lambda x: (x.is_monotonic_increasing and x.is_unique))[2:]
+        .apply(lambda x: x.is_monotonic_increasing and x.is_unique)[2:]
         .astype(bool)
     )
     perf.worse = perf["passed_change"].iat[-1] < 0
@@ -71,7 +70,7 @@ detection_test_set = [
 @pytest.mark.parametrize("perf_level, expected, condition", detection_test_set)
 def test_trend__detect(perf_level: list, expected: float, condition: str):
     perf = pd.DataFrame({"measureScore.rate": perf_level})
-    slope = Trend._detect(perf,PSDO.desired_increase)
+    slope = Trend._detect(perf, "increase")
 
     assert slope == pytest.approx(expected), condition + " failed"
 
