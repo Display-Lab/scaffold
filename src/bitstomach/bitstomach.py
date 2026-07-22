@@ -3,7 +3,7 @@ from rdflib import RDF, BNode, Graph
 
 from src import context, startup
 from src.bitstomach.signals import SIGNALS
-from src.utils.namespace import FHIR, PSDO, SLOWMO
+from src.utils.namespace import PSDO, SLOWMO
 from src.utils.settings import settings
 
 
@@ -45,10 +45,12 @@ def prepare():
         performance_df["period.start"] <= context.performance_month
     ].copy()
 
+    # Mark rows as valid when denominator meets minimum count.
     performance_df["valid"] = (
         performance_df["measureScore.denominator"] >= settings.min_count
     )
 
+    # Collect measures that are valid for the current performance month.
     performance_df.attrs["valid_measures"] = performance_df[
         (
             (performance_df["period.start"] == context.performance_month)
@@ -56,7 +58,7 @@ def prepare():
         )
     ]["measure"]
 
-  
+    # Keep only measures that exist in the startup measure catalog.
     performance_df.attrs["valid_measures"] = [
         m for m in performance_df.attrs["valid_measures"] if m in startup.measure_catalog
     ]  

@@ -1,15 +1,17 @@
 # SCAFFOLD Sandbox
-The SCAFFOLD sandbox currently provides example datasets produced using SCAFFOLD data ingestion model. At the moment, it includes a dataset created for a hospital quality dashboard use case. Additional examples can be incorporated in the future as new use cases are developed.
+The SCAFFOLD sandbox currently provides example datasets and their corresponding knowledge bases. At present, it includes an example for a hospital quality dashboard use case. Additional examples can be incorporated as new use cases are developed.
 
-## SCAFFOLD [Data Ingestion Model](https://docs.google.com/spreadsheets/d/1qDjS2-a7F1El53jUx0fippL3m28pQilLcYNAv4pQkxI/edit?gid=1258033503#gid=1258033503)
+The example datasets are produced using the SCAFFOLD FHIR-aligned data ingestion model. The ingestion model accepts input data in either JSON-LD or tabular (CSV) format. We use the term FHIR-aligned to indicate that the model adopts selected HL7 FHIR concepts, resource structures, and identifiers where they are beneficial for interoperability and consistency. The input artifacts are not intended to be fully conformant FHIR resources. Instead, they are lightweight representations tailored to SCAFFOLD's knowledge graph and data ingestion requirements, reusing FHIR semantics where appropriate while allowing extensions and simplifications specific to the platform.
+
+## SCAFFOLD [FHIR-aligned Data Ingestion Model](https://docs.google.com/spreadsheets/d/1qDjS2-a7F1El53jUx0fippL3m28pQilLcYNAv4pQkxI/edit?gid=1258033503#gid=1258033503)
 We adopted several [FHIR standard](https://hl7.org/fhir/index.html)'s resources to model performance data ingestion for SCAFFOLD. The performance input data include:
 - Provider information 
 - Performance data
 - Comparator data
 
-SCAFFOLD can also input the `Message history` and `Preferences` which are optional and can be for prioritization of candidate messages.
+SCAFFOLD can also input the `Message history` and `Preferences` which are optional and can be used for candidate selection depending on the candidate selector algorithm used for esteemer.
 
-The data was structured using FHIR resources to the extent possible. Since no suitable resources exist for history and preferences, those were represented using our own format.
+The data and performance measures were structured using FHIR resources to the extent possible. As a result we refer to them as FHIR_aligned data ingestion model and FHIR aligned performance measures. Since no suitable resources exist for history and preferences, those were represented using our own format.
 
 ### Performance Data Structure
 #### Provider information (`PractitionerRole`)
@@ -296,3 +298,7 @@ Successful: 100, Failed: 0
 
 
 SCAFFOLD also creates a `messages` folder, which contains a summary of the generated candidates (`candidates.csv`) and a detailed JSON file for each generated message. Each JSON file includes information about the selected message, all created candidates with their scoring details, and any generated images.
+
+## SCAFFOLD Knowledge Base
+SCAFFOLD requires a knowledge base that contains feedback message templates, prioritization algorithms, performance measures, configuration files, and other supporting resources. For more information about the knowledge base and its structure, see the [Sandbox Knowledge Base documentation](hospital%20quality%20dashboard%20usecase/knowledge-base/readme.md).
+

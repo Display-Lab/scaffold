@@ -5,7 +5,7 @@ from rdflib.resource import Resource
 
 from src import context, startup
 from src.bitstomach.signals import Signal
-from src.utils.namespace import CPO, FHIR, IAO, PSDO, RO, SCHEMA, SLOWMO
+from src.utils.namespace import CPO, IAO, PSDO, RO, SCHEMA, SLOWMO
 
 PERFORMANCE_SUMMARY_DISPLAY_TEMPLATE = URIRef(
     "http://data.bioontology.org/ontologies/PSDO/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FPSDO_0000002"
@@ -129,15 +129,9 @@ def create_candidates():
         for template in context.subject_graph[
             : RDF.type : PERFORMANCE_SUMMARY_DISPLAY_TEMPLATE
         ]:
-            # check if the measure type matches the template type
-            node = BNode(measure)
-            # measure_type = next(startup.base_graph.objects(node, PSDO.has_desired_direction))
-            measure_type = next(
-                startup.base_graph.objects(
-                    node, FHIR.measure_group_improvement_notation
-                ),
-                None,
-            ).value
+    
+            measure_type =  startup.measure_catalog[str(measure)].improvement_notation
+            
             if measure_type == "increase":
                 measure_type_iri = PSDO.desired_increase
             else:

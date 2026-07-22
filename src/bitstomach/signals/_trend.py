@@ -2,12 +2,12 @@ from typing import List, Optional
 
 import pandas as pd
 from dateutil.relativedelta import relativedelta
-from rdflib import RDF, BNode, Literal, URIRef
+from rdflib import RDF, Literal, URIRef
 from rdflib.resource import Resource
 
 from src import startup
 from src.bitstomach.signals import Signal
-from src.utils import FHIR, PSDO, SLOWMO
+from src.utils import PSDO, SLOWMO
 from src.utils.settings import settings
 
 
@@ -33,12 +33,7 @@ class Trend(Signal):
         if not Trend.last_three_periods_are_valid_and_consecutive(perf_data):
             return []
 
-        node = BNode(perf_data["measure"].iloc[0])
-        # current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
-        current_measure_type = next(
-            startup.base_graph.objects(node, FHIR.measure_group_improvement_notation),
-            None,
-        ).value
+        current_measure_type =  startup.measure_catalog[perf_data["measure"].iloc[0]].improvement_notation
         slope = Trend._detect(perf_data, current_measure_type)
 
         if not slope:

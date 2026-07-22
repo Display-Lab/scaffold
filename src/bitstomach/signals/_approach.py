@@ -2,12 +2,12 @@ from typing import List, Optional
 
 import numpy as np
 import pandas as pd
-from rdflib import RDF, BNode, Literal, URIRef
+from rdflib import RDF, Literal, URIRef
 from rdflib.resource import Resource
 
 from src import startup
 from src.bitstomach.signals import Comparison, Signal, Trend
-from src.utils.namespace import FHIR, PSDO, SLOWMO
+from src.utils.namespace import PSDO, SLOWMO
 
 
 class Approach(Signal):
@@ -44,12 +44,7 @@ class Approach(Signal):
         ]
 
         approach_signals = []
-        node = BNode(perf_data["measure"].iloc[0])
-        # current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
-        current_measure_type = next(
-            startup.base_graph.objects(node, FHIR.measure_group_improvement_notation),
-            None,
-        ).value
+        current_measure_type =  startup.measure_catalog[perf_data["measure"].iloc[0]].improvement_notation
 
         for comparison_signal in negative_comparison_signals:
             previous_comparison_signal = next(

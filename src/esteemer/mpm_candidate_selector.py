@@ -9,6 +9,7 @@ from typing import List
 
 import pandas as pd
 import requests
+from loguru import logger
 from rdflib import XSD, Graph, Literal, URIRef
 from rdflib.resource import Resource
 from requests_file import FileAdapter
@@ -381,13 +382,17 @@ class MPM_candidate_selector(Esteemer):
             index=["subject"],
         )
         history_file = os.environ.get("history")
-        if os.path.exists(history_file):
+        if history_file and os.path.exists(history_file):
             history = pd.read_csv(
                 history_file,
                 converters={"history": json.loads},
                 dtype={"period.start": str},
             )
             history.set_index("subject", inplace=True, drop=False)
+        else:
+            logger.warning(
+                "History file not found or not specified. History will be empty."
+            )
         return history
 
     def _load_preferences(self):
@@ -395,11 +400,15 @@ class MPM_candidate_selector(Esteemer):
             columns=["subject", "preference.json"], index=["subject"]
         )
         preferences_file = os.environ.get("preferences")
-        if os.path.exists(preferences_file):
+        if preferences_file and os.path.exists(preferences_file):
             preferences = pd.read_csv(
                 preferences_file, converters={"preferences": json.loads}
             )
             preferences.set_index("subject", inplace=True, drop=False)
+        else:
+            logger.warning(
+                "Preferences file not found or not specified. Preferences will be empty."
+            )
 
         default_preferences_file = os.environ.get("default_preferences")
         se = requests.Session()
@@ -480,3 +489,15 @@ class MPM_candidate_selector(Esteemer):
                 display_format = key.lower()  # display formats are hardcoded with lower case in pictoralist so lower() is used to keep it the same
 
         return {"Message_Format": preferences, "Display_Format": display_format}
+
+    def set_logger():
+        logger.remove()
+        logger.add(
+            sys.stdout,
+            colorize=True,
+            format="{level}|  {message}",
+            level=settings.log_level,
+        )
+        logger.at_least = lambda lvl: (
+            logger.level(lvl).no >= logger.level(settings.log_level).no
+        )

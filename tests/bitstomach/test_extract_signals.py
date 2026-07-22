@@ -6,6 +6,7 @@ from rdflib import RDF, BNode, Graph, Literal
 
 from src import context, startup
 from src.bitstomach import bitstomach
+from src.models import Measure
 from src.utils.namespace import FHIR, PSDO
 
 COLUMNS = [
@@ -19,14 +20,23 @@ COLUMNS = [
 
 @pytest.fixture
 def prep_base_graph():
-    g = Graph()
-    g.add((BNode("PONV05"), RDF.type, FHIR.Measure))
-    g.add((BNode("PONV05"), FHIR.improvementNotation, Literal("increase")))
-
-    g.add((BNode("SUS04"), RDF.type, FHIR.Measure))
-    g.add((BNode("SUS04"), FHIR.improvementNotation, Literal("increase")))
-
-    startup.base_graph = g
+    
+    startup.measure_catalog = {
+        "PONV05": Measure(
+            identifier="PONV05",
+            name="PONV05",
+            title="",
+            measure_type="process",
+            improvement_notation="increase",
+        ),
+        "SUS04": Measure(
+            identifier="SUS04",
+            name="SUS04",
+            title="",
+            measure_type="process",
+            improvement_notation="increase",
+        )
+    }
 
     comparators = [
         {

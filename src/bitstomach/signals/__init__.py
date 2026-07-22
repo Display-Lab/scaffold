@@ -4,7 +4,7 @@ from rdflib import RDF, BNode, Graph, URIRef
 from rdflib.resource import Resource
 
 from src import startup
-from src.utils import FHIR, PSDO
+from src.utils import PSDO
 
 
 class Signal:
@@ -20,12 +20,7 @@ class Signal:
         """
         checks if the signal can process the measure based on measure type
         """
-        node = BNode(performance_df["measure"].iloc[0])
-        # measure_type = next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value
-        measure_type = next(
-            startup.base_graph.objects(node, FHIR.measure_group_improvement_notation),
-            None,
-        ).value
+        measure_type = startup.measure_catalog[performance_df["measure"].iloc[0]].improvement_notation
         if measure_type not in self.measure_types:
             return False
         return True

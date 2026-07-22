@@ -6,7 +6,7 @@ from rdflib.resource import Resource
 
 from src import context, startup
 from src.bitstomach.signals import Signal
-from src.utils.namespace import FHIR, PSDO, SLOWMO
+from src.utils.namespace import PSDO, SLOWMO
 
 
 class Comparison(Signal):
@@ -39,12 +39,7 @@ class Comparison(Signal):
 
         resources = []
 
-        node = BNode(perf_data["measure"].iloc[0])
-        # current_measure_type = URIRef(next(startup.base_graph.objects(node, PSDO.has_desired_direction)).value)
-        current_measure_type = next(
-            startup.base_graph.objects(node, FHIR.measure_group_improvement_notation),
-            None,
-        ).value
+        current_measure_type =  startup.measure_catalog[perf_data["measure"].iloc[0]].improvement_notation
         gaps = Comparison._detect(perf_data, comparator_data, current_measure_type)
 
         for key, (gap, comparator_value) in gaps.items():

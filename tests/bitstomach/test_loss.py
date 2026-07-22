@@ -8,6 +8,7 @@ from rdflib.resource import Resource
 
 from src import context, startup
 from src.bitstomach.signals import Loss
+from src.models import Measure
 from src.utils.namespace import FHIR, PSDO, SLOWMO
 
 
@@ -31,15 +32,23 @@ def perf_data() -> pd.DataFrame:
     ]
     df = pd.DataFrame(performance_data[1:], columns=performance_data[0])
     df.attrs["performance_month"] = "2022-10-01"
-
-    g = Graph()
-    g.add((BNode("BP01"), RDF.type, FHIR.Measure))
-    g.add((BNode("BP01"), FHIR.improvementNotation, Literal("increase")))
-
-    g.add((BNode("BP02"), RDF.type, FHIR.Measure))
-    g.add((BNode("BP02"), FHIR.improvementNotation, Literal("decrease")))
-
-    startup.base_graph = g
+   
+    startup.measure_catalog = {
+        "BP01": Measure(
+            identifier="BP01",
+            name="BP01",
+            title="",
+            measure_type="process",
+            improvement_notation="increase",
+        ),
+        "BP02": Measure(
+            identifier="BP02",
+            name="BP02",
+            title="",
+            measure_type="process",
+            improvement_notation="decrease",
+        )
+    }
 
     return df
 
