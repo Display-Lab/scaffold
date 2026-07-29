@@ -1,3 +1,5 @@
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Display-Lab/scaffold/blob/main/sandbox/hospital%20quality%20dashboard%20usecase/SCADDOLD_Sandbox.ipynb)
+
 # SCAFFOLD Sandbox
 The SCAFFOLD sandbox currently provides example datasets and their corresponding knowledge bases. At present, it includes an example for a hospital quality dashboard use case. Additional examples can be incorporated as new use cases are developed.
 
