@@ -1,7 +1,10 @@
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Display-Lab/scaffold/blob/main/sandbox/hospital%20quality%20dashboard%20usecase/SCADDOLD_Sandbox.ipynb)
+
 
 # SCAFFOLD Sandbox
-The SCAFFOLD sandbox currently provides example datasets and their corresponding knowledge bases. At present, it includes an example for a hospital quality dashboard use case. Additional examples can be incorporated as new use cases are developed.
+The SCAFFOLD sandbox currently includes one complete use case: [Hospital Quality Dashboard](hospital%20quality%20dashboard%20usecase/). It provides example datasets and a corresponding knowledge base, plus a notebook you can run directly in Google Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Display-Lab/scaffold/blob/main/sandbox/hospital%20quality%20dashboard%20usecase/SCADDOLD_Sandbox.ipynb)
+
+
+Additional examples can be incorporated as new use cases are developed.
 
 The example datasets are produced using the SCAFFOLD FHIR-aligned data ingestion model. The ingestion model accepts input data in either JSON-LD or tabular (CSV) format. We use the term FHIR-aligned to indicate that the model adopts selected HL7 FHIR concepts, resource structures, and identifiers where they are beneficial for interoperability and consistency. The input artifacts are not intended to be fully conformant FHIR resources. Instead, they are lightweight representations tailored to SCAFFOLD's knowledge graph and data ingestion requirements, reusing FHIR semantics where appropriate while allowing extensions and simplifications specific to the platform.
 
