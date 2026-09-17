@@ -1,3 +1,4 @@
+import base64
 import datetime
 import re
 import sys
@@ -8,14 +9,14 @@ from urllib.request import urlopen
 import pandas as pd
 import yaml
 from loguru import logger
-from rdflib import DCTERMS, RDF, BNode, Graph, URIRef
+from rdflib import RDF, BNode, Graph, URIRef
 from rdflib.resource import Resource
 from scaffold_sdk import Esteemer
 
 from src import context, startup
-from src.models import MeasureReport
+from src.models import CommunicationRequest
 from src.utils import SLOWMO
-from src.utils.namespace import PSDO, FHIR
+from src.utils.namespace import FHIR, PSDO
 from src.utils.settings import settings
 
 candidate_df: pd.DataFrame = pd.DataFrame()
@@ -122,21 +123,24 @@ def add_candidates(response_data: dict):
         candidate_df = pd.concat([candidate_df, candidates], ignore_index=True)
 
 
-def _bundle_response_info(bundle: dict) -> tuple:
-    """Extracts subject and causal pathway from a message bundle's CommunicationRequest."""
+def _communication_request_response_info(resource: dict) -> tuple:
+    """Extract subject and causal pathway from a CommunicationRequest response."""
     subject = None
     causal_pathway = [None]
-    for entry in bundle.get("entry", []):
-        resource = entry.get("resource", {})
-        if resource.get("resourceType") != "CommunicationRequest":
-            continue
-        reference = resource.get("subject", {}).get("reference")
-        if reference:
-            subject = reference.split("/", 1)[-1]
-        for payload_item in resource.get("payload", []):
-            concept = payload_item.get("contentCodeableConcept")
-            if concept and concept.get("acceptable_by"):
-                causal_pathway = concept["acceptable_by"]
+
+    reference = resource.get("subject", {}).get("reference")
+    if reference:
+        subject = reference.split("/", 1)[-1]
+
+    for extension in resource.get("extension", []):
+        nested_extensions = extension.get("extension", [])
+        for nested in nested_extensions:
+            if nested.get("url") != "acceptable_by":
+                continue
+            value = nested.get("valueString")
+            if value:
+                causal_pathway = [value]
+                return subject, causal_pathway
 
     return subject, causal_pathway
 
@@ -144,8 +148,8 @@ def _bundle_response_info(bundle: dict) -> tuple:
 def add_response(response_data):
     global response_df
 
-    if response_data.get("resourceType") == "Bundle":
-        subject, causal_pathway = _bundle_response_info(response_data)
+    if response_data.get("resourceType") == "CommunicationRequest":
+        subject, causal_pathway = _communication_request_response_info(response_data)
     else:
         selected_candidate = response_data.get("selected_candidate", None)
         subject = response_data.get("subject", None)
@@ -364,10 +368,14 @@ def candidate_as_record(a_candidate: Resource) -> List:
 
     signals = extract_motivating_signals(a_candidate)
     representation.append(
-        "" if signals["PerformanceGapSize"] is None else str(signals["PerformanceGapSize"])
+        ""
+        if signals["PerformanceGapSize"] is None
+        else str(signals["PerformanceGapSize"])
     )
     representation.append(
-        "" if signals["PerformanceTrendSlope"] is None else str(signals["PerformanceTrendSlope"])
+        ""
+        if signals["PerformanceTrendSlope"] is None
+        else str(signals["PerformanceTrendSlope"])
     )
     representation.append(
         "" if signals["StreakLength"] is None else str(signals["StreakLength"])
@@ -410,46 +418,16 @@ def extract_motivating_signals(a_candidate: Resource) -> list[dict[str, object]]
     for signal in a_candidate[PSDO.motivating_information]:
         for name in signals:
             try:
-                signals[name] = round(float(signal.value(getattr(SLOWMO, name)).value), 4)
+                signals[name] = round(
+                    float(signal.value(getattr(SLOWMO, name)).value), 4
+                )
             except Exception:
                 pass
 
     return signals
 
-def set_motivating_signals_extension(a_candidate: Resource, measure_reports) :
-    """
-    Extracts motivating signal values (performance gap size, trend slope and
-    streak length) from a candidate's motivating information.
 
-    Parameters:
-    - a_candidate (Resource): The candidate to extract signals from.
-
-    Returns:
-    dict: Signal values, keyed by signal name, or None where a signal is not present.
-    """
-    signals = extract_motivating_signals(a_candidate)
-    signal_value_keys = {
-        "PerformanceGapSize": "valueDecimal",
-        "PerformanceTrendSlope": "valueDecimal",
-        "StreakLength": "valueInteger",
-    }
-    extensions = [
-        {
-            "url": str(getattr(SLOWMO, name)),
-            value_key: int(signals[name]) if value_key == "valueInteger" else signals[name],
-        }
-        for name, value_key in signal_value_keys.items()
-        if signals[name] is not None
-    ]
-    
-    for entry in measure_reports:
-            if entry["resource"]["period"]["start"] == context.performance_month:
-                entry["resource"]["extension"] = extensions
-                break
-    
-
-
-def _matching_comparator_row(measure_identifier: str, comparator: Resource):
+def _matching_comparator(measure_identifier: str, comparator: Resource) -> pd.DataFrame:
     comparator_type = str(comparator.identifier)
     comparator_df = context.comparator_df
     comparator_period_start = pd.to_datetime(comparator_df["period.start"])
@@ -477,16 +455,16 @@ def _matching_comparator_row(measure_identifier: str, comparator: Resource):
             f"Expected exactly 1 comparator row, found {len(comparator_filtered)}"
         )
 
-    return comparator_filtered.iloc[0]
+    return comparator_filtered
 
 
-def build_message_bundle(a_candidate: Resource, image: str = None, message_text: str = None) -> dict:
+def build_communication_request(
+    a_candidate: Resource, image: str = None, message_text: str = None
+) -> dict:
     """
-    Builds a FHIR Bundle containing the MeasureReport for the measure the
-    selected candidate relates to and a CommunicationRequest for the
-    selected candidate's message itself. All values are derived from the
-    candidate and the graph, except the image and finalized message text,
-    which Pictoralist generates separately.
+    Builds a CommunicationRequest for the selected candidate message.
+    All values are derived from the candidate and graph, except the image
+    and finalized message text, which Pictoralist generates separately.
 
     Parameters:
     - a_candidate (Resource): The selected candidate, or None if no candidate was selected.
@@ -495,134 +473,107 @@ def build_message_bundle(a_candidate: Resource, image: str = None, message_text:
       back to the candidate's raw template text if not provided.
 
     Returns:
-    dict: A FHIR Bundle resource, or None if no candidate was selected.
+    dict: A CommunicationRequest resource, or None if no candidate was selected.
     """
     if a_candidate is None:
         return None
 
     measure = a_candidate.value(SLOWMO.RegardingMeasure)
-    measure_identifier = str(measure.identifier)  
+    measure_identifier = str(measure.identifier)
+
+    communication_request = CommunicationRequest(
+        identifier=f"communication-request-{context.subject}-{measure_identifier}",
+        authored_on=datetime.datetime.now().isoformat(),
+        subject_reference=f"Practitioner/{context.subject}",
+    )
+
+    nested = [
+        CommunicationRequest.build_extension(
+            "template_name", "valueString", str(a_candidate.value(SLOWMO.name))
+        ),
+        CommunicationRequest.build_extension(
+            "template_id",
+            "valueString",
+            str(a_candidate.value(SLOWMO.AncestorTemplate)),
+        ),
+        CommunicationRequest.build_extension(
+            "display", "valueString", str(a_candidate.value(SLOWMO.Display))
+        ),
+        CommunicationRequest.build_extension(
+            "acceptable_by", "valueString", str(a_candidate.value(SLOWMO.AcceptableBy))
+        ),
+    ]
+    selected_comparator = a_candidate.value(
+        SLOWMO.RegardingComparator / SLOWMO.DisplayName
+    )
+    if selected_comparator is not None:
+        nested.append(
+            CommunicationRequest.build_extension(
+                "selected_comparator", "valueString", str(selected_comparator)
+            )
+        )
+    communication_request.add_extension(
+        "https://umich.edu/scaffold/", extensions=nested
+    )
+
+    communication_request.add_extension(
+        str(FHIR.improvementNotation),
+        "valueString",
+        value=measure.value(FHIR.improvementNotation).value,
+    )
+
+    # Add motivating signals
+    signals = extract_motivating_signals(a_candidate)
+    signal_value_keys = {
+        "PerformanceGapSize": "valueDecimal",
+        "PerformanceTrendSlope": "valueDecimal",
+        "StreakLength": "valueInteger",
+    }
+    for name, value_key in signal_value_keys.items():
+        if signals[name] is not None:
+            communication_request.add_extension(
+                str(getattr(SLOWMO, name)), value_key, value=signals[name]
+            )
+
+    communication_request.add_about(
+        display=measure.value(FHIR.title).value,
+        type="Measure",
+        identifier_system="urn:ietf:rfc:3986",
+        identifier_value=measure_identifier,
+    )
+
+    communication_request.add_text_payload(str(message_text))
+
+    communication_request.add_attachment_payload(
+        content_type="image/png",
+        data=image,
+    )
 
     # prepare performance measure reports
-    filtered = context.performance_df[
-        (context.performance_df["measure"] == measure_identifier)        
+    performance_report_df = context.performance_df[
+        (context.performance_df["measure"] == measure_identifier)
     ]
-    performance_report_df = filtered.copy()
+    performance_report_csv = performance_report_df.to_csv(index=False).encode("utf-8")
 
-    measure_reports = MeasureReport.bundle_entries_from_dataframe(
-        dataframe=performance_report_df,
-        report_type="individual",        
-        id_prefix="measure-report",
-        subject_column="subject",
-        subject_resource_type="Practitioner",
+    communication_request.add_attachment_payload(
+        content_type="text/csv; charset=utf-8",
+        data=base64.b64encode(performance_report_csv).decode("ascii"),
+        title="Performance measure reports",
     )
-    
-    set_motivating_signals_extension(a_candidate, measure_reports)
-   
-
-    # prepare communication request
-    authored_on = datetime.datetime.now().isoformat()
-    template_name = a_candidate.value(SLOWMO.name)
-    template_id = a_candidate.value(SLOWMO.AncestorTemplate)
-    display = a_candidate.value(SLOWMO.Display)
-    acceptable_by = a_candidate.value(SLOWMO.AcceptableBy)
-    selected_comparator = a_candidate.value(SLOWMO.RegardingComparator / SLOWMO.DisplayName)
-
-    payload = [{"contentString": str(message_text)}]
-
-    payload.append(
-        {
-            "contentAttachment": {
-                "contentType": "image/png",
-                "data": image,
-            }
-        }
-    )
-    
-    candidate_metadata = {}
-    candidate_metadata["message_template_id"] = str(template_id.identifier)
-    candidate_metadata["message_template_name"] = str(template_name)
-    candidate_metadata["display"] = str(display.value)
-    candidate_metadata["acceptable_by"] = [str(acceptable_by)]
-    if selected_comparator is not None:
-        candidate_metadata["selected_comparator"] = str(selected_comparator)
-    candidate_metadata["performance_month"] = str(context.performance_month)
-    payload.append({"contentCodeableConcept": candidate_metadata})
-    
-    communication_request_id = f"communication-request-{context.subject}-{measure_identifier}"
-    communication_request = {
-        "resourceType": "CommunicationRequest",
-        "id": communication_request_id,
-        "status": "active",
-        "subject": {"reference": f"Practitioner/{context.subject}"},
-        "about": [
-            {
-                "reference": f"urn:uuid:measure-report-{performance_report_df.loc[
-                    performance_report_df["period.start"] == context.performance_month,
-                    "identifier"
-                ].iloc[0]}",
-                "display": measure.value(FHIR.title).value,
-            }
-        ],
-        "payload": payload,
-        "authoredOn": authored_on,
-    }
 
     # prepare the comparator measure report
     comparator = a_candidate.value(SLOWMO.RegardingComparator)
-    comparator_measure_report = None
-    comparator_measure_report_id = None
-    comparator_measure_report_entry = None
-    if comparator is not None:
-        comparator_type = str(comparator.identifier)
-        comparator_row = _matching_comparator_row(
-            measure_identifier, comparator
-        )
-        comparator_report_df = pd.DataFrame([comparator_row]).copy()
+    if str(comparator) != "None":
+        comparator_df = _matching_comparator(measure_identifier, comparator)
+        comparator_report_csv = comparator_df.to_csv(index=False).encode("utf-8")
 
-        comparator_measure_report_entry = MeasureReport.bundle_entries_from_dataframe(
-            dataframe=comparator_report_df,
-            report_type="summary",
-            id_prefix="comparator-measure-report",
-            subject_column="group.subject",
-            subject_resource_type="Organization",
-        )[0]
-        comparator_measure_report = comparator_measure_report_entry["resource"]
-        comparator_measure_report_id = comparator_measure_report["id"]
-
-        comparator_measure_report["group"][0]["code"] = {
-            "coding": [{"code": comparator_type}],
-            "text": str(comparator.value(SLOWMO.DisplayName)),
-        }
-        communication_request["about"].append(
-            {
-                "reference": f"urn:uuid:{comparator_measure_report_id}",
-                "display": str(comparator.value(SLOWMO.DisplayName)),
-            }
+        communication_request.add_attachment_payload(
+            content_type="text/csv; charset=utf-8",
+            data=base64.b64encode(comparator_report_csv).decode("ascii"),
+            title="Comparator measure reports",
         )
 
-    entries = [
-        {
-            "fullUrl": f"urn:uuid:{communication_request_id}",
-            "resource": communication_request,
-        }        
-    ]
-    entries.extend(measure_reports)
-    if comparator_measure_report is not None:
-        entries.append(comparator_measure_report_entry)
-    entries.append(
-        {
-            "fullUrl": f"urn:uuid:measure-{measure_identifier}",
-            "resource": startup.measure_catalog[measure_identifier].to_json(),
-        }
-    )
-
-    return {
-        "resourceType": "Bundle",
-        "id": f"perf-feedback-package-{context.subject}-{measure_identifier}",
-        "type": "collection",
-        "entry": entries,
-    }
+    return communication_request.to_json()
 
 
 def load_kb_config(config_path: str) -> dict:
