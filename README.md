@@ -261,3 +261,113 @@ $env:ENV_PATH=/user/.../.env.dev; $env:log_level="INFO"; $env:use_preferences="T
 ```
 
 > :point_right: `uvicorn` can be run with multiple workers. This is useful when testing with a client that can send multiple requests.
+
+## FHIR-aligned output model
+
+SCAFFOLD now returns a single FHIR `CommunicationRequest` as the primary output model for generated feedback messages.
+
+### Why this model
+
+We selected a `CommunicationRequest`-first output for the following reasons:
+
+- Clear intent: The pipeline's core result is a communication artifact (message + optional attachments), which maps directly to `CommunicationRequest`.
+- Better interoperability: FHIR-native consumers can ingest a standard resource without custom wrappers.
+- Simpler client parsing: Clients no longer need to navigate bundle entries to find the selected message.
+- Preserved explainability: SCAFFOLD-specific metadata is still included using FHIR `extension` fields.
+- Backward-friendly analytics: Candidate records can still be attached when `log_level=INFO`.
+
+### Output shape at a glance
+
+The response is a JSON object with:
+
+- `resourceType: CommunicationRequest`
+- Core identity and context: `id`, `status`, `subject`, `authoredOn`
+- Measure context: `about`
+- Message content and artifacts: `payload`
+- SCAFFOLD metadata and signals: `extension`
+- Optional debugging/analysis rows: `candidates` (when enabled)
+
+### Design choices and logic
+
+1. Chosen message as first-class resource
+The selected candidate is represented as a single `CommunicationRequest`, because each run produces one final message for one subject and measure. If we decide to select multiple candidates in the future, it would be straightforward to switch from a single `CommunicationRequest` to a collection bundle containint multiple `CommunicationRequest` resources.
+
+2. Domain metadata via extensions
+Template details and causal pathway information are represented as nested extensions under `https://umich.edu/scaffold/`.
+This keeps domain-specific fields explicit while staying FHIR-compatible.
+
+3. Motivating signals in typed FHIR extensions
+Signals such as performance gap size, trend slope, and streak length are emitted as typed extension values (`valueDecimal`, `valueInteger`) for predictable downstream parsing.
+
+4. Portable context in attachments
+The current performance measure reports and selected comparator measure report are attached as base64-encoded CSV payload attachments so clients can display or audit the exact evidence used in message generation.
+
+5. Optional visual payload
+When image generation is enabled, the feedback chart is included as a PNG attachment in `payload`.
+
+### How to read the response
+
+For most clients, this sequence works well:
+
+1. Verify `resourceType == "CommunicationRequest"`.
+2. Read practitioner ID from `subject.reference` (for example, `Practitioner/<id>`).
+3. Read human-readable message from the first `payload` item with `contentString`.
+4. Read measure info from `about[0]` (`display`, `identifier.value`).
+5. Read SCAFFOLD metadata from nested extensions under `url == "https://umich.edu/scaffold/"`:
+   - `template_name`
+   - `template_id`
+   - `display`
+   - `acceptable_by`
+   - `selected_comparator` (if present)
+6. Read motivating signals from top-level extensions by URL:
+   - `...#PerformanceGapSize`
+   - `...#PerformanceTrendSlope`
+   - `...#StreakLength`
+7. Read optional attachment payloads (`image/png`, `text/csv`) as needed.
+
+### Minimal example
+
+```json
+{
+  "resourceType": "CommunicationRequest",
+  "id": "communication-request-52e46856-...-Physician-language-01",
+  "status": "active",
+  "subject": {
+    "reference": "Practitioner/52e46856-9a80-41cf-a74d-8cddd753ec56"
+  },
+  "about": [
+    {
+      "identifier": {
+        "system": "urn:ietf:rfc:3986",
+        "value": "Physician-language-01"
+      },
+      "type": "Measure",
+      "display": "Physician informed using clear language"
+    }
+  ],
+  "payload": [
+    {
+      "contentString": "Your performance is approaching the peer average this month..."
+    },
+    {
+      "contentAttachment": {
+        "contentType": "image/png",
+        "data": "<base64>"
+      }
+    }
+  ],
+  "extension": [
+    {
+      "url": "https://umich.edu/scaffold/",
+      "extension": [
+        {"url": "template_name", "valueString": "Approach Peer Average"},
+        {"url": "acceptable_by", "valueString": "Social Approach"}
+      ]
+    },
+    {
+      "url": "http://example.com/slowmo#PerformanceGapSize",
+      "valueDecimal": -0.031
+    }
+  ]
+}
+```
