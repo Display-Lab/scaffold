@@ -104,12 +104,10 @@ def pipeline():
         selected_candidate,
         image=image,
         message_text=message_text,
+        include_candidates=logger.at_least("INFO"),
     )
     if new_response is None:
         return response
-
-    if logger.at_least("INFO"):
-        new_response["candidates"] = candidates_records(context.subject_graph)
 
     return new_response
 

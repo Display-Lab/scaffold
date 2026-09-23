@@ -1,5 +1,6 @@
 import base64
 import datetime
+import json
 import re
 import sys
 from importlib.metadata import entry_points
@@ -114,9 +115,20 @@ def build_table(grouping_column):
     return report_table
 
 
+def _extract_candidates_table(response_data: dict) -> list[list] | None:
+    """Finds the JSON-encoded candidates table nested under the scaffold extension."""
+    for extension in response_data.get("extension", []):
+        for nested in extension.get("extension", []):
+            if nested.get("url") == "candidates":
+                value = nested.get("valueString")
+                if value:
+                    return json.loads(value)
+    return None
+
+
 def add_candidates(response_data: dict):
     global candidate_df
-    data = response_data.get("candidates", None)
+    data = _extract_candidates_table(response_data)
     if data:
         candidates = pd.DataFrame(data[1:], columns=data[0])
         candidates["performance_month"] = context.performance_month
@@ -398,6 +410,24 @@ def candidate_as_record(a_candidate: Resource) -> List:
     return representation
 
 
+def candidates_extension(subject_graph: Graph) -> dict[str, object]:
+    """
+    Wraps the candidates_records() table in a nested FHIR extension, unchanged in shape.
+    The table is JSON-encoded since FHIR extensions only support value[x] types.
+
+    Parameters:
+    - subject_graph (Graph): The subject_graph.
+
+    Returns:
+    dict: A nested FHIR extension whose value is the candidates records table.
+    """
+    return CommunicationRequest.build_extension(
+        "candidates",
+        "valueString",
+        value=json.dumps(candidates_records(subject_graph)),
+    )
+
+
 def extract_motivating_signals(a_candidate: Resource) -> list[dict[str, object]]:
     """
     Extracts motivating signal values (performance gap size, trend slope and
@@ -459,7 +489,10 @@ def _matching_comparator(measure_identifier: str, comparator: Resource) -> pd.Da
 
 
 def build_communication_request(
-    a_candidate: Resource, image: str = None, message_text: str = None
+    a_candidate: Resource,
+    image: str = None,
+    message_text: str = None,
+    include_candidates: bool = False,
 ) -> dict:
     """
     Builds a CommunicationRequest for the selected candidate message.
@@ -471,6 +504,8 @@ def build_communication_request(
     - image (str, optional): The base64-encoded graph image produced by Pictoralist, if any.
     - message_text (str, optional): The finalized message text produced by Pictoralist. Falls
       back to the candidate's raw template text if not provided.
+    - include_candidates (bool, optional): When True, adds an extension listing all
+      acceptable candidates considered during selection.
 
     Returns:
     dict: A CommunicationRequest resource, or None if no candidate was selected.
@@ -482,8 +517,8 @@ def build_communication_request(
     measure_identifier = str(measure.identifier)
 
     communication_request = CommunicationRequest(
-        identifier=f"communication-request-{context.subject}-{measure_identifier}",
-        authored_on=datetime.datetime.now().isoformat(),
+        identifier=f"cr-{context.subject}-{measure_identifier}",
+        authored_on=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         subject_reference=f"Practitioner/{context.subject}",
     )
 
@@ -494,13 +529,19 @@ def build_communication_request(
         CommunicationRequest.build_extension(
             "template_id",
             "valueString",
-            str(a_candidate.value(SLOWMO.AncestorTemplate)),
+            str(a_candidate.value(SLOWMO.AncestorTemplate).identifier),
         ),
         CommunicationRequest.build_extension(
             "display", "valueString", str(a_candidate.value(SLOWMO.Display))
         ),
         CommunicationRequest.build_extension(
             "acceptable_by", "valueString", str(a_candidate.value(SLOWMO.AcceptableBy))
+        ),
+        CommunicationRequest.build_extension(
+            "performance_date", "valueString", str(context.performance_month)
+        ),
+        CommunicationRequest.build_extension(
+            "improvementNotation", "valueString", measure.value(FHIR.improvementNotation).value
         ),
     ]
     selected_comparator = a_candidate.value(
@@ -512,14 +553,10 @@ def build_communication_request(
                 "selected_comparator", "valueString", str(selected_comparator)
             )
         )
+    if include_candidates:
+        nested.append(candidates_extension(context.subject_graph))
     communication_request.add_extension(
         "https://umich.edu/scaffold/", extensions=nested
-    )
-
-    communication_request.add_extension(
-        str(FHIR.improvementNotation),
-        "valueString",
-        value=measure.value(FHIR.improvementNotation).value,
     )
 
     # Add motivating signals
@@ -532,14 +569,13 @@ def build_communication_request(
     for name, value_key in signal_value_keys.items():
         if signals[name] is not None:
             communication_request.add_extension(
-                str(getattr(SLOWMO, name)), value_key, value=signals[name]
+                str(getattr(SLOWMO, name)), value_key, value=(signals[name] if value_key == "valueDecimal" else int(signals[name]))
             )
 
     communication_request.add_about(
         display=measure.value(FHIR.title).value,
         type="Measure",
-        identifier_system="urn:ietf:rfc:3986",
-        identifier_value=measure_identifier,
+        reference=measure_identifier,
     )
 
     communication_request.add_text_payload(str(message_text))

@@ -153,7 +153,6 @@ def batch_csv(
             context.from_global(subject)
             try:
                 full_message = pipeline()
-                full_message["performance_data"] = context.performance_month
             except Exception as e:
                 raise e
             if not stats_only:

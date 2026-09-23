@@ -10,6 +10,7 @@ def test_to_json_returns_minimal_communication_request():
         "resourceType": "CommunicationRequest",
         "id": "communication-request-1",
         "status": "active",
+        "intent": "proposal",
     }
 
 
@@ -37,6 +38,7 @@ def test_add_about_and_payload_methods_mutate_and_return_request():
         "resourceType": "CommunicationRequest",
         "id": "communication-request-1",
         "status": "active",
+        "intent": "proposal",
         "subject": {"reference": "Practitioner/practitioner-1"},
         "authoredOn": "2026-09-15T12:00:00",
         "about": [

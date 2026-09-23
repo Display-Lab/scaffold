@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 class CommunicationRequest:
     identifier: str
     status: str = "active"
+    intent: str = "proposal"
     subject_reference: str | None = None
     authored_on: str | None = None
     about: list[dict[str, object]] = field(default_factory=list)
@@ -133,6 +134,7 @@ class CommunicationRequest:
             "resourceType": "CommunicationRequest",
             "id": self.identifier,
             "status": self.status,
+            "intent": self.intent,
         }
 
         optional_fields = {
