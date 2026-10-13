@@ -261,3 +261,165 @@ $env:ENV_PATH=/user/.../.env.dev; $env:log_level="INFO"; $env:use_preferences="T
 ```
 
 > :point_right: `uvicorn` can be run with multiple workers. This is useful when testing with a client that can send multiple requests.
+
+## FHIR-aligned output model
+
+SCAFFOLD now returns a single FHIR `CommunicationRequest` as the primary output model for generated feedback messages.
+
+### Why this model
+
+We selected a `CommunicationRequest`-first output for the following reasons:
+
+- Clear intent: The pipeline's core result is a communication artifact (message + optional attachments), which maps directly to `CommunicationRequest`.
+- Better interoperability: FHIR-native consumers can ingest a standard resource without custom wrappers.
+- Simpler client parsing: Clients no longer need to navigate bundle entries to find the selected message.
+- Preserved explainability: SCAFFOLD-specific metadata is still included using FHIR `extension` fields.
+- Backward-friendly analytics: Candidate records can still be attached when `log_level=INFO`.
+
+### Output shape at a glance
+
+The response is a JSON object with:
+
+- `resourceType: CommunicationRequest`
+- Core identity and context: `id`, `status`, `subject`, `authoredOn`
+- Measure context: `about`
+- Message content and artifacts: `payload`
+- SCAFFOLD metadata and signals: `extension`
+- Optional debugging/analysis rows: a nested `candidates` extension under the SCAFFOLD extension (when `log_level=INFO`)
+
+### Design choices and logic
+
+1. Chosen message as first-class resource
+The selected candidate is represented as a single `CommunicationRequest`, because each run produces one final message for one subject and measure. If we decide to select multiple candidates in the future, it would be straightforward to switch from a single `CommunicationRequest` to a collection bundle containint multiple `CommunicationRequest` resources.
+
+2. Domain metadata via extensions
+Template details, causal pathway information, the improvement notation, and (optionally) candidate records are represented as nested extensions under the SCAFFOLD extension URL `https://umich.edu/scaffold/`. This keeps domain-specific fields explicit while staying FHIR-compatible.
+
+**Custom extensions without a bundled StructureDefinition**: SCAFFOLD's output is **FHIR-aligned**, not a fully conformant FHIR implementation guide/profile. The SCAFFOLD extension is included in the output using its canonical URL, but SCAFFOLD does not generate or host a `StructureDefinition` for it — not at that URL, and not included with the output.
+
+Example of the SCAFFOLD extension on a `CommunicationRequest`:
+
+```json
+"extension": [
+  {
+    "url": "https://umich.edu/fhir/scaffold/StructureDefinition/feedback-metadata",
+    "extension": [
+      {
+        "url": "template_name",
+        "valueString": "Approach Peer Average"
+      }
+    ]
+  }
+]
+```
+
+A minimal `StructureDefinition` for this extension could look like:
+
+```json
+{
+  "resourceType": "StructureDefinition",
+  "id": "scaffold-feedback-metadata",
+  "url": "https://umich.edu/fhir/scaffold/StructureDefinition/feedback-metadata",
+  "version": "0.1.0",
+  "name": "ScaffoldFeedbackMetadata",
+  "status": "draft",
+  "kind": "complex-type",
+  "abstract": false,
+  "type": "Extension",
+  "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Extension",
+  "derivation": "constraint",
+  "context": [
+    {
+      "type": "element",
+      "expression": "CommunicationRequest"
+    }
+  ],
+  "differential": {
+    "element": [
+      {
+        "id": "Extension",
+        "path": "Extension"
+      }
+    ]
+  }
+}
+```
+
+> :point_right: In the future, SCAFFOLD may publish a `StructureDefinition` at this canonical URL so the output can be validated as fully conformant FHIR.
+
+3. Motivating signals in typed FHIR extensions
+Signals such as performance gap size, trend slope, and streak length are emitted as typed extension values (`valueDecimal`, `valueInteger`) for predictable downstream parsing.
+
+4. Portable context in attachments
+The current performance measure reports and selected comparator measure report are attached as base64-encoded CSV payload attachments so clients can display or audit the exact evidence used in message generation.
+
+5. Optional visual payload
+When image generation is enabled, the feedback chart is included as a PNG attachment in `payload`.
+
+### How to read the response
+
+For most clients, this sequence works well:
+
+1. Verify `resourceType == "CommunicationRequest"`.
+2. Read practitioner ID from `subject.reference` (for example, `Practitioner/<id>`).
+3. Read human-readable message from the first `payload` item with `contentString`.
+4. Read measure info from `about[0]` (`display`, `reference`).
+5. Read SCAFFOLD metadata from nested extensions under `url == "https://umich.edu/scaffold/"`:
+   - `template_name`
+   - `template_id`
+   - `display`
+   - `acceptable_by`
+   - `performance_date`
+   - `improvementNotation`
+   - `selected_comparator` (if present)
+   - `candidates` (if `log_level=INFO`)
+6. Read motivating signals from top-level extensions by URL:
+   - `...#PerformanceGapSize`
+   - `...#PerformanceTrendSlope`
+   - `...#StreakLength`
+7. Read optional attachment payloads (`image/png`, `text/csv`) as needed.
+
+### Minimal example
+
+```json
+{
+  "resourceType": "CommunicationRequest",
+  "id": "cr-52e46856-...-Physician-language-01",
+  "status": "active",
+  "subject": {
+    "reference": "Practitioner/52e46856-9a80-41cf-a74d-8cddd753ec56"
+  },
+  "about": [
+    {
+      "reference": "Physician-language-01",
+      "type": "Measure",
+      "display": "Physician informed using clear language"
+    }
+  ],
+  "payload": [
+    {
+      "contentString": "Your performance is approaching the peer average this month..."
+    },
+    {
+      "contentAttachment": {
+        "contentType": "image/png",
+        "data": "<base64>"
+      }
+    }
+  ],
+  "extension": [
+    {
+      "url": "https://umich.edu/scaffold/",
+      "extension": [
+        {"url": "template_name", "valueString": "Approach Peer Average"},
+        {"url": "acceptable_by", "valueString": "Social Approach"},
+        {"url": "improvementNotation", "valueString": "increase"}
+      ]
+    },
+    {
+      "url": "http://example.com/slowmo#PerformanceGapSize",
+      "valueDecimal": -0.031
+    }
+  ]
+}
+```

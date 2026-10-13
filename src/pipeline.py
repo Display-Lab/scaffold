@@ -13,6 +13,7 @@ from src.pictoralist.pictoralist import Pictoralist
 from src.utils.namespace import PSDO, SLOWMO
 from src.utils.settings import settings
 from src.utils.utils import (
+    build_communication_request,
     candidates_records,
     load_esteemer,
     merge_and_pivot,
@@ -32,33 +33,40 @@ def pipeline():
 
     performance_content = g.resource(BNode("performance_content"))
     if len(list(performance_content[PSDO.motivating_information])) == 0:
-        raise_error("Insufficient significant data found for providing feedback, process aborted. Detail: No motivating information found in the performance content.")
+        raise_error(
+            "Insufficient significant data found for providing feedback, process aborted. Detail: No motivating information found in the performance content."
+        )
 
     context.subject_graph += g
 
     # candidate_pudding
     logger.debug("Calling candidate_pudding from main...")
     candidate_pudding.create_candidates()
-    
+
     if not set(context.subject_graph[: SLOWMO.AcceptableBy :]):
-        raise_error("Insufficient significant data found for providing feedback, process aborted. Detail: No acceptable candidates found after candidate creation.")
-       
+        raise_error(
+            "Insufficient significant data found for providing feedback, process aborted. Detail: No acceptable candidates found after candidate creation."
+        )
+
     # esteemer
     logger.debug("Calling Esteemer from main...")
     esteemer = load_esteemer(context)
-    selected_candidate = esteemer.select_candidate()    
+    selected_candidate = esteemer.select_candidate()
 
     preferences = get_preferences()
- 
-    if preferences["Display_Format"] and selected_candidate:
-        selected_candidate[SLOWMO.Display] = Literal(
-            preferences["Display_Format"]
-        )
 
-    selected_message = render(context.subject_graph, selected_candidate.identifier if selected_candidate else None)
+    if preferences["Display_Format"] and selected_candidate:
+        selected_candidate[SLOWMO.Display] = Literal(preferences["Display_Format"])
+
+    selected_message = render(
+        context.subject_graph,
+        selected_candidate.identifier if selected_candidate else None,
+    )
 
     ### Pictoralist 2, now on the Nintendo DS: ###
     logger.debug("Calling Pictoralist from main...")
+    image = None
+    message_text = None
     if selected_message["message_text"] != "No message selected":
         ## Initialize and run message and display generation:
         pc = Pictoralist(
@@ -73,6 +81,8 @@ def pipeline():
         pc.graph_controller()  # Select and run graphing based on display type
 
         full_selected_message = pc.prepare_selected_message()
+        image = pc.base64_image
+        message_text = pc.message_text
     else:
         full_selected_message = selected_message
 
@@ -90,16 +100,26 @@ def pipeline():
 
     response.update(full_selected_message)
 
-    return response
+    new_response = build_communication_request(
+        selected_candidate,
+        image=image,
+        message_text=message_text,
+        include_candidates=logger.at_least("INFO"),
+    )
+    if new_response is None:
+        return response
+
+    return new_response
+
 
 def raise_error(message):
     context.subject_graph.close()
     detail = {
-            "message": message,
-            "subject": context.subject,
-        }
+        "message": message,
+        "subject": context.subject,
+    }
     raise HTTPException(
-            status_code=400,
-            detail=detail,
-            headers={"400-Error": "Invalid Input Error"},
-        )
+        status_code=400,
+        detail=detail,
+        headers={"400-Error": "Invalid Input Error"},
+    )

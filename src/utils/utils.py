@@ -1,3 +1,6 @@
+import base64
+import datetime
+import json
 import re
 import sys
 from importlib.metadata import entry_points
@@ -7,13 +10,14 @@ from urllib.request import urlopen
 import pandas as pd
 import yaml
 from loguru import logger
-from rdflib import DCTERMS, RDF, BNode, Graph, URIRef
+from rdflib import RDF, BNode, Graph, URIRef
 from rdflib.resource import Resource
 from scaffold_sdk import Esteemer
 
 from src import context, startup
+from src.models import CommunicationRequest
 from src.utils import SLOWMO
-from src.utils.namespace import PSDO, FHIR
+from src.utils.namespace import FHIR, PSDO
 from src.utils.settings import settings
 
 candidate_df: pd.DataFrame = pd.DataFrame()
@@ -46,15 +50,15 @@ def analyse_candidates(OUTPUT):
 
     # causal pathways
     causal_pathway_report = build_table("causal_pathway")
-    print(causal_pathway_report, "\n")
+    print(causal_pathway_report.to_string(), "\n")
 
     # messages
     message_report = build_table("message")
-    print(message_report, "\n")
+    print(message_report.to_string(), "\n")
 
     # measures
     measure_report = build_table("measure")
-    print(measure_report, "\n")
+    print(measure_report.to_string(), "\n")
 
 
 def build_table(grouping_column):
@@ -111,24 +115,63 @@ def build_table(grouping_column):
     return report_table
 
 
+def _extract_candidates_table(response_data: dict) -> list[list] | None:
+    """Finds the JSON-encoded candidates table nested under the scaffold extension."""
+    for extension in response_data.get("extension", []):
+        for nested in extension.get("extension", []):
+            if nested.get("url") == "candidates":
+                value = nested.get("valueString")
+                if value:
+                    return json.loads(value)
+    return None
+
+
 def add_candidates(response_data: dict):
     global candidate_df
-    data = response_data.get("candidates", None)
+    data = _extract_candidates_table(response_data)
     if data:
         candidates = pd.DataFrame(data[1:], columns=data[0])
         candidates["performance_month"] = context.performance_month
         candidate_df = pd.concat([candidate_df, candidates], ignore_index=True)
 
 
+def _communication_request_response_info(resource: dict) -> tuple:
+    """Extract subject and causal pathway from a CommunicationRequest response."""
+    subject = None
+    causal_pathway = [None]
+
+    reference = resource.get("subject", {}).get("reference")
+    if reference:
+        subject = reference.split("/", 1)[-1]
+
+    for extension in resource.get("extension", []):
+        nested_extensions = extension.get("extension", [])
+        for nested in nested_extensions:
+            if nested.get("url") != "acceptable_by":
+                continue
+            value = nested.get("valueString")
+            if value:
+                causal_pathway = [value]
+                return subject, causal_pathway
+
+    return subject, causal_pathway
+
+
 def add_response(response_data):
     global response_df
-    selected_candidate = response_data.get("selected_candidate", None)
+
+    if response_data.get("resourceType") == "CommunicationRequest":
+        subject, causal_pathway = _communication_request_response_info(response_data)
+    else:
+        selected_candidate = response_data.get("selected_candidate", None)
+        subject = response_data.get("subject", None)
+        causal_pathway = (
+            selected_candidate["acceptable_by"] if selected_candidate else [None]
+        )
 
     response_dict: dict = {
-        "subject": [response_data.get("subject", None)],
-        "causal_pathway": selected_candidate["acceptable_by"]
-        if selected_candidate
-        else [None],
+        "subject": [subject],
+        "causal_pathway": causal_pathway,
     }
     response_df = pd.concat(
         [response_df, pd.DataFrame(response_dict)], ignore_index=True
@@ -334,34 +377,21 @@ def candidate_as_record(a_candidate: Resource) -> List:
     representation.append(a_candidate.value(SLOWMO.name))
     representation.append(a_candidate.value(SLOWMO.AcceptableBy))
     representation.append(bool(a_candidate.value(SLOWMO.Selected)))
-    PerformanceGapSize = ""
-    PerformanceTrendSlope = ""
-    StreakLength = ""
-    for signal in a_candidate[PSDO.motivating_information]:
-        try:
-            PerformanceGapSize = str(
-                round(signal.value(SLOWMO.PerformanceGapSize).value, 4)
-            )
-        except Exception:
-            pass
 
-    for signal in a_candidate[PSDO.motivating_information]:
-        try:
-            PerformanceTrendSlope = str(
-                round(signal.value(SLOWMO.PerformanceTrendSlope).value, 4)
-            )
-        except Exception:
-            pass
-
-    for signal in a_candidate[PSDO.motivating_information]:
-        try:
-            StreakLength = str(round(signal.value(SLOWMO.StreakLength).value, 4))
-        except Exception:
-            pass
-
-    representation.append(PerformanceGapSize)
-    representation.append(PerformanceTrendSlope)
-    representation.append(StreakLength)
+    signals = extract_motivating_signals(a_candidate)
+    representation.append(
+        ""
+        if signals["PerformanceGapSize"] is None
+        else str(signals["PerformanceGapSize"])
+    )
+    representation.append(
+        ""
+        if signals["PerformanceTrendSlope"] is None
+        else str(signals["PerformanceTrendSlope"])
+    )
+    representation.append(
+        "" if signals["StreakLength"] is None else str(signals["StreakLength"])
+    )
 
     filtered = context.performance_df[
         (
@@ -378,6 +408,208 @@ def candidate_as_record(a_candidate: Resource) -> List:
     representation.append(int(denominator))
 
     return representation
+
+
+def candidates_extension(subject_graph: Graph) -> dict[str, object]:
+    """
+    Wraps the candidates_records() table in a nested FHIR extension, unchanged in shape.
+    The table is JSON-encoded since FHIR extensions only support value[x] types.
+
+    Parameters:
+    - subject_graph (Graph): The subject_graph.
+
+    Returns:
+    dict: A nested FHIR extension whose value is the candidates records table.
+    """
+    return CommunicationRequest.build_extension(
+        "candidates",
+        "valueString",
+        value=json.dumps(candidates_records(subject_graph)),
+    )
+
+
+def extract_motivating_signals(a_candidate: Resource) -> list[dict[str, object]]:
+    """
+    Extracts motivating signal values (performance gap size, trend slope and
+    streak length) from a candidate's motivating information.
+
+    Parameters:
+    - a_candidate (Resource): The candidate to extract signals from.
+
+    Returns:
+    dict: Signal values, keyed by signal name, or None where a signal is not present.
+    """
+    signals = {
+        "PerformanceGapSize": None,
+        "PerformanceTrendSlope": None,
+        "StreakLength": None,
+    }
+
+    for signal in a_candidate[PSDO.motivating_information]:
+        for name in signals:
+            try:
+                signals[name] = round(
+                    float(signal.value(getattr(SLOWMO, name)).value), 4
+                )
+            except Exception:
+                pass
+
+    return signals
+
+
+def _matching_comparator(measure_identifier: str, comparator: Resource) -> pd.DataFrame:
+    comparator_type = str(comparator.identifier)
+    comparator_df = context.comparator_df
+    comparator_period_start = pd.to_datetime(comparator_df["period.start"])
+    performance_period_start = pd.to_datetime(context.performance_month)
+
+    row_filter = (
+        (comparator_df["measure"] == measure_identifier)
+        & (comparator_period_start == performance_period_start)
+        & (comparator_df["group.code"] == comparator_type)
+    )
+
+    merge_columns = startup.config.get("ComparatorMergeColumns", [])
+    if not context.practitioner_role.empty:
+        practitioner_role = context.practitioner_role.iloc[0]
+        if "group.subject" in merge_columns:
+            org_id = practitioner_role["PractitionerRole.organization"]
+            row_filter &= comparator_df["group.subject"] == org_id
+        if "PractitionerRole.code" in merge_columns:
+            role = practitioner_role["PractitionerRole.code"]
+            row_filter &= comparator_df["PractitionerRole.code"] == role
+
+    comparator_filtered = comparator_df[row_filter]
+    if len(comparator_filtered) != 1:
+        raise ValueError(
+            f"Expected exactly 1 comparator row, found {len(comparator_filtered)}"
+        )
+
+    return comparator_filtered
+
+
+def build_communication_request(
+    a_candidate: Resource,
+    image: str = None,
+    message_text: str = None,
+    include_candidates: bool = False,
+) -> dict:
+    """
+    Builds a CommunicationRequest for the selected candidate message.
+    All values are derived from the candidate and graph, except the image
+    and finalized message text, which Pictoralist generates separately.
+
+    Parameters:
+    - a_candidate (Resource): The selected candidate, or None if no candidate was selected.
+    - image (str, optional): The base64-encoded graph image produced by Pictoralist, if any.
+    - message_text (str, optional): The finalized message text produced by Pictoralist. Falls
+      back to the candidate's raw template text if not provided.
+    - include_candidates (bool, optional): When True, adds an extension listing all
+      acceptable candidates considered during selection.
+
+    Returns:
+    dict: A CommunicationRequest resource, or None if no candidate was selected.
+    """
+    if a_candidate is None:
+        return None
+
+    measure = a_candidate.value(SLOWMO.RegardingMeasure)
+    measure_identifier = str(measure.identifier)
+
+    communication_request = CommunicationRequest(
+        identifier=f"cr-{context.subject}-{measure_identifier}",
+        authored_on=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        subject_reference=f"Practitioner/{context.subject}",
+    )
+
+    nested = [
+        CommunicationRequest.build_extension(
+            "template_name", "valueString", str(a_candidate.value(SLOWMO.name))
+        ),
+        CommunicationRequest.build_extension(
+            "template_id",
+            "valueString",
+            str(a_candidate.value(SLOWMO.AncestorTemplate).identifier),
+        ),
+        CommunicationRequest.build_extension(
+            "display", "valueString", str(a_candidate.value(SLOWMO.Display))
+        ),
+        CommunicationRequest.build_extension(
+            "acceptable_by", "valueString", str(a_candidate.value(SLOWMO.AcceptableBy))
+        ),
+        CommunicationRequest.build_extension(
+            "performance_date", "valueString", str(context.performance_month)
+        ),
+        CommunicationRequest.build_extension(
+            "improvementNotation", "valueString", measure.value(FHIR.improvementNotation).value
+        ),
+    ]
+    selected_comparator = a_candidate.value(
+        SLOWMO.RegardingComparator / SLOWMO.DisplayName
+    )
+    if selected_comparator is not None:
+        nested.append(
+            CommunicationRequest.build_extension(
+                "selected_comparator", "valueString", str(selected_comparator)
+            )
+        )
+    if include_candidates:
+        nested.append(candidates_extension(context.subject_graph))
+    communication_request.add_extension(
+        "https://umich.edu/scaffold/", extensions=nested
+    )
+
+    # Add motivating signals
+    signals = extract_motivating_signals(a_candidate)
+    signal_value_keys = {
+        "PerformanceGapSize": "valueDecimal",
+        "PerformanceTrendSlope": "valueDecimal",
+        "StreakLength": "valueInteger",
+    }
+    for name, value_key in signal_value_keys.items():
+        if signals[name] is not None:
+            communication_request.add_extension(
+                str(getattr(SLOWMO, name)), value_key, value=(signals[name] if value_key == "valueDecimal" else int(signals[name]))
+            )
+
+    communication_request.add_about(
+        display=measure.value(FHIR.title).value,
+        type="Measure",
+        reference=measure_identifier,
+    )
+
+    communication_request.add_text_payload(str(message_text))
+
+    communication_request.add_attachment_payload(
+        content_type="image/png",
+        data=image,
+    )
+
+    # prepare performance measure reports
+    performance_report_df = context.performance_df[
+        (context.performance_df["measure"] == measure_identifier)
+    ]
+    performance_report_csv = performance_report_df.to_csv(index=False).encode("utf-8")
+
+    communication_request.add_attachment_payload(
+        content_type="text/csv; charset=utf-8",
+        data=base64.b64encode(performance_report_csv).decode("ascii"),
+        title="Performance measure reports",
+    )
+
+    # prepare the comparator measure report
+    comparator = a_candidate.value(SLOWMO.RegardingComparator)
+    if str(comparator) != "None":
+        comparator_df = _matching_comparator(measure_identifier, comparator)
+        comparator_report_csv = comparator_df.to_csv(index=False).encode("utf-8")
+
+        communication_request.add_attachment_payload(
+            content_type="text/csv; charset=utf-8",
+            data=base64.b64encode(comparator_report_csv).decode("ascii"),
+            title="Comparator measure reports",
+        )
+
+    return communication_request.to_json()
 
 
 def load_kb_config(config_path: str) -> dict:
