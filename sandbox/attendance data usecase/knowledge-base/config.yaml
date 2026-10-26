@@ -1,0 +1,5 @@
+
+plugins:
+  scaffold.esteemer:
+    name: mpm_candidate_selector
+    version: "1.0.0"

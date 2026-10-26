@@ -1,0 +1,26 @@
+---
+variables:
+  HITS_DEPLOY:
+    description: Deploy to this environment
+    value: test
+  DOWNSTREAM_PROJECT:
+    description: The project id in gitlab that you want to kick off
+    value: "4621"
+default:
+  image: google/cloud-sdk:latest
+  tags:
+    - shared
+
+stages:
+  - build
+  - trigger
+
+downstream-trigger-curl:
+  stage: trigger
+  script:
+    - >-
+      curl --request POST
+      --form "token=$CI_JOB_TOKEN"
+      --form ref=main
+      --form "variables[HITS_DEPLOY]=$HITS_DEPLOY"
+      "https://git.umms.med.umich.edu/api/v4/projects/$DOWNSTREAM_PROJECT/trigger/pipeline"
