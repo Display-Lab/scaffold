@@ -1,0 +1,24 @@
+---
+message_templates/: 
+  - approach_goal.json
+  - drop_below_goal.json
+  - getting_worse.json
+  - opportunity_to_improve_goal.json
+  - performance_improving.json
+  - reached_goal.json
+  - above_goal.json
+
+causal_pathways/: 
+  - goal_approach.json
+  - goal_gain.json
+  - goal_loss.json
+  - goal_worse.json
+  - improving.json
+  - worsening.json
+  - goal_better.json
+
+performance_measures/: 
+  - measures.json
+.: 
+  - comparators.json
+

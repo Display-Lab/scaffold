@@ -1,0 +1,23 @@
+{
+  "@context": {
+    "fhir": "http://hl7.org/fhir/",
+    "Measure": "fhir:Measure",
+    "identifier": "fhir:Measure.identifier",
+    "name": "fhir:Measure.name",
+    "title": "fhir:Measure.title",
+    "group": "fhir:Measure.group",
+    "type": "fhir:Measure.group.type",
+    "improvementNotation": "fhir:Measure.group.improvementNotation"
+  },
+  "@graph": [
+    {
+      "@id": "_:attendance-01",
+      "@type": "Measure",
+      "identifier": "attendance-01",
+      "name": "attendance-01",
+      "title": "Attendance-01: Department-level seminar attendance",
+      "type": "process",
+      "improvementNotation": "increase"
+    }
+  ]
+}

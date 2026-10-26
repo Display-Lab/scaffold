@@ -1,0 +1,113 @@
+﻿identifier,measure,group.subject,period.start,period.end,measureScore.rate,measureScore.denominator,group.code,PractitionerRole.code
+cmr-20250826-c8bf8917,attendance-01,DLHS,2025-08-26,2025-08-26,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20250902-3f265aea,attendance-01,DLHS,2025-09-02,2025-09-02,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20250909-57009536,attendance-01,DLHS,2025-09-09,2025-09-09,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20250916-43c3b753,attendance-01,DLHS,2025-09-16,2025-09-16,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20250923-1e58b848,attendance-01,DLHS,2025-09-23,2025-09-23,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20250930-0ed5dc6c,attendance-01,DLHS,2025-09-30,2025-09-30,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20251007-9f7ee4bf,attendance-01,DLHS,2025-10-07,2025-10-07,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20251021-01a8dd96,attendance-01,DLHS,2025-10-21,2025-10-21,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20251028-7928fddd,attendance-01,DLHS,2025-10-28,2025-10-28,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20251104-90b9405e,attendance-01,DLHS,2025-11-04,2025-11-04,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20251111-c955eabd,attendance-01,DLHS,2025-11-11,2025-11-11,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20251118-8454d53e,attendance-01,DLHS,2025-11-18,2025-11-18,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20251125-3c536a36,attendance-01,DLHS,2025-11-25,2025-11-25,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20251202-be14b3a9,attendance-01,DLHS,2025-12-02,2025-12-02,0.8,116,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260113-0385666c,attendance-01,DLHS,2026-01-13,2026-01-13,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260120-39902df5,attendance-01,DLHS,2026-01-20,2026-01-20,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260127-01f10cc6,attendance-01,DLHS,2026-01-27,2026-01-27,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260203-0522109c,attendance-01,DLHS,2026-02-03,2026-02-03,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260210-3e115f75,attendance-01,DLHS,2026-02-10,2026-02-10,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260217-8ac6e211,attendance-01,DLHS,2026-02-17,2026-02-17,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260224-1578072d,attendance-01,DLHS,2026-02-24,2026-02-24,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260310-45fb2eb1,attendance-01,DLHS,2026-03-10,2026-03-10,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260317-fbb2a92b,attendance-01,DLHS,2026-03-17,2026-03-17,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260324-e7784a43,attendance-01,DLHS,2026-03-24,2026-03-24,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260331-9f39436f,attendance-01,DLHS,2026-03-31,2026-03-31,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260407-b1d5318e,attendance-01,DLHS,2026-04-07,2026-04-07,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260414-ae809563,attendance-01,DLHS,2026-04-14,2026-04-14,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20260421-a59f10e0,attendance-01,DLHS,2026-04-21,2026-04-21,0.8,114,http://purl.obolibrary.org/obo/PSDO_0000094,DLHS member
+cmr-20250826-fee24f41,attendance-01,DLHS,2025-08-26,2025-08-26,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20250902-8f1fdbce,attendance-01,DLHS,2025-09-02,2025-09-02,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20250909-0c9c1b78,attendance-01,DLHS,2025-09-09,2025-09-09,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20250916-78847ab3,attendance-01,DLHS,2025-09-16,2025-09-16,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20250923-ff3f0ab1,attendance-01,DLHS,2025-09-23,2025-09-23,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20250930-820b344e,attendance-01,DLHS,2025-09-30,2025-09-30,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20251007-59588a11,attendance-01,DLHS,2025-10-07,2025-10-07,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20251021-99d8b8d4,attendance-01,DLHS,2025-10-21,2025-10-21,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20251028-216c5325,attendance-01,DLHS,2025-10-28,2025-10-28,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20251104-234fd657,attendance-01,DLHS,2025-11-04,2025-11-04,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20251111-18259f86,attendance-01,DLHS,2025-11-11,2025-11-11,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20251118-66158f9a,attendance-01,DLHS,2025-11-18,2025-11-18,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20251125-796ac1a2,attendance-01,DLHS,2025-11-25,2025-11-25,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20251202-0129cae0,attendance-01,DLHS,2025-12-02,2025-12-02,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260113-56882f0d,attendance-01,DLHS,2026-01-13,2026-01-13,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260120-4641ed69,attendance-01,DLHS,2026-01-20,2026-01-20,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260127-49a7cf33,attendance-01,DLHS,2026-01-27,2026-01-27,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260203-325df613,attendance-01,DLHS,2026-02-03,2026-02-03,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260210-84d5f0e7,attendance-01,DLHS,2026-02-10,2026-02-10,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260217-eae68888,attendance-01,DLHS,2026-02-17,2026-02-17,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260224-d2e61606,attendance-01,DLHS,2026-02-24,2026-02-24,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260310-4f43aff5,attendance-01,DLHS,2026-03-10,2026-03-10,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260317-b5202f17,attendance-01,DLHS,2026-03-17,2026-03-17,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260324-4acb8940,attendance-01,DLHS,2026-03-24,2026-03-24,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260331-cf5dfbdd,attendance-01,DLHS,2026-03-31,2026-03-31,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260407-fee51fc9,attendance-01,DLHS,2026-04-07,2026-04-07,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260414-082a3ce3,attendance-01,DLHS,2026-04-14,2026-04-14,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20260421-486da31a,attendance-01,DLHS,2026-04-21,2026-04-21,0.8,30,http://purl.obolibrary.org/obo/PSDO_0000094,Faculty
+cmr-20250826-80c4a3e0,attendance-01,DLHS,2025-08-26,2025-08-26,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20250902-1dca4e6c,attendance-01,DLHS,2025-09-02,2025-09-02,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20250909-31c9fb8e,attendance-01,DLHS,2025-09-09,2025-09-09,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20250916-e2dcc28c,attendance-01,DLHS,2025-09-16,2025-09-16,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20250923-de9adba9,attendance-01,DLHS,2025-09-23,2025-09-23,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20250930-4a548ca8,attendance-01,DLHS,2025-09-30,2025-09-30,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20251007-f4d20919,attendance-01,DLHS,2025-10-07,2025-10-07,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20251021-6f366006,attendance-01,DLHS,2025-10-21,2025-10-21,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20251028-e11a0dd4,attendance-01,DLHS,2025-10-28,2025-10-28,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20251104-bec82a45,attendance-01,DLHS,2025-11-04,2025-11-04,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20251111-f1949d8c,attendance-01,DLHS,2025-11-11,2025-11-11,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20251118-64e0098c,attendance-01,DLHS,2025-11-18,2025-11-18,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20251125-f6bace96,attendance-01,DLHS,2025-11-25,2025-11-25,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20251202-77a8737b,attendance-01,DLHS,2025-12-02,2025-12-02,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260113-05a4986f,attendance-01,DLHS,2026-01-13,2026-01-13,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260120-d9dc38f6,attendance-01,DLHS,2026-01-20,2026-01-20,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260127-3c8fb13e,attendance-01,DLHS,2026-01-27,2026-01-27,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260203-697bb740,attendance-01,DLHS,2026-02-03,2026-02-03,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260210-73734403,attendance-01,DLHS,2026-02-10,2026-02-10,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260217-29282042,attendance-01,DLHS,2026-02-17,2026-02-17,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260224-4dedf9b5,attendance-01,DLHS,2026-02-24,2026-02-24,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260310-54aa7baa,attendance-01,DLHS,2026-03-10,2026-03-10,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260317-8efe2595,attendance-01,DLHS,2026-03-17,2026-03-17,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260324-2ed96ed2,attendance-01,DLHS,2026-03-24,2026-03-24,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260331-6463b785,attendance-01,DLHS,2026-03-31,2026-03-31,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260407-f4559408,attendance-01,DLHS,2026-04-07,2026-04-07,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260414-6fc16c00,attendance-01,DLHS,2026-04-14,2026-04-14,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr-20260421-7783b4a2,attendance-01,DLHS,2026-04-21,2026-04-21,0.8,25,http://purl.obolibrary.org/obo/PSDO_0000094,Staff
+cmr--20250826-9f9d7c38,attendance-01,DLHS,2025-08-26,2025-08-26,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20250902-8bf4f79d,attendance-01,DLHS,2025-09-02,2025-09-02,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20250909-548bad1a,attendance-01,DLHS,2025-09-09,2025-09-09,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20250916-92a7e4f8,attendance-01,DLHS,2025-09-16,2025-09-16,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20250923-3e3acce8,attendance-01,DLHS,2025-09-23,2025-09-23,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20250930-c7862eb2,attendance-01,DLHS,2025-09-30,2025-09-30,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20251007-823087b4,attendance-01,DLHS,2025-10-07,2025-10-07,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20251021-1ec40baa,attendance-01,DLHS,2025-10-21,2025-10-21,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20251028-8a932641,attendance-01,DLHS,2025-10-28,2025-10-28,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20251104-813507e8,attendance-01,DLHS,2025-11-04,2025-11-04,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20251111-845fb52f,attendance-01,DLHS,2025-11-11,2025-11-11,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20251118-b590aaa9,attendance-01,DLHS,2025-11-18,2025-11-18,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20251125-15e38d24,attendance-01,DLHS,2025-11-25,2025-11-25,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20251202-18d2b4db,attendance-01,DLHS,2025-12-02,2025-12-02,0.8,61,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260113-fcd5f628,attendance-01,DLHS,2026-01-13,2026-01-13,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260120-35c0ade6,attendance-01,DLHS,2026-01-20,2026-01-20,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260127-9692e1d6,attendance-01,DLHS,2026-01-27,2026-01-27,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260203-a2ad53a3,attendance-01,DLHS,2026-02-03,2026-02-03,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260210-7c33333b,attendance-01,DLHS,2026-02-10,2026-02-10,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260217-c4845b7a,attendance-01,DLHS,2026-02-17,2026-02-17,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260224-d3dee0d6,attendance-01,DLHS,2026-02-24,2026-02-24,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260310-54185fe4,attendance-01,DLHS,2026-03-10,2026-03-10,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260317-3f5eb9cb,attendance-01,DLHS,2026-03-17,2026-03-17,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260324-1086e5ce,attendance-01,DLHS,2026-03-24,2026-03-24,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260331-faa4ad78,attendance-01,DLHS,2026-03-31,2026-03-31,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260407-2af7ff0c,attendance-01,DLHS,2026-04-07,2026-04-07,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260414-97e54410,attendance-01,DLHS,2026-04-14,2026-04-14,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student
+cmr--20260421-829f26ce,attendance-01,DLHS,2026-04-21,2026-04-21,0.8,59,http://purl.obolibrary.org/obo/PSDO_0000094,Student

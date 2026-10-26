@@ -1,0 +1,5 @@
+﻿PractitionerRole.identifier,PractitionerRole.practitioner,PractitionerRole.code,PractitionerRole.organization
+9999,,DLHS member,DLHS
+1119,,Faculty,DLHS
+1120,,Student,DLHS
+1121,,Staff,DLHS

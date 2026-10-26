@@ -1,0 +1,90 @@
+{
+    "@context": {
+      "@vocab": "http://schema.org/",
+      "slowmo": "http://example.com/slowmo#",
+      "csvw": "http://www.w3.org/ns/csvw#",
+      "dc": "http://purl.org/dc/terms/",
+      "psdo": "http://purl.obolibrary.org/obo/",
+      "slowmo:Measure": "http://example.com/slowmo#Measure",
+      "slowmo:IsAboutPerformer": "http://example.com/slowmo#IsAboutPerformer",
+      "slowmo:ColumnUse": "http://example.com/slowmo#ColumnUse",
+      "slowmo:IsAboutTemplate": "http://example.com/slowmo#IsAboutTemplate",
+      "slowmo:spek": "http://example.com/slowmo#spek",
+      "slowmo:IsAboutCausalPathway": "http://example.com/slowmo#IsAboutCausalPathway",
+      "slowmo:IsAboutOrganization": "http://example.com/slowmo#IsAboutOrganization",
+      "slowmo:IsAboutMeasure": "http://example.com/slowmo#IsAboutMeasure",
+      "slowmo:InputTable": "http://example.com/slowmo#InputTable",
+      "slowmo:WithComparator": "http://example.com/slowmo#WithComparator",
+      "has_part": "http://purl.obolibrary.org/obo/bfo#BFO_0000051",
+      "has_disposition": "http://purl.obolibrary.org/obo/RO_0000091"
+    },
+  "Performance_data":[
+      ["staff_number","measure","month","passed_count","flagged_count","denominator","peer_average_comparator","peer_75th_percentile_benchmark","peer_90th_percentile_benchmark", "MPOG_goal"],
+      [4,"GLU01","2023-01-01",95,5,100,80,85,90,90],
+      [4,"GLU01","2023-02-01",95,5,100,80,85,90,90],
+      [4,"GLU01","2023-03-01",95,5,100,80,85,90,90],
+      [4,"GLU01","2023-04-01",95,5,100,80,85,90,90],
+      [4,"GLU01","2023-05-01",95,5,100,80,85,90,90],
+      [4,"GLU01","2023-06-01",95,5,100,80,85,90,90],
+      [4,"GLU01","2023-07-01",95,5,100,80,85,90,90],
+      [4,"GLU01","2023-08-01",95,5,100,80,85,90,90],
+      [4,"GLU01","2023-09-01",95,5,100,80,85,90,90],
+      [4,"GLU01","2023-10-01",95,5,100,80,85,90,90],
+      [4,"GLU01","2023-11-01",95,5,100,80,85,90,90],
+      [4,"GLU01","2023-12-01",89,11,100,80,85,90,90],
+
+      [4,"TOC02","2023-01-01",95,5,100,80,85,90,90],
+      [4,"TOC02","2023-02-01",95,5,100,80,85,90,90],
+      [4,"TOC02","2023-03-01",95,5,100,80,85,90,90],
+      [4,"TOC02","2023-04-01",95,5,100,80,85,90,90],
+      [4,"TOC02","2023-05-01",95,5,100,80,85,90,90],
+      [4,"TOC02","2023-06-01",95,5,100,80,85,90,90],
+      [4,"TOC02","2023-07-01",95,5,100,80,85,90,90],
+      [4,"TOC02","2023-08-01",95,5,100,80,85,90,90],
+      [4,"TOC02","2023-09-01",95,5,100,80,85,90,90],
+      [4,"TOC02","2023-10-01",95,5,100,80,85,90,90],
+      [4,"TOC02","2023-11-01",84,16,100,80,85,90,90],
+      [4,"TOC02","2023-12-01",89,11,100,80,85,90,90],
+
+      [4,"BP03","2023-01-01",75,25,100,80,85,90,90],
+      [4,"BP03","2023-02-01",75,25,100,80,85,90,90],
+      [4,"BP03","2023-03-01",75,25,100,80,85,90,90],
+      [4,"BP03","2023-04-01",75,25,100,80,85,90,90],
+      [4,"BP03","2023-05-01",75,25,100,80,85,90,90],
+      [4,"BP03","2023-06-01",75,25,100,80,85,90,90],
+      [4,"BP03","2023-07-01",75,25,100,80,85,90,90],
+      [4,"BP03","2023-08-01",75,25,100,80,85,90,90],
+      [4,"BP03","2023-09-01",75,25,100,80,85,90,90],
+      [4,"BP03","2023-10-01",75,25,100,80,85,90,90],
+      [4,"BP03","2023-11-01",82,18,100,80,85,90,90],
+      [4,"BP03","2023-12-01",87,13,100,80,85,90,90]
+    ],
+  "History":{
+  },
+  "Preferences":{
+    "Utilities": {
+    "Message_Format": 
+      {
+        "Social Gain":"-14",
+        "Social stayed better":"5",
+        "Worsening":"3",
+        "Improving":"4",
+        "Social Loss":"3",
+        "Social stayed worse":"2",
+        "Social Better":"-13",
+        "Social Worse":"5",
+        "Social Approach":"5",
+        "Goal Gain":"-8",
+        "Goal Approach":"5"
+      },
+    "Display_Format":
+      {
+        "Bar chart": "0",
+        "Line chart": "1",
+        "Text-only": "0",
+        "System-generated":"0"
+      }
+  }
+}
+
+}
