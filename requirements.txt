@@ -69,7 +69,7 @@ packaging==26.2
     #   pytest
 pandas==2.3.3
     # via scaffold
-pillow==12.3.0
+pillow==13.0.0
     # via
     #   matplotlib
     #   scaffold
