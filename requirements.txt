@@ -89,7 +89,7 @@ pyparsing==3.3.2
     # via
     #   matplotlib
     #   rdflib
-pytest==8.4.2
+pytest==9.0.3
 python-dateutil==2.9.0.post0
     # via
     #   matplotlib

@@ -57,7 +57,7 @@ build-backend = "setuptools.build_meta"
 
 [dependency-groups]
 dev = [
-    "pytest>=8.4.2",
+    "pytest>=9.0.3",
     "ruff>=0.15.12",
     "python-slugify>=8.0.4,<9.0.0",
     "decoy>=2.1.2,<3.0.0",
